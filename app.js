@@ -204,21 +204,16 @@ shareBtn.addEventListener('click', () => {
   const spot = JSON.parse(localStorage.getItem('parkingSpot'));
   if (!spot) return;
 
-  // Get saved photo (if any)
-  const photo = localStorage.getItem('parkingPhoto') || '';
-
-  // Create a shareable URL with encoded data
-  const baseURL = 'https://parking-pwa-eight.vercel.app'; // 👈 Use your real domain
+  const baseURL = 'https://parking-pwa-eight.vercel.app';
   const params = new URLSearchParams({
     lat: spot.lat,
     lng: spot.lng,
-    time: spot.time,
-    ...(photo && { photo })
+    time: spot.time
+    // Photo removed — keeps link short and shareable
   });
 
   const shareURL = `${baseURL}?${params.toString()}`;
 
-  // Try to use Web Share API (mobile)
   if (navigator.share) {
     navigator.share({
       title: 'My Parking Spot',
@@ -226,7 +221,6 @@ shareBtn.addEventListener('click', () => {
       url: shareURL
     }).catch(err => console.log('Share canceled', err));
   } else {
-    // Fallback: Copy to clipboard
     navigator.clipboard.writeText(shareURL).then(() => {
       alert('Parking link copied to clipboard!\nShare it with your friends.');
     });
