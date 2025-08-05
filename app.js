@@ -268,3 +268,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 });
+
+
+// Restore saved spot on page load
+document.addEventListener('DOMContentLoaded', () => {
+  const savedSpot = localStorage.getItem('parkingSpot');
+  if (savedSpot) {
+    const spot = JSON.parse(savedSpot);
+    
+    // Re-enable Find My Car button
+    findBtn.disabled = false;
+    
+    // Update status
+    status.textContent = `Parking saved on ${new Date(spot.time).toLocaleTimeString()}`;
+    
+    // ✅ Auto-show the map
+    updateMap(spot.lat, spot.lng);
+  }
+
+  // Restore photo if exists
+  const savedPhoto = localStorage.getItem('parkingPhoto');
+  if (savedPhoto) {
+    photoImg.src = savedPhoto;
+    photoPreview.style.display = 'block';
+  }
+});
