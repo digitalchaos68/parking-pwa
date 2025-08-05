@@ -342,7 +342,6 @@ showQRBtn.addEventListener('click', () => {
 });
 
 
-const testVoiceBtn = document.getElementById('testVoiceBtn');
 
 testVoiceBtn.addEventListener('click', () => {
   if ('speechSynthesis' in window) {
