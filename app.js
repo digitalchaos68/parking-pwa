@@ -190,15 +190,19 @@ if (findBtn) {
     const spot = JSON.parse(localStorage.getItem('parkingSpot'));
     if (!spot) return;
 
+    // Cancel any previous speech
+    speechSynthesis.cancel();
+
+    // Update map immediately
     updateMap(spot.lat, spot.lng);
 
-    // Voice reminder
+    // ✅ Speak parking time (within user gesture)
     const time = new Date(spot.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const utter = new SpeechSynthesisUtterance(`You parked at ${time}.`);
     utter.rate = 0.9;
     speechSynthesis.speak(utter);
 
-    // Distance calculation
+    // Get distance
     status.textContent = 'Calculating distance...';
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -215,12 +219,14 @@ if (findBtn) {
 
         status.textContent = `🚗 Your car is ${distText} away.`;
 
+        // ✅ Speak distance
         const distUtter = new SpeechSynthesisUtterance(`Your car is ${Math.round(distance)} meters away.`);
         distUtter.rate = 0.8;
         speechSynthesis.speak(distUtter);
       },
       (err) => {
         status.textContent = 'Unable to get your location for distance.';
+        console.error("Distance error:", err);
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
