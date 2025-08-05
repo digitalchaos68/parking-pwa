@@ -1,15 +1,16 @@
 // DOM Elements
 const saveBtn = document.getElementById('saveBtn');
 const findBtn = document.getElementById('findBtn');
+const shareBtn = document.getElementById('shareBtn');
 const status = document.getElementById('status');
 const mapDiv = document.getElementById('map');
+const themeToggle = document.getElementById('themeToggle');
 
 const photoInput = document.getElementById('photoInput');
 const photoPreview = document.getElementById('photoPreview');
 const photoImg = document.getElementById('photoImg');
 
-const themeToggle = document.getElementById('themeToggle');
-let isDark = false;
+const timer = document.getElementById('timer'); // Make sure you have <div id="timer"></div> in HTML
 
 // Update the map using Google Maps Embed
 function updateMap(lat, lng) {
@@ -18,287 +19,237 @@ function updateMap(lat, lng) {
   mapDiv.innerHTML = `<iframe frameborder="0" style="border:0" src="${mapUrl}" allowfullscreen></iframe>`;
 }
 
-
-
-
-// Request notification permission on first save
+// Request notification permission
 function requestNotificationPermission() {
   if ('Notification' in window && Notification.permission !== 'granted') {
     Notification.requestPermission();
   }
 }
 
-// Load saved theme
+// Theme Toggle
+let isDark = false;
 if (localStorage.getItem('darkMode') === 'true') {
   document.body.classList.add('dark');
   themeToggle.textContent = '☀️ Light Mode';
   isDark = true;
 }
 
-// Toggle theme
 themeToggle.addEventListener('click', () => {
   isDark = !isDark;
   document.body.classList.toggle('dark', isDark);
   themeToggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
   localStorage.setItem('darkMode', isDark);
 });
-// Run once on load
-requestNotificationPermission();
 
-
-// Check if we already have a saved spot
-const savedSpot = localStorage.getItem('parkingSpot');
-
-// Start timer if spot is saved
-if (savedSpot) {
-  const spot = JSON.parse(savedSpot);
-  findBtn.disabled = false;
-  status.textContent = `Parking saved on ${new Date(spot.time).toLocaleTimeString()}`;
-  
-  // Start live timer
-  setInterval(() => {
-    const parkedTime = new Date(spot.time);
-    const now = new Date();
-    const diff = Math.floor((now - parkedTime) / 1000); // seconds
-    const hours = Math.floor(diff / 3600);
-    const minutes = Math.floor((diff % 3600) / 60);
-    const seconds = diff % 60;
-    timer.textContent = `🕒 Parked: ${hours}h ${minutes}m ${seconds}s`;
-  }, 1000);
-
-// Save selected notification time
-localStorage.setItem('notifyTime', notifyDelay);
-
-}
-
-// Restore photo if exists
-const savedPhoto = localStorage.getItem('parkingPhoto');
-if (savedPhoto) {
-  photoImg.src = savedPhoto;
-  photoPreview.style.display = 'block';
-}
-
-// If spot is saved, schedule a 2-hour reminder
-if (savedSpot) {
-  const spot = JSON.parse(savedSpot);
-  const parkedTime = new Date(spot.time);
-  const now = new Date();
-  const diffMs = now - parkedTime;
-  const twoHours = 2 * 60 * 60 * 1000;
-
-// Schedule custom notification
-setTimeout(() => {
-  if (Notification.permission === 'granted') {
-    new Notification('🕒 Park Reminder', {
-      body: 'You’ve been parked for a while!',
-      icon: 'image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🅿️</text></svg>'
-    });
-  }
-}, notifyDelay);
-  
-}
-
-photoInput.addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(event) {
-      const dataUrl = event.target.result; // This is a data: URL
-      photoImg.src = dataUrl;
-      photoPreview.style.display = 'block';
-      localStorage.setItem('parkingPhoto', dataUrl);
-    };
-    reader.readAsDataURL(file);
-  }
-});
-
-// Run once on load
-requestNotificationPermission();
-
-// Save current location
-saveBtn.addEventListener('click', () => {
-  status.textContent = 'Getting your location...';
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const { latitude, longitude } = position.coords;
-// Get notification delay from dropdown
-      const notifyDelay = parseInt(document.getElementById('notifyTime').value);
-      const spot = {
-        lat: latitude,
-        lng: longitude,
-        time: new Date().toISOString()
-      };
-
-      localStorage.setItem('parkingSpot', JSON.stringify(spot));
-      findBtn.disabled = false;
-
-      status.textContent = `✅ Parking saved! (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
-      updateMap(latitude, longitude);
-    },
-    (error) => {
-      console.error("Geolocation error:", error);
-      status.textContent = `❌ Error: ${error.message}`;
-    },
-    { timeout: 10000 }
-  );
-});
-
-// Show the map and distance to car
-findBtn.addEventListener('click', () => {
-  const spot = JSON.parse(localStorage.getItem('parkingSpot'));
-  if (!spot) return;
-
-  updateMap(spot.lat, spot.lng);
-
-  // 🔊 Voice reminder
-  const time = new Date(spot.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  const utter = new SpeechSynthesisUtterance(`You parked at ${time}.`);
-  utter.rate = 0.9;
-  speechSynthesis.speak(utter);
-
-  // 📍 Distance calculation
-  status.textContent = 'Calculating distance...';
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      const userLat = pos.coords.latitude;
-      const userLng = pos.coords.longitude;
-
-      // Haversine formula for distance
-      const R = 6371e3; // Earth radius in meters
-      const φ1 = userLat * Math.PI / 180;
-      const φ2 = spot.lat * Math.PI / 180;
-      const Δφ = (spot.lat - userLat) * Math.PI / 180;
-      const Δλ = (spot.lng - userLng) * Math.PI / 180;
-
-      const a = Math.sin(Δφ/2)*Math.sin(Δφ/2) +
-                Math.cos(φ1)*Math.cos(φ2)*
-                Math.sin(Δλ/2)*Math.sin(Δλ/2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-      const distance = R * c; // meters
-      const unit = distance >= 1000 ? 'km' : 'm';
-      const distText = distance >= 1000 ? (distance/1000).toFixed(1) + ' km' : Math.round(distance) + ' m';
-
-      status.textContent = `🚗 Your car is ${distText} away.`;
-
-      // Extra voice hint
-      const distUtter = new SpeechSynthesisUtterance(`Your car is ${Math.round(distance)} meters away.`);
-      distUtter.rate = 0.8;
-      speechSynthesis.speak(distUtter);
-    },
-    (err) => {
-      status.textContent = 'Unable to get your location for distance.';
-    },
-    { timeout: 10000 }
-  );
-});
-
-
-const shareBtn = document.getElementById('shareBtn');
-
-// Enable share button if spot exists
-if (savedSpot) {
-  shareBtn.disabled = false;
-}
-
-// Handle share button
-shareBtn.addEventListener('click', () => {
-  const spot = JSON.parse(localStorage.getItem('parkingSpot'));
-  if (!spot) return;
-
-  const baseURL = 'https://parking-pwa-eight.vercel.app';
-  const params = new URLSearchParams({
-    lat: spot.lat,
-    lng: spot.lng,
-    time: spot.time
-    // Photo removed — keeps link short and shareable
-  });
-
-  const shareURL = `${baseURL}?${params.toString()}`;
-
-  if (navigator.share) {
-    navigator.share({
-      title: 'My Parking Spot',
-      text: 'Here’s where I parked 🅿️',
-      url: shareURL
-    }).catch(err => console.log('Share canceled', err));
-  } else {
-    navigator.clipboard.writeText(shareURL).then(() => {
-      alert('Parking link copied to clipboard!\nShare it with your friends.');
-    });
-  }
-});
-
-
-// Check if this is a shared link
+// On Load
 document.addEventListener('DOMContentLoaded', () => {
+  requestNotificationPermission();
+
   const params = new URLSearchParams(window.location.search);
+
+  // Check if this is a shared link
   if (params.has('lat') && params.has('lng')) {
-    // This is a shared view
     const lat = parseFloat(params.get('lat'));
     const lng = parseFloat(params.get('lng'));
     const time = params.get('time');
-    const photo = params.get('photo');
 
-    const backButton = document.createElement('button');
-    backButton.textContent = '🔙 Back to My Parking';
-    backButton.onclick = () => {
-      window.location.href = './';
-      };
-    document.querySelector('.container').appendChild(backButton);
-
-    // Update UI
-    // This is a shared view
+    // Update UI for shared view
     document.querySelector('.container h1').textContent = '📍 Friend’s Parking Spot';
     saveBtn.style.display = 'none';
     findBtn.style.display = 'none';
     shareBtn.style.display = 'none';
-    status.textContent = `Parked at ${new Date(params.get('time')).toLocaleTimeString()}`;
-    updateMap(parseFloat(params.get('lat')), parseFloat(params.get('lng')));
-
-    // 🔹 NEW: Hide photo section in shared view
-    document.querySelector('p:nth-child(6)').style.display = 'none'; // "📸 Add a photo:"
-    document.getElementById('photoInput').style.display = 'none';
-    document.getElementById('photoPreview').style.display = 'none';
-
-// Restore notification time selection
-    const savedNotifyTime = localStorage.getItem('notifyTime');
-    if (savedNotifyTime) {
-      document.getElementById('notifyTime').value = savedNotifyTime;
-    }
-
-    // Show map
+    status.textContent = `Parked at ${new Date(time).toLocaleTimeString()}`;
     updateMap(lat, lng);
 
-    // Show photo if available
-    if (photo) {
-      photoImg.src = photo;
-      photoPreview.style.display = 'block';
-    }
+    // Hide photo section in shared view
+    if (photoInput) photoInput.style.display = 'none';
+    document.querySelector('p:nth-child(6)').style.display = 'none'; // "Add a photo"
+    photoPreview.style.display = 'none';
+
+    // Add Back button
+    const backButton = document.createElement('button');
+    backButton.textContent = '🔙 Back to My Parking';
+    backButton.onclick = () => window.location.href = './';
+    document.querySelector('.container').appendChild(backButton);
+
+    return; // Exit early — don't run normal app logic
   }
-});
 
-
-// Restore saved spot on page load
-document.addEventListener('DOMContentLoaded', () => {
+  // Normal app flow (not shared view)
   const savedSpot = localStorage.getItem('parkingSpot');
+
+  // Restore saved spot
   if (savedSpot) {
     const spot = JSON.parse(savedSpot);
-    
-    // Re-enable Find My Car button
     findBtn.disabled = false;
-    
-    // Update status
     status.textContent = `Parking saved on ${new Date(spot.time).toLocaleTimeString()}`;
-    
-    // ✅ Auto-show the map
-    updateMap(spot.lat, spot.lng);
+    updateMap(spot.lat, spot.lng); // Auto-show map
+
+    // Start live timer
+    setInterval(() => {
+      const parkedTime = new Date(spot.time);
+      const now = new Date();
+      const diff = Math.floor((now - parkedTime) / 1000);
+      const hours = Math.floor(diff / 3600);
+      const minutes = Math.floor((diff % 3600) / 60);
+      const seconds = diff % 60;
+      if (timer) {
+        timer.textContent = `🕒 Parked: ${hours}h ${minutes}m ${seconds}s`;
+      }
+    }, 1000);
+
+    // Schedule notification
+    const notifyDelay = parseInt(localStorage.getItem('notifyTime') || '7200000'); // default 2h
+    const parkedTime = new Date(spot.time);
+    const now = new Date();
+    const diffMs = now - parkedTime;
+
+    if (diffMs < notifyDelay) {
+      setTimeout(() => {
+        if (Notification.permission === 'granted') {
+          new Notification('🕒 Park Reminder', {
+            body: 'You’ve been parked for a while!',
+            icon: 'image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🅿️</text></svg>'
+          });
+        }
+      }, notifyDelay - diffMs);
+    }
   }
 
-  // Restore photo if exists
+  // Restore photo
   const savedPhoto = localStorage.getItem('parkingPhoto');
   if (savedPhoto) {
     photoImg.src = savedPhoto;
     photoPreview.style.display = 'block';
   }
+
+  // Restore notification time dropdown
+  const notifyTimeSelect = document.getElementById('notifyTime');
+  if (notifyTimeSelect) {
+    const savedNotifyTime = localStorage.getItem('notifyTime') || '7200000';
+    notifyTimeSelect.value = savedNotifyTime;
+  }
 });
+
+// Photo Upload
+if (photoInput) {
+  photoInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const dataUrl = event.target.result;
+        photoImg.src = dataUrl;
+        photoPreview.style.display = 'block';
+        localStorage.setItem('parkingPhoto', dataUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+}
+
+// Save Location
+if (saveBtn) {
+  saveBtn.addEventListener('click', () => {
+    status.textContent = 'Getting your location...';
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        const notifyDelay = parseInt(document.getElementById('notifyTime').value);
+
+        const spot = {
+          lat: latitude,
+          lng: longitude,
+          time: new Date().toISOString()
+        };
+
+        localStorage.setItem('parkingSpot', JSON.stringify(spot));
+        localStorage.setItem('notifyTime', notifyDelay); // Save user's choice
+
+        findBtn.disabled = false;
+        status.textContent = `✅ Parking saved! (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
+        updateMap(latitude, longitude);
+
+        // Reset timer
+        if (timer) timer.textContent = '🕒 Parked: 0h 0m 0s';
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        status.textContent = `❌ Error: ${error.message}`;
+      },
+      { timeout: 10000 }
+    );
+  });
+}
+
+// Find My Car
+if (findBtn) {
+  findBtn.addEventListener('click', () => {
+    const spot = JSON.parse(localStorage.getItem('parkingSpot'));
+    if (!spot) return;
+
+    updateMap(spot.lat, spot.lng);
+
+    // Voice reminder
+    const time = new Date(spot.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const utter = new SpeechSynthesisUtterance(`You parked at ${time}.`);
+    utter.rate = 0.9;
+    speechSynthesis.speak(utter);
+
+    // Distance calculation
+    status.textContent = 'Calculating distance...';
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const R = 6371e3;
+        const φ1 = pos.coords.latitude * Math.PI / 180;
+        const φ2 = spot.lat * Math.PI / 180;
+        const Δφ = (spot.lat - pos.coords.latitude) * Math.PI / 180;
+        const Δλ = (spot.lng - pos.coords.longitude) * Math.PI / 180;
+
+        const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        const distance = R * c;
+        const distText = distance >= 1000 ? (distance/1000).toFixed(1) + ' km' : Math.round(distance) + ' m';
+
+        status.textContent = `🚗 Your car is ${distText} away.`;
+
+        const distUtter = new SpeechSynthesisUtterance(`Your car is ${Math.round(distance)} meters away.`);
+        distUtter.rate = 0.8;
+        speechSynthesis.speak(distUtter);
+      },
+      (err) => {
+        status.textContent = 'Unable to get your location for distance.';
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  });
+}
+
+// Share My Spot
+if (shareBtn) {
+  shareBtn.addEventListener('click', () => {
+    const spot = JSON.parse(localStorage.getItem('parkingSpot'));
+    if (!spot) return;
+
+    const baseURL = 'https://parking-pwa-eight.vercel.app';
+    const params = new URLSearchParams({
+      lat: spot.lat,
+      lng: spot.lng,
+      time: spot.time
+    });
+
+    const shareURL = `${baseURL}?${params.toString()}`;
+
+    if (navigator.share) {
+      navigator.share({
+        title: 'My Parking Spot',
+        text: 'Here’s where I parked 🅿️',
+        url: shareURL
+      }).catch(err => console.log('Share canceled', err));
+    } else {
+      navigator.clipboard.writeText(shareURL).then(() => {
+        alert('Parking link copied to clipboard!\nShare it with your friends.');
+      });
+    }
+  });
+}
