@@ -2,6 +2,9 @@
 const saveBtn = document.getElementById('saveBtn');
 const findBtn = document.getElementById('findBtn');
 const shareBtn = document.getElementById('shareBtn');
+const showQRBtn = document.getElementById('showQRBtn');
+const testVoiceBtn = document.getElementById('testVoiceBtn');
+const qrContainer = document.getElementById('qrContainer');
 const status = document.getElementById('status');
 const mapDiv = document.getElementById('map');
 const themeToggle = document.getElementById('themeToggle');
@@ -121,43 +124,45 @@ if ('speechSynthesis' in window) {
   const savedSpot = localStorage.getItem('parkingSpot');
 
   // Restore saved spot
-  if (savedSpot) {
-    const spot = JSON.parse(savedSpot);
-    findBtn.disabled = false;
-    shareBtn.disabled = false;
-    status.textContent = `Parking saved on ${new Date(spot.time).toLocaleTimeString()}`;
-    updateMap(spot.lat, spot.lng);
+if (savedSpot) {
+  const spot = JSON.parse(savedSpot);
+  findBtn.disabled = false;
+  shareBtn.disabled = false;
+  showQRBtn.disabled = false;
+  testVoiceBtn.disabled = false;
+  status.textContent = `Parking saved on ${new Date(spot.time).toLocaleTimeString()}`;
+  updateMap(spot.lat, spot.lng);
 
-    // Start live timer
-    setInterval(() => {
-      const parkedTime = new Date(spot.time);
-      const now = new Date();
-      const diff = Math.floor((now - parkedTime) / 1000);
-      const hours = Math.floor(diff / 3600);
-      const minutes = Math.floor((diff % 3600) / 60);
-      const seconds = diff % 60;
-      if (timer) {
-        timer.textContent = `🕒 Parked: ${hours}h ${minutes}m ${seconds}s`;
-      }
-    }, 1000);
-
-    // Schedule notification
-    const notifyDelay = parseInt(localStorage.getItem('notifyTime') || '7200000');
+  // Start live timer
+  setInterval(() => {
     const parkedTime = new Date(spot.time);
     const now = new Date();
-    const diffMs = now - parkedTime;
-
-    if (diffMs < notifyDelay) {
-      setTimeout(() => {
-        if (Notification.permission === 'granted') {
-          new Notification('🕒 Park Reminder', {
-            body: 'You’ve been parked for a while!',
-            icon: 'image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🅿️</text></svg>'
-          });
-        }
-      }, notifyDelay - diffMs);
+    const diff = Math.floor((now - parkedTime) / 1000);
+    const hours = Math.floor(diff / 3600);
+    const minutes = Math.floor((diff % 3600) / 60);
+    const seconds = diff % 60;
+    if (timer) {
+      timer.textContent = `🕒 Parked: ${hours}h ${minutes}m ${seconds}s`;
     }
+  }, 1000);
+
+  // Schedule notification
+  const notifyDelay = parseInt(localStorage.getItem('notifyTime') || '7200000');
+  const parkedTime = new Date(spot.time);
+  const now = new Date();
+  const diffMs = now - parkedTime;
+
+  if (diffMs < notifyDelay) {
+    setTimeout(() => {
+      if (Notification.permission === 'granted') {
+        new Notification('🕒 Park Reminder', {
+          body: 'You’ve been parked for a while!',
+          icon: 'image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🅿️</text></svg>'
+        });
+      }
+    }, notifyDelay - diffMs);
   }
+}
 
   // Restore photo
   const savedPhoto = localStorage.getItem('parkingPhoto');
