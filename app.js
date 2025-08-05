@@ -11,6 +11,15 @@ const photoImg = document.getElementById('photoImg');
 const themeToggle = document.getElementById('themeToggle');
 let isDark = false;
 
+// Update the map using Google Maps Embed
+function updateMap(lat, lng) {
+  const mapUrl = `https://www.google.com/maps/embed/v1/view?key=AIzaSyD0iSWh-ke56m_qdHt1IWPnUb7r_Q40sII&center=${lat},${lng}&zoom=18`;
+  mapDiv.style.display = 'block';
+  mapDiv.innerHTML = `<iframe frameborder="0" style="border:0" src="${mapUrl}" allowfullscreen></iframe>`;
+}
+
+
+
 
 // Request notification permission on first save
 function requestNotificationPermission() {
@@ -180,13 +189,6 @@ findBtn.addEventListener('click', () => {
   );
 });
 
-// Update the map using Google Maps Embed
-function updateMap(lat, lng) {
-  const mapUrl = `https://www.google.com/maps/embed/v1/view?key=AIzaSyD0iSWh-ke56m_qdHt1IWPnUb7r_Q40sII&center=${lat},${lng}&zoom=18`;
-  mapDiv.style.display = 'block';
-  mapDiv.innerHTML = `<iframe frameborder="0" style="border:0" src="${mapUrl}" allowfullscreen></iframe>`;
-}
-
 
 const shareBtn = document.getElementById('shareBtn');
 
@@ -231,7 +233,7 @@ shareBtn.addEventListener('click', () => {
 
 
 // Check if this is a shared link
-window.addEventListener('load', () => {
+document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
   if (params.has('lat') && params.has('lng')) {
     // This is a shared view

@@ -1,0 +1,10 @@
+git add .
+git commit -m "Add: Push notification and share parking spot feature"
+git push origin main
+
+git init
+git add .
+git commit -m "Add PWA files"
+git branch -M main
+git remote add origin https://github.com/digitalchaos68/parking-pwa.git
+git push -f origin main
