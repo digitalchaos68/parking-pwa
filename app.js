@@ -9,6 +9,7 @@ const status = document.getElementById('status');
 const mapDiv = document.getElementById('map');
 const themeToggle = document.getElementById('themeToggle');
 
+
 const photoInput = document.getElementById('photoInput');
 const photoPreview = document.getElementById('photoPreview');
 const photoImg = document.getElementById('photoImg');
@@ -308,8 +309,6 @@ if (shareBtn) {
   });
 }
 
-const showQRBtn = document.getElementById('showQRBtn');
-const qrContainer = document.getElementById('qrContainer');
 
 // Enable QR button if spot exists
 if (savedSpot) {
