@@ -78,3 +78,29 @@ button {
   height: 100%;
   border-radius: 8px;
 }
+
+body {
+  transition: background 0.3s, color 0.3s;
+}
+
+body.dark {
+  background: #121212;
+  color: #e0e0e0;
+}
+
+body.dark .container {
+  background: #1e1e1e;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+body.dark button {
+  background: #6200ea;
+}
+
+body.dark #findBtn {
+  background: #03dac6;
+}
+
+body.dark #status, body.dark p {
+  color: #bb86fc;
+}

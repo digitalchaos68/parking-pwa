@@ -13,10 +13,19 @@
     <h1>ParkHere</h1>
     <p>Remember where you parked — no install needed.</p>
 
+    <button id="themeToggle">🌙 Dark Mode</button>
     <button id="saveBtn">📍 Save My Parking Spot</button>
     <button id="findBtn" disabled>🧭 Find My Car</button>
+    <button id="shareBtn" disabled>📤 Share My Spot</button>
+
+    <p>📸 Add a photo:</p>
+    <input type="file" id="photoInput" accept="image/*" capture="environment">
+    <div id="photoPreview" style="margin:10px 0; display:none;">
+      <img id="photoImg" src="" width="100%" style="border-radius:8px;">
+    </div>
 
     <div id="status"></div>
+    <div id="timer"></div>
     <div id="map"></div>
   </div>
 
