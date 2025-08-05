@@ -65,6 +65,10 @@ if (savedSpot) {
     const seconds = diff % 60;
     timer.textContent = `🕒 Parked: ${hours}h ${minutes}m ${seconds}s`;
   }, 1000);
+
+// Save selected notification time
+localStorage.setItem('notifyTime', notifyDelay);
+
 }
 
 // Restore photo if exists
@@ -82,19 +86,16 @@ if (savedSpot) {
   const diffMs = now - parkedTime;
   const twoHours = 2 * 60 * 60 * 1000;
 
-  // If less than 2 hours have passed, schedule notification
-  if (diffMs < twoHours) {
-    const timeUntilNotify = twoHours - diffMs;
-
-    setTimeout(() => {
-      if (Notification.permission === 'granted') {
-        new Notification('🕒 Park Reminder', {
-          body: 'You’ve been parked for 2 hours!',
-          icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🅿️</text></svg>'
-        });
-      }
-    }, timeUntilNotify);
+// Schedule custom notification
+setTimeout(() => {
+  if (Notification.permission === 'granted') {
+    new Notification('🕒 Park Reminder', {
+      body: 'You’ve been parked for a while!',
+      icon: 'image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🅿️</text></svg>'
+    });
   }
+}, notifyDelay);
+  
 }
 
 photoInput.addEventListener('change', (e) => {
@@ -120,7 +121,8 @@ saveBtn.addEventListener('click', () => {
   navigator.geolocation.getCurrentPosition(
     (position) => {
       const { latitude, longitude } = position.coords;
-
+// Get notification delay from dropdown
+      const notifyDelay = parseInt(document.getElementById('notifyTime').value);
       const spot = {
         lat: latitude,
         lng: longitude,
@@ -246,11 +248,24 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.container').appendChild(backButton);
 
     // Update UI
+    // This is a shared view
     document.querySelector('.container h1').textContent = '📍 Friend’s Parking Spot';
     saveBtn.style.display = 'none';
     findBtn.style.display = 'none';
     shareBtn.style.display = 'none';
-    status.textContent = `Parked at ${new Date(time).toLocaleTimeString()}`;
+    status.textContent = `Parked at ${new Date(params.get('time')).toLocaleTimeString()}`;
+    updateMap(parseFloat(params.get('lat')), parseFloat(params.get('lng')));
+
+    // 🔹 NEW: Hide photo section in shared view
+    document.querySelector('p:nth-child(6)').style.display = 'none'; // "📸 Add a photo:"
+    document.getElementById('photoInput').style.display = 'none';
+    document.getElementById('photoPreview').style.display = 'none';
+
+// Restore notification time selection
+    const savedNotifyTime = localStorage.getItem('notifyTime');
+    if (savedNotifyTime) {
+      document.getElementById('notifyTime').value = savedNotifyTime;
+    }
 
     // Show map
     updateMap(lat, lng);
