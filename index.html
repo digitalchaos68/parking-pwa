@@ -15,8 +15,9 @@
 
     <button id="themeToggle">🌙 Dark Mode</button>
 
-    <label for="notifyTime">🔔 Notify me after:</label>
-    <select id="notifyTime">
+    <!-- Notification Time Selector -->
+    <label for="notifyTime" class="shared-hide">🔔 Notify me after:</label>
+    <select id="notifyTime" class="shared-hide">
       <option value="1800000">0.5 hour</option>
       <option value="3600000" selected >1 hour</option>
       <option value="5400000">1.5 hour</option>
@@ -25,21 +26,24 @@
       <option value="18000000">5 hours</option>
     </select>
 
-    <button id="saveBtn">📍 Save My Parking Spot</button>
 
-    <button id="findBtn" >🧭 Find My Car</button>
-    <button id="shareBtn" >📤 Share My Spot</button>
-
-    <p>📸 Add a photo:</p>
-    <input type="file" id="photoInput" accept="image/*" capture="environment">
-    <div id="photoPreview" style="margin:10px 0; display:none;">
+    <!-- Photo Upload Section -->
+    <p class="shared-hide">📸 Add a photo:</p>
+    <input type="file" id="photoInput" class="shared-hide" accept="image/*" capture="environment">
+    <div id="photoPreview" class="shared-hide" style="margin:10px 0;">
       <img id="photoImg" src="" width="100%" style="border-radius:8px;">
     </div>
 
+    <!-- Buttons -->
+    <button id="themeToggle" class="shared-hide">🌙 Dark Mode</button>
+    <button id="saveBtn" class="shared-hide">📍 Save My Parking Spot</button>
+    <button id="findBtn" disabled class="shared-hide">🧭 Find My Car</button>
+    <button id="shareBtn" disabled class="shared-hide">📤 Share My Spot</button>
+
+    <!-- Status & Timer -->
     <div id="status"></div>
     <div id="timer"></div>
-    <div id="map"></div>
-  </div>
+    <div id="map"></div>  </div>
 
   <script src="app.js"></script>
 </body>

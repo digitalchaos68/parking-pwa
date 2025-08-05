@@ -42,10 +42,6 @@ themeToggle.addEventListener('click', () => {
 });
 
 // On Load
-document.addEventListener('DOMContentLoaded', () => {
-  requestNotificationPermission();
-
-  const params = new URLSearchParams(window.location.search);
 
 // Main App Initialization
 document.addEventListener('DOMContentLoaded', () => {
