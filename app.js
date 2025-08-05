@@ -45,6 +45,46 @@ themeToggle.addEventListener('click', () => {
 
 // Main App Initialization
 document.addEventListener('DOMContentLoaded', () => {
+
+const voiceSelect = document.getElementById('voiceSelect');
+let voices = [];
+
+// Load voices
+function loadVoices() {
+  voices = speechSynthesis.getVoices();
+  const defaultVoice = voices.find(v => v.name.includes('Google') || v.name.includes('Female')) || voices[0];
+
+  voiceSelect.innerHTML = '';
+  voices.forEach(voice => {
+    const option = document.createElement('option');
+    option.value = voices.indexOf(voice);
+    option.textContent = `${voice.name} (${voice.lang})`;
+    voiceSelect.appendChild(option);
+  });
+
+  if (defaultVoice) voiceSelect.value = voices.indexOf(defaultVoice);
+}
+
+// On voice change
+voiceSelect.addEventListener('change', () => {
+  localStorage.setItem('preferredVoice', voiceSelect.value);
+});
+
+// Get selected voice
+function getSelectedVoice() {
+  const savedIndex = localStorage.getItem('preferredVoice');
+  return voices[savedIndex] || null;
+}
+
+// Initialize
+if ('speechSynthesis' in window) {
+  loadVoices();
+  // Safari needs this hack
+  setTimeout(loadVoices, 500);
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+
   const params = new URLSearchParams(window.location.search);
 
   // Check if this is a shared link (has lat/lng)
@@ -199,9 +239,10 @@ if (findBtn) {
     // ✅ Speak parking time (within user gesture)
     const time = new Date(spot.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const utter = new SpeechSynthesisUtterance(`You parked at ${time}.`);
+    utter.voice = getSelectedVoice();
     utter.rate = 0.9;
+    utter.pitch = 1;
     speechSynthesis.speak(utter);
-
     // Get distance
     status.textContent = 'Calculating distance...';
     navigator.geolocation.getCurrentPosition(
@@ -261,3 +302,52 @@ if (shareBtn) {
     }
   });
 }
+
+const showQRBtn = document.getElementById('showQRBtn');
+const qrContainer = document.getElementById('qrContainer');
+
+// Enable QR button if spot exists
+if (savedSpot) {
+  showQRBtn.disabled = false;
+}
+
+// Generate QR Code
+showQRBtn.addEventListener('click', () => {
+  const spot = JSON.parse(localStorage.getItem('parkingSpot'));
+  if (!spot) return;
+
+  const baseURL = 'https://parking-pwa-eight.vercel.app';
+  const params = new URLSearchParams({
+    lat: spot.lat,
+    lng: spot.lng,
+    time: spot.time
+  });
+  const shareURL = `${baseURL}?${params.toString()}`;
+
+  // Clear previous QR
+  qrContainer.querySelector('#qrcode').innerHTML = '';
+  
+  // Generate new QR
+  new QRCode(qrContainer.querySelector('#qrcode'), {
+    text: shareURL,
+    width: 128,
+    height: 128
+  });
+
+  qrContainer.style.display = 'block';
+});
+
+
+const testVoiceBtn = document.getElementById('testVoiceBtn');
+
+testVoiceBtn.addEventListener('click', () => {
+  if ('speechSynthesis' in window) {
+    const utter = new SpeechSynthesisUtterance('Hello, ParkHere is ready!');
+    utter.voice = getSelectedVoice();
+    utter.rate = 0.9;
+    utter.pitch = 1;
+    speechSynthesis.speak(utter);
+  } else {
+    alert('Speech not supported on this device.');
+  }
+});
