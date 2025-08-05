@@ -100,14 +100,16 @@ if (savedSpot) {
 photoInput.addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (file) {
-    const url = URL.createObjectURL(file);
-    photoImg.src = url;
-    photoPreview.style.display = 'block';
-    localStorage.setItem('parkingPhoto', url);
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const dataUrl = event.target.result; // This is a data: URL
+      photoImg.src = dataUrl;
+      photoPreview.style.display = 'block';
+      localStorage.setItem('parkingPhoto', dataUrl);
+    };
+    reader.readAsDataURL(file);
   }
 });
-
-
 
 // Run once on load
 requestNotificationPermission();
@@ -241,6 +243,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const lng = parseFloat(params.get('lng'));
     const time = params.get('time');
     const photo = params.get('photo');
+
+    const backButton = document.createElement('button');
+    backButton.textContent = '🔙 Back to My Parking';
+    backButton.onclick = () => {
+      window.location.href = './';
+      };
+    document.querySelector('.container').appendChild(backButton);
 
     // Update UI
     document.querySelector('.container h1').textContent = '📍 Friend’s Parking Spot';
