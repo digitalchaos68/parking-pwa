@@ -47,43 +47,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const params = new URLSearchParams(window.location.search);
 
-  // Check if this is a shared link
+// Main App Initialization
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+
+  // Check if this is a shared link (has lat/lng)
   if (params.has('lat') && params.has('lng')) {
-    const lat = parseFloat(params.get('lat'));
-    const lng = parseFloat(params.get('lng'));
-    const time = params.get('time');
+    // Hide all elements with class 'shared-hide'
+    document.querySelectorAll('.shared-hide').forEach(el => {
+      el.style.display = 'none';
+    });
 
     // Update UI for shared view
     document.querySelector('.container h1').textContent = '📍 Friend’s Parking Spot';
-    saveBtn.style.display = 'none';
-    findBtn.style.display = 'none';
-    shareBtn.style.display = 'none';
-    status.textContent = `Parked at ${new Date(time).toLocaleTimeString()}`;
-    updateMap(lat, lng);
+    status.textContent = `Parked at ${new Date(params.get('time')).toLocaleTimeString()}`;
 
-    // Hide photo section in shared view
-    if (photoInput) photoInput.style.display = 'none';
-    document.querySelector('p:nth-child(6)').style.display = 'none'; // "Add a photo"
-    photoPreview.style.display = 'none';
+    // Show map
+    updateMap(parseFloat(params.get('lat')), parseFloat(params.get('lng')));
 
     // Add Back button
     const backButton = document.createElement('button');
     backButton.textContent = '🔙 Back to My Parking';
-    backButton.onclick = () => window.location.href = './';
+    backButton.onclick = () => {
+      window.location.href = './';
+    };
     document.querySelector('.container').appendChild(backButton);
 
     return; // Exit early — don't run normal app logic
   }
 
-  // Normal app flow (not shared view)
+  // —————————————————————————————
+  // Normal App Logic (Owner View)
+  // —————————————————————————————
+
+  requestNotificationPermission();
+
   const savedSpot = localStorage.getItem('parkingSpot');
 
   // Restore saved spot
   if (savedSpot) {
     const spot = JSON.parse(savedSpot);
     findBtn.disabled = false;
+    shareBtn.disabled = false;
     status.textContent = `Parking saved on ${new Date(spot.time).toLocaleTimeString()}`;
-    updateMap(spot.lat, spot.lng); // Auto-show map
+    updateMap(spot.lat, spot.lng);
 
     // Start live timer
     setInterval(() => {
@@ -99,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
 
     // Schedule notification
-    const notifyDelay = parseInt(localStorage.getItem('notifyTime') || '7200000'); // default 2h
+    const notifyDelay = parseInt(localStorage.getItem('notifyTime') || '7200000');
     const parkedTime = new Date(spot.time);
     const now = new Date();
     const diffMs = now - parkedTime;
@@ -130,7 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
     notifyTimeSelect.value = savedNotifyTime;
   }
 });
-
 // Photo Upload
 if (photoInput) {
   photoInput.addEventListener('change', (e) => {
