@@ -1,6 +1,6 @@
 // Main App Initialization
 document.addEventListener('DOMContentLoaded', () => {
-  // ✅ Get all DOM elements after HTML loads
+  // ✅ Get all elements after HTML loads
   const saveBtn = document.getElementById('saveBtn');
   const findBtn = document.getElementById('findBtn');
   const shareBtn = document.getElementById('shareBtn');
@@ -82,7 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
     testVoiceBtn.disabled = false;
     directionsBtn.disabled = false;
     sendWABtn.disabled = false;
-    supportBtn.disabled = false; // ✅ Enable it
     status.textContent = `Parking saved on ${new Date(spot.time).toLocaleTimeString()}`;
     updateMap(spot.lat, spot.lng);
   }
@@ -180,10 +179,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (photoInput) {
     photoInput.addEventListener('change', (e) => {
-
-      if (gtag) {
-    gtag('event', 'click', { 'event_category': 'Feature', 'event_label': 'Save Photo' });
-      }
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
@@ -200,10 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (saveBtn) {
     saveBtn.addEventListener('click', () => {
-
-    if (gtag) {
-      gtag('event', 'click', { 'event_category': 'Feature', 'event_label': 'Save My Parking Spot' });
-      }
       status.textContent = 'Getting your location...';
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -222,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
           testVoiceBtn.disabled = false;
           directionsBtn.disabled = false;
           sendWABtn.disabled = false;
-          status.innerHTML = `✅ Parking saved! (<small>${latitude.toFixed(5)}, ${longitude.toFixed(5)}</small>)<br><small style="color:#666; font-size:0.8em;">Love ParkHere? <a href="https://buymeacoffee.com/digitalchaos" target="_blank" style="color:#ff8f00; text-decoration:underline;">Buy me a coffee ☕</a></small>`;
+          status.textContent = `✅ Parking saved! (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
           updateMap(latitude, longitude);
           if (timer) timer.textContent = '🕒 Parked: 0h 0m 0s';
         },
@@ -236,11 +227,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (findBtn) {
     findBtn.addEventListener('click', () => {
-
-  if (gtag) {
-gtag('event', 'click', { 'event_category': 'Feature', 'event_label': 'Find My Car' });
-  }
-
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
       speechSynthesis.cancel();
@@ -277,41 +263,31 @@ gtag('event', 'click', { 'event_category': 'Feature', 'event_label': 'Find My Ca
     });
   }
 
-if (shareBtn) {
-  shareBtn.addEventListener('click', () => {
-
-  if (gtag) {
-    gtag('event', 'click', { 'event_category': 'Feature', 'event_label': 'Share My Spot' });
+  if (shareBtn) {
+    shareBtn.addEventListener('click', () => {
+      const spot = JSON.parse(localStorage.getItem('parkingSpot'));
+      if (!spot) return;
+      const baseURL = 'https://parking-pwa-eight.vercel.app';
+      const params = new URLSearchParams({
+        lat: spot.lat,
+        lng: spot.lng,
+        time: spot.time
+      });
+      const shareURL = `${baseURL}?${params.toString()}`;
+      if (navigator.share) {
+        navigator.share({
+          title: 'My Parking Spot',
+          text: 'Here’s where I parked 🅿️',
+          url: 'https://tinyurl.com/parkhere-app'
+        }).catch(console.log);
+      } else {
+        navigator.clipboard.writeText('https://tinyurl.com/parkhere-app').then(() => {
+          alert('Link copied to clipboard! (via tinyurl)');
+        });
+      }
+    });
   }
 
-    const spot = JSON.parse(localStorage.getItem('parkingSpot'));
-    if (!spot) return;
-
-    // Keep the full URL for location data
-    const baseURL = 'https://parking-pwa-eight.vercel.app';
-    const params = new URLSearchParams({
-      lat: spot.lat,
-      lng: spot.lng,
-      time: spot.time
-    });
-    const longURL = `${baseURL}?${params.toString()}`;
-
-    // But share the short link for ease
-    const shortURL = 'https://tinyurl.com/parkhere-app';
-
-    if (navigator.share) {
-      navigator.share({
-        title: 'My Parking Spot',
-        text: 'Here’s where I parked 🅿️ (via ParkHere)',
-        url: 'https://tinyurl.com/parkhere-app'
-      }).catch(err => console.log('Share canceled', err));
-    } else {
-      navigator.clipboard.writeText('https://tinyurl.com/parkhere-app').then(() => {
-        alert('Link copied to clipboard! (via tinyurl)');
-      });
-    }
-  });
-}
   if (directionsBtn) {
     directionsBtn.addEventListener('click', () => {
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
@@ -324,15 +300,12 @@ if (shareBtn) {
 
   if (showQRBtn && qrContainer) {
     showQRBtn.addEventListener('click', () => {
-
-  if (gtag) {
-    gtag('event', 'click', {
-      'event_category': 'Feature',
-      'event_label': 'Show QR Code'
-    });
-  }
-
-
+      if (gtag) {
+        gtag('event', 'click', {
+          'event_category': 'Feature',
+          'event_label': 'Show QR Code'
+        });
+      }
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
       const baseURL = 'https://parking-pwa-eight.vercel.app';
@@ -366,46 +339,20 @@ if (shareBtn) {
     });
   }
 
- if (sendWABtn && whatsappNumberInput) {
-  sendWABtn.addEventListener('click', () => {
-
-        if (gtag) {
-gtag('event', 'click', { 'event_category': 'Feature', 'event_label': 'WhatsApp reminder' });
+  if (sendWABtn && whatsappNumberInput) {
+    sendWABtn.addEventListener('click', () => {
+      const spot = JSON.parse(localStorage.getItem('parkingSpot'));
+      if (!spot) return;
+      const number = whatsappNumberInput.value.trim();
+      if (!number) {
+        alert('Please enter a WhatsApp number in international format (e.g., +1234567890)');
+        return;
+      }
+      const message = encodeURIComponent(
+        `🅿️ ParkHere: I parked at ${new Date().toLocaleTimeString()}.\n\nTap to see location:\nhttps://tinyurl.com/parkhere-app`
+      );
+      const waURL = `https://wa.me/${number}?text=${message}`;
+      window.open(waURL, '_blank');
+    });
   }
-
-    const spot = JSON.parse(localStorage.getItem('parkingSpot'));
-    if (!spot) return;
-
-    const number = whatsappNumberInput.value.trim();
-    if (!number) {
-      alert('Please enter a WhatsApp number in international format (e.g., +1234567890)');
-      return;
-    }
-
-    // ✅ Use tinyurl short link
-    const shortURL = 'https://tinyurl.com/parkhere-app';
-
-    const message = encodeURIComponent(
-      `🅿️ ParkHere: I parked at ${new Date().toLocaleTimeString()}.\n\nTap to see my location:\n${shortURL}`
-    );
-
-    const waURL = `https://wa.me/${number}?text=${message}`;
-    window.open(waURL, '_blank');
-  });
-}
-
-const supportBtn = document.getElementById('supportBtn');
-
-if (supportBtn) {
-  supportBtn.addEventListener('click', () => {
-
-            if (gtag) {
-gtag('event', 'click', { 'event_category': 'Support', 'event_label': 'Buy Me a Coffee' });
-  }
-    window.open('https://buymeacoffee.com/digitalchaos', '_blank');
-  });
-}
-
-
-
 });
