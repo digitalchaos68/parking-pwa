@@ -329,6 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
         height: 128
       });
       qrContainer.style.display = 'block';
+      qrContainer.style.textAlign = 'center'; // Optional if needed
     });
   }
 
