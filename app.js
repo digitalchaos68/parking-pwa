@@ -263,31 +263,36 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  if (shareBtn) {
-    shareBtn.addEventListener('click', () => {
-      const spot = JSON.parse(localStorage.getItem('parkingSpot'));
-      if (!spot) return;
-      const baseURL = 'https://parking-pwa-eight.vercel.app';
-      const params = new URLSearchParams({
-        lat: spot.lat,
-        lng: spot.lng,
-        time: spot.time
-      });
-      const shareURL = `${baseURL}?${params.toString()}`;
-      if (navigator.share) {
-        navigator.share({
-          title: 'My Parking Spot',
-          text: 'Here’s where I parked 🅿️',
-          url: shareURL
-        }).catch(console.log);
-      } else {
-        navigator.clipboard.writeText(shareURL).then(() => {
-          alert('Link copied to clipboard!');
-        });
-      }
-    });
-  }
+if (shareBtn) {
+  shareBtn.addEventListener('click', () => {
+    const spot = JSON.parse(localStorage.getItem('parkingSpot'));
+    if (!spot) return;
 
+    // Keep the full URL for location data
+    const baseURL = 'https://parking-pwa-eight.vercel.app';
+    const params = new URLSearchParams({
+      lat: spot.lat,
+      lng: spot.lng,
+      time: spot.time
+    });
+    const longURL = `${baseURL}?${params.toString()}`;
+
+    // But share the short link for ease
+    const shortURL = 'https://tinyurl.com/parkhere-app';
+
+    if (navigator.share) {
+      navigator.share({
+        title: 'My Parking Spot',
+        text: 'Here’s where I parked 🅿️ (via ParkHere)',
+        url: shortURL  // ✅ Use short link
+      }).catch(err => console.log('Share canceled', err));
+    } else {
+      navigator.clipboard.writeText(shortURL).then(() => {
+        alert('Parking link copied to clipboard! (via tinyurl)');
+      });
+    }
+  });
+}
   if (directionsBtn) {
     directionsBtn.addEventListener('click', () => {
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
