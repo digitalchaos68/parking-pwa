@@ -147,6 +147,81 @@ document.addEventListener('DOMContentLoaded', () => {
   // Event Listeners (All inside DOMContentLoaded)
   // —————————————————————————————
 
+
+// —————————————————————————————
+// Voice Selection (iOS-Friendly)
+// —————————————————————————————
+
+// Only run if speech is supported
+if ('speechSynthesis' in window && voiceSelect) {
+  // Function to populate the voice dropdown
+  function populateVoiceList() {
+    const voices = speechSynthesis.getVoices();
+
+    // Clear dropdown
+    voiceSelect.innerHTML = '';
+
+    // Add "System Default" option
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'System Voice';
+    voiceSelect.appendChild(defaultOption);
+
+    // Add available voices
+    voices.forEach((voice, i) => {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = `${voice.name} (${voice.lang})`;
+      voiceSelect.appendChild(option);
+    });
+
+    // Restore saved voice
+    const savedIndex = localStorage.getItem('preferredVoice');
+    if (savedIndex !== null && voices[savedIndex]) {
+      voiceSelect.value = savedIndex;
+    } else {
+      voiceSelect.value = ''; // fallback to system
+    }
+  }
+
+  // Try to load voices with retries (iOS needs this)
+  function loadVoicesWithRetry(attempt = 1) {
+    populateVoiceList();
+
+    // If no voices found and we haven't tried too many times
+    if (speechSynthesis.getVoices().length === 0 && attempt < 5) {
+      setTimeout(() => loadVoicesWithRetry(attempt + 1), 500);
+    }
+  }
+
+  // Get selected voice for speech
+  function getSelectedVoice() {
+    const savedIndex = localStorage.getItem('preferredVoice');
+    const voices = speechSynthesis.getVoices();
+    if (savedIndex && voices[savedIndex]) {
+      return voices[savedIndex];
+    }
+    return null; // use system default
+  }
+
+  // Initialize
+  loadVoicesWithRetry();
+
+  // Fallback: iOS rarely fires this, but try
+  if (speechSynthesis.onvoiceschanged === null) {
+    speechSynthesis.onvoiceschanged = populateVoiceList;
+  }
+
+  // Save user selection
+  voiceSelect.addEventListener('change', () => {
+    localStorage.setItem('preferredVoice', voiceSelect.value);
+  });
+} else if (voiceSelect) {
+  // If speech not supported, hide or disable voice select
+  voiceSelect.style.display = 'none';
+  document.querySelector('label[for="voiceSelect"]').style.display = 'none';
+}
+
   // Photo Upload
   if (photoInput) {
     photoInput.addEventListener('change', (e) => {
@@ -318,34 +393,3 @@ document.addEventListener('DOMContentLoaded', () => {
   const voiceSelect = document.getElementById('voiceSelect');
   let voices = [];
 
-  function loadVoices() {
-    voices = speechSynthesis.getVoices();
-    if (voiceSelect) {
-      voiceSelect.innerHTML = '';
-      voices.forEach((voice, i) => {
-        const option = document.createElement('option');
-        option.value = i;
-        option.textContent = `${voice.name} (${voice.lang})`;
-        voiceSelect.appendChild(option);
-      });
-      const savedIndex = localStorage.getItem('preferredVoice');
-      if (savedIndex && voices[savedIndex]) {
-        voiceSelect.value = savedIndex;
-      }
-    }
-  }
-
-  function getSelectedVoice() {
-    const savedIndex = localStorage.getItem('preferredVoice');
-    return voices[savedIndex] || null;
-  }
-
-  if (voiceSelect) {
-    voiceSelect.addEventListener('change', () => {
-      localStorage.setItem('preferredVoice', voiceSelect.value);
-    });
-    loadVoices();
-    setTimeout(loadVoices, 500);
-    speechSynthesis.onvoiceschanged = loadVoices;
-  }
-});
