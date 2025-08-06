@@ -1,36 +1,12 @@
-// DOM Elements
-
-console.log('QRCode available:', typeof QRCode !== 'undefined');
-
-// Request notification permission
-function requestNotificationPermission() {
-  if ('Notification' in window && Notification.permission !== 'granted') {
-    Notification.requestPermission();
-  }
-}
-
-// Theme Toggle
-let isDark = false;
-if (localStorage.getItem('darkMode') === 'true') {
-  document.body.classList.add('dark');
-  themeToggle.textContent = '☀️ Light Mode';
-  isDark = true;
-}
-themeToggle.addEventListener('click', () => {
-  isDark = !isDark;
-  document.body.classList.toggle('dark', isDark);
-  themeToggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
-  localStorage.setItem('darkMode', isDark);
-});
-
 // Main App Initialization
 document.addEventListener('DOMContentLoaded', () => {
-  // ✅ Get all elements
+  // ✅ Get all DOM elements after HTML loads
   const saveBtn = document.getElementById('saveBtn');
   const findBtn = document.getElementById('findBtn');
   const shareBtn = document.getElementById('shareBtn');
+  const directionsBtn = document.getElementById('directionsBtn');
   const status = document.getElementById('status');
-  const mapDiv = document.getElementById('map'); // ✅ Defined here
+  const mapDiv = document.getElementById('map');
   const themeToggle = document.getElementById('themeToggle');
   const photoInput = document.getElementById('photoInput');
   const photoPreview = document.getElementById('photoPreview');
@@ -42,20 +18,43 @@ document.addEventListener('DOMContentLoaded', () => {
   const voiceSelect = document.getElementById('voiceSelect');
   const notifyTimeSelect = document.getElementById('notifyTime');
 
-  // ✅ Now define updateMap() — after mapDiv is defined
+  // ✅ Update the map using Google Maps Embed
   function updateMap(lat, lng) {
     const mapUrl = `https://www.google.com/maps/embed/v1/view?key=AIzaSyD0iSWh-ke56m_qdHt1IWPnUb7r_Q40sII&center=${lat},${lng}&zoom=18`;
     mapDiv.style.display = 'block';
     mapDiv.innerHTML = `<iframe frameborder="0" style="border:0" src="${mapUrl}" allowfullscreen></iframe>`;
   }
 
-  // Get URL parameters
+  // ✅ Request notification permission
+  function requestNotificationPermission() {
+    if ('Notification' in window && Notification.permission !== 'granted') {
+      Notification.requestPermission();
+    }
+  }
+
+  // ✅ Theme Toggle
+  let isDark = false;
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark');
+    themeToggle.textContent = '☀️ Light Mode';
+    isDark = true;
+  }
+  themeToggle.addEventListener('click', () => {
+    isDark = !isDark;
+    document.body.classList.toggle('dark', isDark);
+    themeToggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+    localStorage.setItem('darkMode', isDark);
+  });
+
+  // ✅ Get URL parameters
   const params = new URLSearchParams(window.location.search);
 
-  // Check if this is a shared link
+  // 🔍 Check if this is a shared link (has lat/lng)
   if (params.has('lat') && params.has('lng')) {
     // Hide all elements with class 'shared-hide'
-    document.querySelectorAll('.shared-hide').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.shared-hide').forEach(el => {
+      el.style.display = 'none';
+    });
 
     // Update UI for shared view
     document.querySelector('.container h1').textContent = '📍 Friend’s Parking Spot';
@@ -67,25 +66,46 @@ document.addEventListener('DOMContentLoaded', () => {
     backButton.textContent = '🔙 Back to My Parking';
     backButton.onclick = () => window.location.href = './';
     document.querySelector('.container').appendChild(backButton);
+
     return; // Exit early — don't run normal app logic
   }
 
+  // —————————————————————————————
   // Normal App Logic (Owner View)
+  // —————————————————————————————
+
   requestNotificationPermission();
 
   const savedSpot = localStorage.getItem('parkingSpot');
 
-  // Restore saved spot
+  // ✅ Restore saved spot
   if (savedSpot) {
     const spot = JSON.parse(savedSpot);
     findBtn.disabled = false;
     shareBtn.disabled = false;
     showQRBtn.disabled = false;
     testVoiceBtn.disabled = false;
+    directionsBtn.disabled = false;
     status.textContent = `Parking saved on ${new Date(spot.time).toLocaleTimeString()}`;
     updateMap(spot.lat, spot.lng);
+  }
 
-    // Start live timer
+  // ✅ Restore photo
+  const savedPhoto = localStorage.getItem('parkingPhoto');
+  if (savedPhoto) {
+    photoImg.src = savedPhoto;
+    photoPreview.style.display = 'block';
+  }
+
+  // ✅ Restore notification time dropdown
+  if (notifyTimeSelect) {
+    const savedNotifyTime = localStorage.getItem('notifyTime') || '7200000';
+    notifyTimeSelect.value = savedNotifyTime;
+  }
+
+  // ✅ Start live timer
+  if (savedSpot) {
+    const spot = JSON.parse(savedSpot);
     setInterval(() => {
       const parkedTime = new Date(spot.time);
       const now = new Date();
@@ -116,21 +136,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Restore photo
-  const savedPhoto = localStorage.getItem('parkingPhoto');
-  if (savedPhoto) {
-    photoImg.src = savedPhoto;
-    photoPreview.style.display = 'block';
-  }
-
-  // Restore notification time dropdown
-
-  if (notifyTimeSelect) {
-    const savedNotifyTime = localStorage.getItem('notifyTime') || '7200000';
-    notifyTimeSelect.value = savedNotifyTime;
-  }
-
+  // —————————————————————————————
   // Voice Selection (iOS-Friendly)
+  // —————————————————————————————
   if ('speechSynthesis' in window && voiceSelect) {
     let voices = [];
 
@@ -178,7 +186,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('label[for="voiceSelect"]').style.display = 'none';
   }
 
+  // —————————————————————————————
   // Event Listeners
+  // —————————————————————————————
+
+  // 📸 Photo Upload
   if (photoInput) {
     photoInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
@@ -195,13 +207,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // 🅿️ Save My Parking Spot
   if (saveBtn) {
     saveBtn.addEventListener('click', () => {
       status.textContent = 'Getting your location...';
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          const notifyDelay = parseInt(document.getElementById('notifyTime').value);
+          const notifyDelay = parseInt(notifyTimeSelect.value);
           const spot = {
             lat: latitude,
             lng: longitude,
@@ -209,20 +222,16 @@ document.addEventListener('DOMContentLoaded', () => {
           };
           localStorage.setItem('parkingSpot', JSON.stringify(spot));
           localStorage.setItem('notifyTime', notifyDelay);
-
-          const spot = JSON.parse(savedSpot);
           findBtn.disabled = false;
           shareBtn.disabled = false;
           showQRBtn.disabled = false;
           testVoiceBtn.disabled = false;
-          directionsBtn.disabled = false; // ✅ Enable Directions button
-          status.textContent = `Parking saved on ${new Date(spot.time).toLocaleTimeString()}`;
-          updateMap(spot.lat, spot.lng);
-
+          directionsBtn.disabled = false;
+          status.textContent = `✅ Parking saved! (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
+          updateMap(latitude, longitude);
           if (timer) timer.textContent = '🕒 Parked: 0h 0m 0s';
         },
         (error) => {
-          console.error("Geolocation error:", error);
           status.textContent = `❌ Error: ${error.message}`;
         },
         { timeout: 10000 }
@@ -230,18 +239,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // 🧭 Find My Car
   if (findBtn) {
     findBtn.addEventListener('click', () => {
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
+
       speechSynthesis.cancel();
       updateMap(spot.lat, spot.lng);
+
       const time = new Date(spot.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const utter = new SpeechSynthesisUtterance(`You parked at ${time}.`);
       utter.voice = window.getSelectedVoice ? window.getSelectedVoice() : null;
       utter.rate = 0.9;
       utter.pitch = 1;
       speechSynthesis.speak(utter);
+
       status.textContent = 'Calculating distance...';
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -255,25 +268,26 @@ document.addEventListener('DOMContentLoaded', () => {
           const distance = R * c;
           const distText = distance >= 1000 ? (distance/1000).toFixed(1) + ' km' : Math.round(distance) + ' m';
           status.textContent = `🚗 Your car is ${distText} away.`;
+
           const distUtter = new SpeechSynthesisUtterance(`Your car is ${Math.round(distance)} meters away.`);
           distUtter.voice = window.getSelectedVoice ? window.getSelectedVoice() : null;
-          distUtter.rate = 0.9;
-          distUtter.pitch = 1;
+          distUtter.rate = 0.8;
           speechSynthesis.speak(distUtter);
         },
         (err) => {
           status.textContent = 'Unable to get your location for distance.';
-          console.error("Distance error:", err);
         },
         { enableHighAccuracy: true, timeout: 10000 }
       );
     });
   }
 
+  // 📤 Share My Spot
   if (shareBtn) {
     shareBtn.addEventListener('click', () => {
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
+
       const baseURL = 'https://parking-pwa-eight.vercel.app';
       const params = new URLSearchParams({
         lat: spot.lat,
@@ -281,6 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
         time: spot.time
       });
       const shareURL = `${baseURL}?${params.toString()}`;
+
       if (navigator.share) {
         navigator.share({
           title: 'My Parking Spot',
@@ -295,45 +310,47 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  
-  // Generate QR Code
-if (showQRBtn) {
-  showQRBtn.addEventListener('click', () => {
-    const spot = JSON.parse(localStorage.getItem('parkingSpot'));
-    if (!spot) return;
+  // 🗺️ Get Directions
+  if (directionsBtn) {
+    directionsBtn.addEventListener('click', () => {
+      const spot = JSON.parse(localStorage.getItem('parkingSpot'));
+      if (!spot) return;
 
-    const baseURL = 'https://parking-pwa-eight.vercel.app';
-    const params = new URLSearchParams({
-      lat: spot.lat,
-      lng: spot.lng,
-      time: spot.time
+      const dest = `${spot.lat},${spot.lng}`;
+      const url = `https://www.google.com/maps/dir/?api=1&destination=${dest}`;
+      window.open(url, '_blank');
     });
-    const shareURL = `${baseURL}?${params.toString()}`;
+  }
 
-    // Clear previous QR
-    qrContainer.querySelector('#qrcode').innerHTML = '';
+  // 🔲 Show QR Code
+  if (showQRBtn && qrContainer) {
+    showQRBtn.addEventListener('click', () => {
+      const spot = JSON.parse(localStorage.getItem('parkingSpot'));
+      if (!spot) return;
 
-    // ✅ Generate new QR — QRCode must be defined
-    new QRCode(qrContainer.querySelector('#qrcode'), {
-      text: shareURL,
-      width: 128,
-      height: 128
+      const baseURL = 'https://parking-pwa-eight.vercel.app';
+      const params = new URLSearchParams({
+        lat: spot.lat,
+        lng: spot.lng,
+        time: spot.time
+      });
+      const shareURL = `${baseURL}?${params.toString()}`;
+
+      // Clear previous QR
+      qrContainer.querySelector('#qrcode').innerHTML = '';
+
+      // Generate new QR
+      new QRCode(qrContainer.querySelector('#qrcode'), {
+        text: shareURL,
+        width: 128,
+        height: 128
+      });
+
+      qrContainer.style.display = 'block';
     });
+  }
 
-       // Show container
-    qrContainer.style.display = 'block';
-  });
-}
-
-
-
-console.log('QR Button clicked');
-console.log('Spot:', localStorage.getItem('parkingSpot'));
-console.log('QR Container:', qrContainer);
-
-
-  });
-
+  // 🔊 Test Voice
   if (testVoiceBtn) {
     testVoiceBtn.addEventListener('click', () => {
       if ('speechSynthesis' in window) {
@@ -347,3 +364,4 @@ console.log('QR Container:', qrContainer);
       }
     });
   }
+});
