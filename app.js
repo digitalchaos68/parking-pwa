@@ -180,6 +180,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (photoInput) {
     photoInput.addEventListener('change', (e) => {
+
+      if (gtag) {
+    gtag('event', 'click', { 'event_category': 'Feature', 'event_label': 'Save Photo' });
+      }
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
@@ -196,6 +200,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (saveBtn) {
     saveBtn.addEventListener('click', () => {
+
+    if (gtag) {
+      gtag('event', 'click', { 'event_category': 'Feature', 'event_label': 'Save My Parking Spot' });
+      }
       status.textContent = 'Getting your location...';
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -228,6 +236,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (findBtn) {
     findBtn.addEventListener('click', () => {
+
+  if (gtag) {
+gtag('event', 'click', { 'event_category': 'Feature', 'event_label': 'Find My Car' });
+  }
+
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
       speechSynthesis.cancel();
@@ -266,6 +279,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 if (shareBtn) {
   shareBtn.addEventListener('click', () => {
+
+  if (gtag) {
+    gtag('event', 'click', { 'event_category': 'Feature', 'event_label': 'Share My Spot' });
+  }
+
     const spot = JSON.parse(localStorage.getItem('parkingSpot'));
     if (!spot) return;
 
@@ -306,6 +324,15 @@ if (shareBtn) {
 
   if (showQRBtn && qrContainer) {
     showQRBtn.addEventListener('click', () => {
+
+  if (gtag) {
+    gtag('event', 'click', {
+      'event_category': 'Feature',
+      'event_label': 'Show QR Code'
+    });
+  }
+
+
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
       const baseURL = 'https://parking-pwa-eight.vercel.app';
@@ -341,6 +368,11 @@ if (shareBtn) {
 
  if (sendWABtn && whatsappNumberInput) {
   sendWABtn.addEventListener('click', () => {
+
+        if (gtag) {
+gtag('event', 'click', { 'event_category': 'Feature', 'event_label': 'WhatsApp reminder' });
+  }
+
     const spot = JSON.parse(localStorage.getItem('parkingSpot'));
     if (!spot) return;
 
@@ -366,6 +398,10 @@ const supportBtn = document.getElementById('supportBtn');
 
 if (supportBtn) {
   supportBtn.addEventListener('click', () => {
+
+            if (gtag) {
+gtag('event', 'click', { 'event_category': 'Support', 'event_label': 'Buy Me a Coffee' });
+  }
     window.open('https://buymeacoffee.com/digitalchaos', '_blank');
   });
 }
