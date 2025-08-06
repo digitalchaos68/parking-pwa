@@ -320,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       });
       qrContainer.style.display = 'block';
-    });
+    };
   
 
   if (testVoiceBtn) {
