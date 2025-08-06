@@ -321,7 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       qrContainer.style.display = 'block';
     });
-  }
+  
 
   if (testVoiceBtn) {
     testVoiceBtn.addEventListener('click', () => {
@@ -360,4 +360,3 @@ document.addEventListener('DOMContentLoaded', () => {
       window.open(waURL, '_blank');
     });
   }
-});
