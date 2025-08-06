@@ -197,8 +197,9 @@ body.dark #status, body.dark p {
 
 /* QR Code Wrapper */
 #qrcode-wrapper {
-  display: inline-block;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin: 0 auto;
   padding: 10px;
   background-color: white; /* Light mode */
@@ -217,7 +218,6 @@ body.dark #status, body.dark p {
   margin: 0 auto !important;
   border-radius: 4px;
 }
-
 
 /* Align voiceSelect with button sizes */
 #voiceSelect {
