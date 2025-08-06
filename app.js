@@ -290,13 +290,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   
   // Generate QR Code
-if (showQRBtn && qrContainer) {
+if (showQRBtn) {
   showQRBtn.addEventListener('click', () => {
     const spot = JSON.parse(localStorage.getItem('parkingSpot'));
-    if (!spot) {
-      console.error('No parking spot saved');
-      return;
-    }
+    if (!spot) return;
 
     const baseURL = 'https://parking-pwa-eight.vercel.app';
     const params = new URLSearchParams({
@@ -306,18 +303,22 @@ if (showQRBtn && qrContainer) {
     });
     const shareURL = `${baseURL}?${params.toString()}`;
 
-    // Clear previous QR code
+    // Clear previous QR
     qrContainer.querySelector('#qrcode').innerHTML = '';
 
-    // Generate new QR code
+    // ✅ Generate new QR — QRCode must be defined
     new QRCode(qrContainer.querySelector('#qrcode'), {
       text: shareURL,
       width: 128,
       height: 128
     });
 
-    // Show container
+       // Show container
     qrContainer.style.display = 'block';
+  });
+}
+
+
 
 console.log('QR Button clicked');
 console.log('Spot:', localStorage.getItem('parkingSpot'));
