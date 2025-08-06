@@ -209,12 +209,16 @@ document.addEventListener('DOMContentLoaded', () => {
           };
           localStorage.setItem('parkingSpot', JSON.stringify(spot));
           localStorage.setItem('notifyTime', notifyDelay);
+
+          const spot = JSON.parse(savedSpot);
           findBtn.disabled = false;
           shareBtn.disabled = false;
           showQRBtn.disabled = false;
           testVoiceBtn.disabled = false;
-          status.textContent = `✅ Parking saved! (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
-          updateMap(latitude, longitude);
+          directionsBtn.disabled = false; // ✅ Enable Directions button
+          status.textContent = `Parking saved on ${new Date(spot.time).toLocaleTimeString()}`;
+          updateMap(spot.lat, spot.lng);
+
           if (timer) timer.textContent = '🕒 Parked: 0h 0m 0s';
         },
         (error) => {
