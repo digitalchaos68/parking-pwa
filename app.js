@@ -1,18 +1,5 @@
 // DOM Elements
-const saveBtn = document.getElementById('saveBtn');
-const findBtn = document.getElementById('findBtn');
-const shareBtn = document.getElementById('shareBtn');
-const status = document.getElementById('status');
-const mapDiv = document.getElementById('map');
-const themeToggle = document.getElementById('themeToggle');
-const photoInput = document.getElementById('photoInput');
-const photoPreview = document.getElementById('photoPreview');
-const photoImg = document.getElementById('photoImg');
-const timer = document.getElementById('timer');
-const showQRBtn = document.getElementById('showQRBtn');
-const testVoiceBtn = document.getElementById('testVoiceBtn');
-const qrContainer = document.getElementById('qrContainer');
-const voiceSelect = document.getElementById('voiceSelect');
+
 
 // Update the map using Google Maps Embed
 function updateMap(lat, lng) {
@@ -44,6 +31,23 @@ themeToggle.addEventListener('click', () => {
 
 // Main App Initialization
 document.addEventListener('DOMContentLoaded', () => {
+    // ✅ Get all elements after HTML loads
+  const saveBtn = document.getElementById('saveBtn');
+  const findBtn = document.getElementById('findBtn');
+  const shareBtn = document.getElementById('shareBtn');
+  const status = document.getElementById('status');
+  const mapDiv = document.getElementById('map');
+  const themeToggle = document.getElementById('themeToggle');
+  const photoInput = document.getElementById('photoInput');
+  const photoPreview = document.getElementById('photoPreview');
+  const photoImg = document.getElementById('photoImg');
+  const timer = document.getElementById('timer');
+  const showQRBtn = document.getElementById('showQRBtn');      // ✅
+  const testVoiceBtn = document.getElementById('testVoiceBtn'); // ✅
+  const qrContainer = document.getElementById('qrContainer');   // ✅
+  const voiceSelect = document.getElementById('voiceSelect');
+  const notifyTimeSelect = document.getElementById('notifyTime');
+
   // Get URL parameters
   const params = new URLSearchParams(window.location.search);
 
@@ -284,26 +288,44 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  if (showQRBtn) {
-    showQRBtn.addEventListener('click', () => {
-      const spot = JSON.parse(localStorage.getItem('parkingSpot'));
-      if (!spot) return;
-      const baseURL = 'https://parking-pwa-eight.vercel.app';
-      const params = new URLSearchParams({
-        lat: spot.lat,
-        lng: spot.lng,
-        time: spot.time
-      });
-      const shareURL = `${baseURL}?${params.toString()}`;
-      qrContainer.querySelector('#qrcode').innerHTML = '';
-      new QRCode(qrContainer.querySelector('#qrcode'), {
-        text: shareURL,
-        width: 128,
-        height: 128
-      });
-      qrContainer.style.display = 'block';
+  
+  // Generate QR Code
+if (showQRBtn && qrContainer) {
+  showQRBtn.addEventListener('click', () => {
+    const spot = JSON.parse(localStorage.getItem('parkingSpot'));
+    if (!spot) {
+      console.error('No parking spot saved');
+      return;
+    }
+
+    const baseURL = 'https://parking-pwa-eight.vercel.app';
+    const params = new URLSearchParams({
+      lat: spot.lat,
+      lng: spot.lng,
+      time: spot.time
     });
-  }
+    const shareURL = `${baseURL}?${params.toString()}`;
+
+    // Clear previous QR code
+    qrContainer.querySelector('#qrcode').innerHTML = '';
+
+    // Generate new QR code
+    new QRCode(qrContainer.querySelector('#qrcode'), {
+      text: shareURL,
+      width: 128,
+      height: 128
+    });
+
+    // Show container
+    qrContainer.style.display = 'block';
+
+console.log('QR Button clicked');
+console.log('Spot:', localStorage.getItem('parkingSpot'));
+console.log('QR Container:', qrContainer);
+
+
+  });
+}
 
   if (testVoiceBtn) {
     testVoiceBtn.addEventListener('click', () => {
