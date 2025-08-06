@@ -56,6 +56,8 @@ button {
 
 button:hover {
   opacity: 0.8;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* Specific button styles */
@@ -89,6 +91,14 @@ button:hover {
   background-color: #8e44ad; /* Purple for "Test Voice" */
   color: white;
 }
+
+/* Save Reminder Button */
+#sendWABtn {
+  background-color: #6c5ce7; /* Indigo */
+  color: white;
+}
+
+
 #status {
   margin: 15px 0;
   font-size: 0.9rem;
@@ -154,6 +164,12 @@ body.dark #showQRBtn {
 body.dark #testVoiceBtn {
   background-color: #9b59b6; /* Same purple for dark mode */
 }
+
+body.dark #sendWABtn {
+  background-color: #a29bfe; /* Light Lavender */
+  color: #2d3436; /* Dark text for contrast */
+}
+
 body.dark #status, body.dark p {
   color: #bb86fc;
 }
