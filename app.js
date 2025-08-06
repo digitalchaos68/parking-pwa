@@ -82,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
     testVoiceBtn.disabled = false;
     directionsBtn.disabled = false;
     sendWABtn.disabled = false;
+    supportBtn.disabled = false; // ✅ Enable it
     status.textContent = `Parking saved on ${new Date(spot.time).toLocaleTimeString()}`;
     updateMap(spot.lat, spot.lng);
   }
@@ -213,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
           testVoiceBtn.disabled = false;
           directionsBtn.disabled = false;
           sendWABtn.disabled = false;
-          status.textContent = `✅ Parking saved! (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
+          status.innerHTML = `✅ Parking saved! (<small>${latitude.toFixed(5)}, ${longitude.toFixed(5)}</small>)<br><small style="color:#666; font-size:0.8em;">Love ParkHere? <a href="https://buymeacoffee.com/digitalchaos" target="_blank" style="color:#ff8f00; text-decoration:underline;">Buy me a coffee ☕</a></small>`;
           updateMap(latitude, longitude);
           if (timer) timer.textContent = '🕒 Parked: 0h 0m 0s';
         },
