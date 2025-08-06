@@ -128,15 +128,15 @@ body.dark #saveBtn {
 }
 
 body.dark #findBtn {
-  background-color: #e67e22; /* Darker orange for dark mode */
+  background-color: #f39c12; /* Darker orange for dark mode */
 }
 
 body.dark #directionsBtn {
-  background-color: #2980b9; /* Darker blue for dark mode */
+  background-color: #3498db; /* Darker blue for dark mode */
 }
 
 body.dark #shareBtn {
-  background-color: #c0392b; /* Darker red for dark mode */
+  background-color: #e74c3c; /* Darker red for dark mode */
 }
 
 body.dark #showQRBtn {
@@ -144,7 +144,7 @@ body.dark #showQRBtn {
 }
 
 body.dark #testVoiceBtn {
-  background-color: #8e44ad; /* Same purple for dark mode */
+  background-color: #9b59b6; /* Same purple for dark mode */
 }
 body.dark #status, body.dark p {
   color: #bb86fc;
