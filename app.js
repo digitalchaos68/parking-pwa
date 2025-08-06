@@ -252,9 +252,9 @@ document.addEventListener('DOMContentLoaded', () => {
           const distText = distance >= 1000 ? (distance/1000).toFixed(1) + ' km' : Math.round(distance) + ' m';
           status.textContent = `🚗 Your car is ${distText} away.`;
           const distUtter = new SpeechSynthesisUtterance(`Your car is ${Math.round(distance)} meters away.`);
-          utter.voice = window.getSelectedVoice ? window.getSelectedVoice() : null;
-          utter.rate = 0.9;
-          utter.pitch = 1;
+          distUtter.voice = window.getSelectedVoice ? window.getSelectedVoice() : null;
+          distUtter.rate = 0.9;
+          distUtter.pitch = 1;
           speechSynthesis.speak(distUtter);
         },
         (err) => {

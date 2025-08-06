@@ -104,3 +104,31 @@ body.dark #findBtn {
 body.dark #status, body.dark p {
   color: #bb86fc;
 }
+
+#qrContainer {
+  display: none;
+  margin: 15px auto;
+  text-align: center;
+  width: fit-content;
+  max-width: 100%;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+#qrContainer #qrcode {
+  display: inline-block;
+}
+
+#qrContainer #qrcode canvas {
+  width: 128px !important;
+  height: 128px !important;
+  margin: 0 auto;
+}
+
+#qrContainer p {
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 8px;
+}
