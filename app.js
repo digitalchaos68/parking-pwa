@@ -1,6 +1,6 @@
 // Main App Initialization
 document.addEventListener('DOMContentLoaded', () => {
-  // ✅ Get all DOM elements after HTML loads
+  // ✅ Get all elements after HTML loads
   const saveBtn = document.getElementById('saveBtn');
   const findBtn = document.getElementById('findBtn');
   const shareBtn = document.getElementById('shareBtn');
@@ -28,8 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
         'event_category': category,
         'event_label': label
       });
-    } else {
-      console.warn('gtag not loaded yet', { action, category, label });
     }
   }
 
@@ -153,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
       voices.forEach((voice, i) => {
         const option = document.createElement('option');
         option.value = i;
-        option.textContent = `${voice.name} (${voice.lang})`;
+        option.textContent = `${voice.name} (${voice.lang})`; // ✅ Fixed: backticks
         voiceSelect.appendChild(option);
       });
       const savedIndex = localStorage.getItem('preferredVoice');

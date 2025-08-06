@@ -85,9 +85,20 @@
     <div id="map"></div>
   </div>
 
-  <!-- ✅ Load QRCode.js first -->
+   <!-- ✅ Load QRCode.js first -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <!-- ✅ Then load your app -->
+
+  <!-- ✅ Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WFEPX8LJMT"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-WFEPX8LJMT');
+  </script>
+
+  <!-- ✅ Then your app -->
   <script src="app.js"></script>
+
 </body>
 </html>
