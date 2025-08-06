@@ -8,7 +8,17 @@
   <!-- App Title for iOS -->
   <meta name="apple-mobile-web-app-title" content="ParkHere">
 
-  <!-- ✅ Content Security Policy (CSP) - Fixed -->
+  <!-- Favicon -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" href="logo.png">
+
+  <!-- Manifest -->
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Content Security Policy (CSP) -->
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self' https://analytics.google.com https://www.googletagmanager.com;
     script-src 'self' https://cdnjs.cloudflare.com https://www.google.com/maps/ https://www.googletagmanager.com https://analytics.google.com;
@@ -21,7 +31,7 @@
     connect-src 'self' https://analytics.google.com https://www.google-analytics.com;
   ">
 
-  <!-- ✅ Google Analytics 4 (gtag.js) -->
+  <!-- Google Analytics 4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WFEPX8LJMT"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -29,34 +39,24 @@
     gtag('js', new Date());
     gtag('config', 'G-WFEPX8LJMT');
   </script>
-
-  <!-- Styles & Manifest -->
-  <link rel="stylesheet" href="style.css" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <link rel="apple-touch-icon" href="logo.png">
 </head>
 <body>
   <div class="container">
     <h1>ParkHere</h1>
     <p>Remember where you parked — no install needed.</p>
 
-    <!-- Notification Time Selector -->
-    <label for="notifyTime" class="shared-hide">🔔 Notify me after:</label>
-    <select id="notifyTime" class="shared-hide">
-      <option value="1800000">0.5 hour</option>
-      <option value="3600000" selected>1 hour</option>
-      <option value="5400000">1.5 hours</option>
-      <option value="7200000">2 hours</option>
-      <option value="10800000">3 hours</option>
-      <option value="18000000">5 hours</option>
-    </select>
-
     <!-- Photo Upload Section -->
     <p class="shared-hide">📸 Add a photo:</p>
-    <input type="file" id="photoInput" class="shared-hide" accept="image/*" capture="environment">
+    <input 
+      type="file" 
+      id="photoInput" 
+      class="shared-hide" 
+      accept="image/*" 
+      capture="environment"
+      aria-label="Upload a photo of your parking spot"
+    >
     <div id="photoPreview" class="shared-hide" style="margin:10px 0;">
-      <img id="photoImg" src="" width="100%" style="border-radius:8px;">
+      <img id="photoImg" src="" width="100%" style="border-radius:8px;" alt="Preview of your parking spot photo">
     </div>
 
     <!-- Buttons -->
@@ -78,6 +78,8 @@
     <label for="whatsappNumber" class="shared-hide">📱 WhatsApp Number:</label>
     <input type="tel" id="whatsappNumber" class="shared-hide" placeholder="+1234567890" />
     <button id="sendWABtn" disabled class="shared-hide">💬 Save Reminder in WhatsApp</button>
+    <button id="supportBtn" class="shared-hide">☕ Support This App</button>
+    <p class="hint">ℹ️ ParkHere v1.0 by Jason | <a href="https://buymeacoffee.com/digitalchaos" target="_blank" style="color:#ff8f00;">Support development</a></p>
 
     <!-- Status & Timer -->
     <div id="status"></div>
@@ -85,20 +87,10 @@
     <div id="map"></div>
   </div>
 
-   <!-- ✅ Load QRCode.js first -->
+  <!-- Load QRCode.js first -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-  <!-- ✅ Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WFEPX8LJMT"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-WFEPX8LJMT');
-  </script>
-
-  <!-- ✅ Then your app -->
+  <!-- Then load your app -->
   <script src="app.js"></script>
-
 </body>
 </html>
