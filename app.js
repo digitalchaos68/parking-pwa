@@ -22,12 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const sendWABtn = document.getElementById('sendWABtn');
 
   // ✅ Update the map using Google Maps Embed
-  function updateMap(lat, lng) {
-    const mapUrl = `https://www.google.com/maps/embed/v1/view?key=AIzaSyD0iSWh-ke56m_qdHt1IWPnUb7r_Q40sII&center=${lat},${lng}&zoom=18`;
-    mapDiv.style.display = 'block';
-    mapDiv.innerHTML = `<iframe frameborder="0" style="border:0" src="${mapUrl}" allowfullscreen></iframe>`;
-  }
+// Inside DOMContentLoaded
 
+
+function updateMap(lat, lng) {
+  const mapUrl = `https://www.google.com/maps/embed/v1/view?key=AIzaSyD0iSWh-ke56m_qdHt1IWPnUb7r_Q40sII&center=${lat},${lng}&zoom=18`;
+  mapDiv.style.display = 'block';
+  mapDiv.innerHTML = `<iframe frameborder="0" style="border:0" src="${mapUrl}" allowfullscreen></iframe>`;
+}
   // ✅ Request notification permission
   function requestNotificationPermission() {
     if ('Notification' in window && Notification.permission !== 'granted') {
@@ -237,16 +239,18 @@ if (savedWANumber) {
             lng: longitude,
             time: new Date().toISOString()
           };
-          localStorage.setItem('parkingSpot', JSON.stringify(spot));
-          localStorage.setItem('notifyTime', notifyDelay);
-          findBtn.disabled = false;
-          shareBtn.disabled = false;
-          showQRBtn.disabled = false;
-          testVoiceBtn.disabled = false;
-          directionsBtn.disabled = false;
-          status.textContent = `✅ Parking saved! (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
-          updateMap(latitude, longitude);
-          if (timer) timer.textContent = '🕒 Parked: 0h 0m 0s';
+    // Inside saveBtn click handler
+    localStorage.setItem('parkingSpot', JSON.stringify(spot));
+    localStorage.setItem('notifyTime', notifyDelay);
+    findBtn.disabled = false;
+    shareBtn.disabled = false;
+    showQRBtn.disabled = false;
+    testVoiceBtn.disabled = false;
+    directionsBtn.disabled = false;
+    sendWABtn.disabled = false;
+    status.textContent = `✅ Parking saved! (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
+    updateMap(latitude, longitude);
+    if (timer) timer.textContent = '🕒 Parked: 0h 0m 0s';
         },
         (error) => {
           status.textContent = `❌ Error: ${error.message}`;
