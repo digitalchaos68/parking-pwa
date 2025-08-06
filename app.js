@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const voiceSelect = document.getElementById('voiceSelect');
   const notifyTimeSelect = document.getElementById('notifyTime');
 
+  const whatsappNumberInput = document.getElementById('whatsappNumber');
+  const sendWABtn = document.getElementById('sendWABtn');
+
   // ✅ Update the map using Google Maps Embed
   function updateMap(lat, lng) {
     const mapUrl = `https://www.google.com/maps/embed/v1/view?key=AIzaSyD0iSWh-ke56m_qdHt1IWPnUb7r_Q40sII&center=${lat},${lng}&zoom=18`;
@@ -31,6 +34,19 @@ document.addEventListener('DOMContentLoaded', () => {
       Notification.requestPermission();
     }
   }
+
+
+  // On change
+whatsappNumberInput.addEventListener('change', () => {
+  localStorage.setItem('whatsappNumber', whatsappNumberInput.value);
+});
+
+// On load
+const savedWANumber = localStorage.getItem('whatsappNumber');
+if (savedWANumber) {
+  whatsappNumberInput.value = savedWANumber;
+}
+
 
   // ✅ Theme Toggle
   let isDark = false;
@@ -86,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
     showQRBtn.disabled = false;
     testVoiceBtn.disabled = false;
     directionsBtn.disabled = false;
+    sendWABtn.disabled = false; 
     status.textContent = `Parking saved on ${new Date(spot.time).toLocaleTimeString()}`;
     updateMap(spot.lat, spot.lng);
   }
@@ -364,4 +381,31 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+if (sendWABtn) {
+  sendWABtn.addEventListener('click', () => {
+    const spot = JSON.parse(localStorage.getItem('parkingSpot'));
+    if (!spot) return;
+
+    const notifyDelay = parseInt(document.getElementById('notifyTime').value);
+    const hours = Math.round(notifyDelay / 3600000); // convert ms to hours
+
+    const number = whatsappNumberInput.value.trim();
+    if (!number) {
+      alert('Please enter a WhatsApp number in international format (e.g., +1234567890)');
+      return;
+    }
+
+    const message = encodeURIComponent(
+      `🕒 ParkHere Reminder: You’ve been parked for ${hours} hour(s)! Time to check your car.`
+    );
+
+    const waURL = `https://wa.me/${number}?text=${message}`;
+
+    // Open WhatsApp
+    window.open(waURL, '_blank');
+  });
+}
+
+
 });
