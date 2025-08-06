@@ -242,3 +242,33 @@ body.dark #status, body.dark p {
 #voiceSelect:hover {
   background-color: #e0e0e0; /* Slightly darker on hover */
 }
+
+#supportBtn {
+  background: #ff8f00; /* Buy Me a Coffee orange */
+  color: white;
+  font-weight: 600;
+  border: none;
+  padding: 10px;
+  margin: 20px auto 10px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 300px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#supportBtn:hover {
+  background: #e67e00;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+body.dark #supportBtn {
+  background: #f0932b;
+  color: white;
+}
+
+body.dark #supportBtn:hover {
+  background: #ffac2f;
+}
+

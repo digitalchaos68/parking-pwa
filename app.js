@@ -284,11 +284,11 @@ if (shareBtn) {
       navigator.share({
         title: 'My Parking Spot',
         text: 'Here’s where I parked 🅿️ (via ParkHere)',
-        url: shortURL  // ✅ Use short link
+        url: 'https://tinyurl.com/parkhere-app'
       }).catch(err => console.log('Share canceled', err));
     } else {
-      navigator.clipboard.writeText(shortURL).then(() => {
-        alert('Parking link copied to clipboard! (via tinyurl)');
+      navigator.clipboard.writeText('https://tinyurl.com/parkhere-app').then(() => {
+        alert('Link copied to clipboard! (via tinyurl)');
       });
     }
   });
@@ -338,27 +338,37 @@ if (shareBtn) {
     });
   }
 
-  if (sendWABtn && whatsappNumberInput) {
-    sendWABtn.addEventListener('click', () => {
-      const spot = JSON.parse(localStorage.getItem('parkingSpot'));
-      if (!spot) return;
-      const number = whatsappNumberInput.value.trim();
-      if (!number) {
-        alert('Please enter a WhatsApp number in international format (e.g., +1234567890)');
-        return;
-      }
-      const baseURL = 'https://parking-pwa-eight.vercel.app';
-      const params = new URLSearchParams({
-        lat: spot.lat,
-        lng: spot.lng,
-        time: spot.time
-      });
-      const shareURL = `${baseURL}?${params.toString()}`;
-      const message = encodeURIComponent(
-        `🅿️ ParkHere: I parked at ${new Date().toLocaleTimeString()}.\n\nTap to see location:\n${shareURL}`
-      );
-      const waURL = `https://wa.me/${number}?text=${message}`;
-      window.open(waURL, '_blank');
-    });
-  }
+ if (sendWABtn && whatsappNumberInput) {
+  sendWABtn.addEventListener('click', () => {
+    const spot = JSON.parse(localStorage.getItem('parkingSpot'));
+    if (!spot) return;
+
+    const number = whatsappNumberInput.value.trim();
+    if (!number) {
+      alert('Please enter a WhatsApp number in international format (e.g., +1234567890)');
+      return;
+    }
+
+    // ✅ Use tinyurl short link
+    const shortURL = 'https://tinyurl.com/parkhere-app';
+
+    const message = encodeURIComponent(
+      `🅿️ ParkHere: I parked at ${new Date().toLocaleTimeString()}.\n\nTap to see my location:\n${shortURL}`
+    );
+
+    const waURL = `https://wa.me/${number}?text=${message}`;
+    window.open(waURL, '_blank');
+  });
+}
+
+const supportBtn = document.getElementById('supportBtn');
+
+if (supportBtn) {
+  supportBtn.addEventListener('click', () => {
+    window.open('https://buymeacoffee.com/digitalchaos', '_blank');
+  });
+}
+
+
+
 });
