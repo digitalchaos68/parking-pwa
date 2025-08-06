@@ -1,14 +1,5 @@
 // DOM Elements
 
-  const mapDiv = document.getElementById('map');
-
-
-// Update the map using Google Maps Embed
-function updateMap(lat, lng) {
-  const mapUrl = `https://www.google.com/maps/embed/v1/view?key=AIzaSyD0iSWh-ke56m_qdHt1IWPnUb7r_Q40sII&center=${lat},${lng}&zoom=18`;
-  mapDiv.style.display = 'block';
-  mapDiv.innerHTML = `<iframe frameborder="0" style="border:0" src="${mapUrl}" allowfullscreen></iframe>`;
-}
 
 // Request notification permission
 function requestNotificationPermission() {
@@ -33,22 +24,29 @@ themeToggle.addEventListener('click', () => {
 
 // Main App Initialization
 document.addEventListener('DOMContentLoaded', () => {
-    // ✅ Get all elements after HTML loads
+  // ✅ Get all elements
   const saveBtn = document.getElementById('saveBtn');
   const findBtn = document.getElementById('findBtn');
   const shareBtn = document.getElementById('shareBtn');
   const status = document.getElementById('status');
-  const mapDiv = document.getElementById('map');
+  const mapDiv = document.getElementById('map'); // ✅ Defined here
   const themeToggle = document.getElementById('themeToggle');
   const photoInput = document.getElementById('photoInput');
   const photoPreview = document.getElementById('photoPreview');
   const photoImg = document.getElementById('photoImg');
   const timer = document.getElementById('timer');
-  const showQRBtn = document.getElementById('showQRBtn');      // ✅
-  const testVoiceBtn = document.getElementById('testVoiceBtn'); // ✅
-  const qrContainer = document.getElementById('qrContainer');   // ✅
+  const showQRBtn = document.getElementById('showQRBtn');
+  const testVoiceBtn = document.getElementById('testVoiceBtn');
+  const qrContainer = document.getElementById('qrContainer');
   const voiceSelect = document.getElementById('voiceSelect');
   const notifyTimeSelect = document.getElementById('notifyTime');
+
+  // ✅ Now define updateMap() — after mapDiv is defined
+  function updateMap(lat, lng) {
+    const mapUrl = `https://www.google.com/maps/embed/v1/view?key=AIzaSyD0iSWh-ke56m_qdHt1IWPnUb7r_Q40sII&center=${lat},${lng}&zoom=18`;
+    mapDiv.style.display = 'block';
+    mapDiv.innerHTML = `<iframe frameborder="0" style="border:0" src="${mapUrl}" allowfullscreen></iframe>`;
+  }
 
   // Get URL parameters
   const params = new URLSearchParams(window.location.search);
