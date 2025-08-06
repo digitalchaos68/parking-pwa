@@ -1,5 +1,7 @@
 // DOM Elements
 
+  const mapDiv = document.getElementById('map');
+
 
 // Update the map using Google Maps Embed
 function updateMap(lat, lng) {
