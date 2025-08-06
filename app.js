@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Restore notification time dropdown
-  const notifyTimeSelect = document.getElementById('notifyTime');
+
   if (notifyTimeSelect) {
     const savedNotifyTime = localStorage.getItem('notifyTime') || '7200000';
     notifyTimeSelect.value = savedNotifyTime;
