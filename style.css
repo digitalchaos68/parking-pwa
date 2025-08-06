@@ -33,26 +33,40 @@ p {
   font-size: 1rem;
 }
 
+/* General button styles */
 button {
   display: block;
   width: 100%;
-  max-width: 300px;
-  margin: 15px auto;
-  padding: 14px;
-  font-size: 1rem;
+  padding: 10px;
+  margin-bottom: 5px;
+  font-size: 16px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: bold;
+  transition: background-color 0.3s ease;
 }
 
-#saveBtn {
-  background: #2c7be5;
+button:hover {
+  opacity: 0.8;
+}
+
+/* Specific button styles */
+#findBtn {
+  background-color: #2ecc71; /* Green for "Find My Car" */
   color: white;
 }
 
-#findBtn {
-  background: #1ac938;
+#directionsBtn {
+  background-color: #ff9f43; /* Orange for "Get Directions" */
+  color: white;
+}
+
+#shareBtn {
+  background-color: #3498db; /* Blue for "Share My Spot" */
+}
+
+#showQRBtn {
+  background-color: #e74c3c; /* Red for "Show QR Code" */
   color: white;
 }
 
@@ -83,6 +97,7 @@ body {
   transition: background 0.3s, color 0.3s;
 }
 
+
 body.dark {
   background: #121212;
   color: #e0e0e0;
@@ -98,7 +113,19 @@ body.dark button {
 }
 
 body.dark #findBtn {
-  background: #03dac6;
+  background-color: #27ae60; /* Darker green for dark mode */
+}
+
+body.dark #directionsBtn {
+  background-color: #e67e22; /* Darker orange for dark mode */
+}
+
+body.dark #shareBtn {
+  background-color: #2980b9; /* Darker blue for dark mode */
+}
+
+body.dark #showQRBtn {
+  background-color: #c0392b; /* Darker red for dark mode */
 }
 
 body.dark #status, body.dark p {
