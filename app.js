@@ -396,9 +396,11 @@ if (sendWABtn) {
       return;
     }
 
+
     const message = encodeURIComponent(
-      `🕒 ParkHere Reminder: You’ve been parked for ${hours} hour(s)! Time to check your car.`
+      `🅿️ ParkHere: I parked at ${new Date().toLocaleTimeString()}.\n\nTap to see location:\n${shareURL}`
     );
+
 
     const waURL = `https://wa.me/${number}?text=${message}`;
 

@@ -11,6 +11,14 @@ body {
   line-height: 1.6;
 }
 
+.hint {
+  font-size: 0.8em;
+  color: #666;
+  text-align: center;
+  margin: 5px 0;
+  font-style: italic;
+}
+
 .container {
   max-width: 480px;
   margin: 40px auto;
