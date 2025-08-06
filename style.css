@@ -183,30 +183,42 @@ body.dark #status, body.dark p {
   width: fit-content;
   max-width: 100%;
   padding: 10px;
-  background: #f9f9f9;
+  background: #f9f9f9; /* Light mode */
   border-radius: 8px;
   border: 1px solid #eee;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  /* Dark mode */
+  background: #1e1e1e; /* Dark mode */
+  color: #fff; /* Dark mode */
+
+  /* Ensure it centers in container */
+  left: 0;
+  right: 0;
 }
 
 /* QR Code Wrapper */
 #qrcode-wrapper {
-  display: inline-block;
-  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
   padding: 10px;
+  background-color: white; /* Light mode */
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  /* Dark mode */
+  background-color: #333; /* Dark mode */
 }
 
 /* QR Code Canvas */
 #qrcode canvas {
-  display: block !important;
+  display: block;
   width: 128px !important;
   height: 128px !important;
   margin: 0 auto !important;
   border-radius: 4px;
 }
-
 /* QR Code Text */
 #qrContainer p {
   font-size: 0.9em;
