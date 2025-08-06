@@ -1,4 +1,18 @@
 // DOM Elements
+const saveBtn = document.getElementById('saveBtn');
+const findBtn = document.getElementById('findBtn');
+const shareBtn = document.getElementById('shareBtn');
+const status = document.getElementById('status');
+const mapDiv = document.getElementById('map');
+const themeToggle = document.getElementById('themeToggle');
+const photoInput = document.getElementById('photoInput');
+const photoPreview = document.getElementById('photoPreview');
+const photoImg = document.getElementById('photoImg');
+const timer = document.getElementById('timer');
+const showQRBtn = document.getElementById('showQRBtn');
+const testVoiceBtn = document.getElementById('testVoiceBtn');
+const qrContainer = document.getElementById('qrContainer');
+const voiceSelect = document.getElementById('voiceSelect');
 
 // Update the map using Google Maps Embed
 function updateMap(lat, lng) {
@@ -21,7 +35,6 @@ if (localStorage.getItem('darkMode') === 'true') {
   themeToggle.textContent = '☀️ Light Mode';
   isDark = true;
 }
-
 themeToggle.addEventListener('click', () => {
   isDark = !isDark;
   document.body.classList.toggle('dark', isDark);
@@ -29,58 +42,30 @@ themeToggle.addEventListener('click', () => {
   localStorage.setItem('darkMode', isDark);
 });
 
-// On Load
-
 // Main App Initialization
 document.addEventListener('DOMContentLoaded', () => {
-  // ✅ Re-get all elements here — after HTML is fully loaded
-  const saveBtn = document.getElementById('saveBtn');
-  const findBtn = document.getElementById('findBtn');
-  const shareBtn = document.getElementById('shareBtn');
-  const status = document.getElementById('status');
-  const mapDiv = document.getElementById('map');
-  const themeToggle = document.getElementById('themeToggle');
-
-  const photoInput = document.getElementById('photoInput');
-  const photoPreview = document.getElementById('photoPreview');
-  const photoImg = document.getElementById('photoImg');
-
-  const timer = document.getElementById('timer');
-  const showQRBtn = document.getElementById('showQRBtn');
-  const testVoiceBtn = document.getElementById('testVoiceBtn');
-  const qrContainer = document.getElementById('qrContainer');
-
+  // Get URL parameters
   const params = new URLSearchParams(window.location.search);
 
-  // Check if this is a shared link (has lat/lng)
+  // Check if this is a shared link
   if (params.has('lat') && params.has('lng')) {
     // Hide all elements with class 'shared-hide'
-    document.querySelectorAll('.shared-hide').forEach(el => {
-      el.style.display = 'none';
-    });
+    document.querySelectorAll('.shared-hide').forEach(el => el.style.display = 'none');
 
     // Update UI for shared view
     document.querySelector('.container h1').textContent = '📍 Friend’s Parking Spot';
     status.textContent = `Parked at ${new Date(params.get('time')).toLocaleTimeString()}`;
-
-    // Show map
     updateMap(parseFloat(params.get('lat')), parseFloat(params.get('lng')));
 
     // Add Back button
     const backButton = document.createElement('button');
     backButton.textContent = '🔙 Back to My Parking';
-    backButton.onclick = () => {
-      window.location.href = './';
-    };
+    backButton.onclick = () => window.location.href = './';
     document.querySelector('.container').appendChild(backButton);
-
     return; // Exit early — don't run normal app logic
   }
 
-  // —————————————————————————————
   // Normal App Logic (Owner View)
-  // —————————————————————————————
-
   requestNotificationPermission();
 
   const savedSpot = localStorage.getItem('parkingSpot');
@@ -94,25 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
     testVoiceBtn.disabled = false;
     status.textContent = `Parking saved on ${new Date(spot.time).toLocaleTimeString()}`;
     updateMap(spot.lat, spot.lng);
-  }
 
-  // Restore photo
-  const savedPhoto = localStorage.getItem('parkingPhoto');
-  if (savedPhoto) {
-    photoImg.src = savedPhoto;
-    photoPreview.style.display = 'block';
-  }
-
-  // Restore notification time dropdown
-  const notifyTimeSelect = document.getElementById('notifyTime');
-  if (notifyTimeSelect) {
-    const savedNotifyTime = localStorage.getItem('notifyTime') || '7200000';
-    notifyTimeSelect.value = savedNotifyTime;
-  }
-
-  // Start live timer
-  if (savedSpot) {
-    const spot = JSON.parse(savedSpot);
+    // Start live timer
     setInterval(() => {
       const parkedTime = new Date(spot.time);
       const now = new Date();
@@ -143,86 +111,69 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // —————————————————————————————
-  // Event Listeners (All inside DOMContentLoaded)
-  // —————————————————————————————
+  // Restore photo
+  const savedPhoto = localStorage.getItem('parkingPhoto');
+  if (savedPhoto) {
+    photoImg.src = savedPhoto;
+    photoPreview.style.display = 'block';
+  }
 
+  // Restore notification time dropdown
+  const notifyTimeSelect = document.getElementById('notifyTime');
+  if (notifyTimeSelect) {
+    const savedNotifyTime = localStorage.getItem('notifyTime') || '7200000';
+    notifyTimeSelect.value = savedNotifyTime;
+  }
 
-// —————————————————————————————
-// Voice Selection (iOS-Friendly)
-// —————————————————————————————
+  // Voice Selection (iOS-Friendly)
+  if ('speechSynthesis' in window && voiceSelect) {
+    let voices = [];
 
-// Only run if speech is supported
-if ('speechSynthesis' in window && voiceSelect) {
-  // Function to populate the voice dropdown
-  function populateVoiceList() {
-    const voices = speechSynthesis.getVoices();
+    function populateVoiceList() {
+      voices = speechSynthesis.getVoices();
+      voiceSelect.innerHTML = '';
+      const defaultOption = document.createElement('option');
+      defaultOption.value = '';
+      defaultOption.textContent = 'System Voice';
+      voiceSelect.appendChild(defaultOption);
+      voices.forEach((voice, i) => {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = `${voice.name} (${voice.lang})`;
+        voiceSelect.appendChild(option);
+      });
+      const savedIndex = localStorage.getItem('preferredVoice');
+      if (savedIndex !== null && voices[savedIndex]) {
+        voiceSelect.value = savedIndex;
+      }
+    }
 
-    // Clear dropdown
-    voiceSelect.innerHTML = '';
+    function getSelectedVoice() {
+      const savedIndex = localStorage.getItem('preferredVoice');
+      if (savedIndex !== null && voices[savedIndex]) {
+        return voices[savedIndex];
+      }
+      return null;
+    }
 
-    // Add "System Default" option
-    const defaultOption = document.createElement('option');
-    defaultOption.value = '';
-    defaultOption.textContent = 'System Voice';
-    voiceSelect.appendChild(defaultOption);
+    populateVoiceList();
+    setTimeout(populateVoiceList, 500);
+    setTimeout(populateVoiceList, 1000);
+    if (speechSynthesis.onvoiceschanged === null) {
+      speechSynthesis.onvoiceschanged = populateVoiceList;
+    }
 
-    // Add available voices
-    voices.forEach((voice, i) => {
-      const option = document.createElement('option');
-      option.value = i;
-      option.textContent = `${voice.name} (${voice.lang})`;
-      voiceSelect.appendChild(option);
+    voiceSelect.addEventListener('change', () => {
+      localStorage.setItem('preferredVoice', voiceSelect.value);
     });
 
-    // Restore saved voice
-    const savedIndex = localStorage.getItem('preferredVoice');
-    if (savedIndex !== null && voices[savedIndex]) {
-      voiceSelect.value = savedIndex;
-    } else {
-      voiceSelect.value = ''; // fallback to system
-    }
+    window.getSelectedVoice = getSelectedVoice;
+  } else if (voiceSelect) {
+    voiceSelect.style.display = 'none';
+    document.querySelector('label[for="voiceSelect"]').style.display = 'none';
   }
 
-  // Try to load voices with retries (iOS needs this)
-  function loadVoicesWithRetry(attempt = 1) {
-    populateVoiceList();
-
-    // If no voices found and we haven't tried too many times
-    if (speechSynthesis.getVoices().length === 0 && attempt < 5) {
-      setTimeout(() => loadVoicesWithRetry(attempt + 1), 500);
-    }
-  }
-
-  // Get selected voice for speech
-  function getSelectedVoice() {
-    const savedIndex = localStorage.getItem('preferredVoice');
-    const voices = speechSynthesis.getVoices();
-    if (savedIndex && voices[savedIndex]) {
-      return voices[savedIndex];
-    }
-    return null; // use system default
-  }
-
-  // Initialize
-  loadVoicesWithRetry();
-
-  // Fallback: iOS rarely fires this, but try
-  if (speechSynthesis.onvoiceschanged === null) {
-    speechSynthesis.onvoiceschanged = populateVoiceList;
-  }
-
-  // Save user selection
-  voiceSelect.addEventListener('change', () => {
-    localStorage.setItem('preferredVoice', voiceSelect.value);
-  });
-} else if (voiceSelect) {
-  // If speech not supported, hide or disable voice select
-  voiceSelect.style.display = 'none';
-  document.querySelector('label[for="voiceSelect"]').style.display = 'none';
-}
-
-  // Photo Upload
+  // Event Listeners
   if (photoInput) {
     photoInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
@@ -239,7 +190,6 @@ if ('speechSynthesis' in window && voiceSelect) {
     });
   }
 
-  // Save Location
   if (saveBtn) {
     saveBtn.addEventListener('click', () => {
       status.textContent = 'Getting your location...';
@@ -247,24 +197,19 @@ if ('speechSynthesis' in window && voiceSelect) {
         (position) => {
           const { latitude, longitude } = position.coords;
           const notifyDelay = parseInt(document.getElementById('notifyTime').value);
-
           const spot = {
             lat: latitude,
             lng: longitude,
             time: new Date().toISOString()
           };
-
           localStorage.setItem('parkingSpot', JSON.stringify(spot));
           localStorage.setItem('notifyTime', notifyDelay);
-
           findBtn.disabled = false;
           shareBtn.disabled = false;
           showQRBtn.disabled = false;
           testVoiceBtn.disabled = false;
-
           status.textContent = `✅ Parking saved! (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
           updateMap(latitude, longitude);
-
           if (timer) timer.textContent = '🕒 Parked: 0h 0m 0s';
         },
         (error) => {
@@ -276,22 +221,18 @@ if ('speechSynthesis' in window && voiceSelect) {
     });
   }
 
-  // Find My Car
   if (findBtn) {
     findBtn.addEventListener('click', () => {
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
-
       speechSynthesis.cancel();
       updateMap(spot.lat, spot.lng);
-
       const time = new Date(spot.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const utter = new SpeechSynthesisUtterance(`You parked at ${time}.`);
-      utter.voice = getSelectedVoice();
+      utter.voice = window.getSelectedVoice ? window.getSelectedVoice() : null;
       utter.rate = 0.9;
       utter.pitch = 1;
       speechSynthesis.speak(utter);
-
       status.textContent = 'Calculating distance...';
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -300,41 +241,35 @@ if ('speechSynthesis' in window && voiceSelect) {
           const φ2 = spot.lat * Math.PI / 180;
           const Δφ = (spot.lat - pos.coords.latitude) * Math.PI / 180;
           const Δλ = (spot.lng - pos.coords.longitude) * Math.PI / 180;
-
           const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
           const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
           const distance = R * c;
           const distText = distance >= 1000 ? (distance/1000).toFixed(1) + ' km' : Math.round(distance) + ' m';
-
           status.textContent = `🚗 Your car is ${distText} away.`;
-
           const distUtter = new SpeechSynthesisUtterance(`Your car is ${Math.round(distance)} meters away.`);
           distUtter.rate = 0.8;
           speechSynthesis.speak(distUtter);
         },
         (err) => {
           status.textContent = 'Unable to get your location for distance.';
+          console.error("Distance error:", err);
         },
         { enableHighAccuracy: true, timeout: 10000 }
       );
     });
   }
 
-  // Share My Spot
   if (shareBtn) {
     shareBtn.addEventListener('click', () => {
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
-
       const baseURL = 'https://parking-pwa-eight.vercel.app';
       const params = new URLSearchParams({
         lat: spot.lat,
         lng: spot.lng,
         time: spot.time
       });
-
       const shareURL = `${baseURL}?${params.toString()}`;
-
       if (navigator.share) {
         navigator.share({
           title: 'My Parking Spot',
@@ -349,12 +284,10 @@ if ('speechSynthesis' in window && voiceSelect) {
     });
   }
 
-  // Generate QR Code
   if (showQRBtn) {
     showQRBtn.addEventListener('click', () => {
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
-
       const baseURL = 'https://parking-pwa-eight.vercel.app';
       const params = new URLSearchParams({
         lat: spot.lat,
@@ -362,24 +295,21 @@ if ('speechSynthesis' in window && voiceSelect) {
         time: spot.time
       });
       const shareURL = `${baseURL}?${params.toString()}`;
-
       qrContainer.querySelector('#qrcode').innerHTML = '';
       new QRCode(qrContainer.querySelector('#qrcode'), {
         text: shareURL,
         width: 128,
         height: 128
       });
-
       qrContainer.style.display = 'block';
     });
   }
 
-  // Test Voice Button
   if (testVoiceBtn) {
     testVoiceBtn.addEventListener('click', () => {
       if ('speechSynthesis' in window) {
         const utter = new SpeechSynthesisUtterance('Hello, ParkHere is ready!');
-        utter.voice = getSelectedVoice();
+        utter.voice = window.getSelectedVoice ? window.getSelectedVoice() : null;
         utter.rate = 0.9;
         utter.pitch = 1;
         speechSynthesis.speak(utter);
@@ -388,8 +318,4 @@ if ('speechSynthesis' in window && voiceSelect) {
       }
     });
   }
-
-  // Voice Selection (if you added it)
-  const voiceSelect = document.getElementById('voiceSelect');
-  let voices = [];
-
+});
