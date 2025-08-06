@@ -310,10 +310,14 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const shareURL = `${baseURL}?${params.toString()}`;
       qrContainer.querySelector('#qrcode').innerHTML = '';
-      new QRCode(qrContainer.querySelector('#qrcode'), {
+      new QRCode(document.getElementById('qrcode'), {
         text: shareURL,
         width: 128,
         height: 128
+});
+
+
+
       });
       qrContainer.style.display = 'block';
     });

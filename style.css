@@ -184,22 +184,33 @@ body.dark #status, body.dark p {
   background: #f9f9f9;
   border-radius: 8px;
   border: 1px solid #eee;
+  /* Ensure it centers in container */
+  left: 0;
+  right: 0;
 }
 
 #qrContainer #qrcode {
-  display: inline-block;
-}
-
-#qrContainer #qrcode canvas {
-  width: 128px !important;
-  height: 128px !important;
+  display: block;
+  text-align: center;
   margin: 0 auto;
 }
 
-#qrContainer p {
-  font-size: 0.9em;
-  color: #666;
-  margin-top: 8px;
+#qrContainer #qrcode canvas {
+  display: block !important;
+  width: 128px !important;
+  height: 128px !important;
+  margin: 0 auto !important;
+  border-radius: 4px;
+}
+
+#qrcode-wrapper {
+  text-align: center;
+  display: inline-block;
+}
+
+#qrcode canvas {
+  display: block;
+  margin: 0 auto;
 }
 
 /* Align voiceSelect with button sizes */
