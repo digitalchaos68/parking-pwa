@@ -1,6 +1,6 @@
 // Main App Initialization
 document.addEventListener('DOMContentLoaded', () => {
-  // ✅ Get all elements after HTML loads
+  // ✅ Get all DOM elements after HTML loads
   const saveBtn = document.getElementById('saveBtn');
   const findBtn = document.getElementById('findBtn');
   const shareBtn = document.getElementById('shareBtn');
@@ -19,6 +19,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const notifyTimeSelect = document.getElementById('notifyTime');
   const whatsappNumberInput = document.getElementById('whatsappNumber');
   const sendWABtn = document.getElementById('sendWABtn');
+  const supportBtn = document.getElementById('supportBtn');
+
+  // ✅ Safe gtag wrapper (prevents "gtag is not defined")
+  function trackEvent(action, category = 'Feature', label = '') {
+    if (typeof gtag === 'function') {
+      gtag('event', action, {
+        'event_category': category,
+        'event_label': label
+      });
+    } else {
+      console.warn('gtag not loaded yet', { action, category, label });
+    }
+  }
 
   // ✅ Update the map using Google Maps Embed
   function updateMap(lat, lng) {
@@ -82,6 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     testVoiceBtn.disabled = false;
     directionsBtn.disabled = false;
     sendWABtn.disabled = false;
+    supportBtn.disabled = false;
     status.textContent = `Parking saved on ${new Date(spot.time).toLocaleTimeString()}`;
     updateMap(spot.lat, spot.lng);
   }
@@ -195,6 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (saveBtn) {
     saveBtn.addEventListener('click', () => {
+      trackEvent('click', 'Feature', 'Save My Parking Spot'); // ✅ Track
       status.textContent = 'Getting your location...';
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -213,6 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
           testVoiceBtn.disabled = false;
           directionsBtn.disabled = false;
           sendWABtn.disabled = false;
+          supportBtn.disabled = false;
           status.textContent = `✅ Parking saved! (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
           updateMap(latitude, longitude);
           if (timer) timer.textContent = '🕒 Parked: 0h 0m 0s';
@@ -227,6 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (findBtn) {
     findBtn.addEventListener('click', () => {
+      trackEvent('click', 'Feature', 'Find My Car'); // ✅ Track
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
       speechSynthesis.cancel();
@@ -265,19 +282,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (shareBtn) {
     shareBtn.addEventListener('click', () => {
+      trackEvent('click', 'Feature', 'Share My Spot'); // ✅ Track
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
-      const baseURL = 'https://parking-pwa-eight.vercel.app';
-      const params = new URLSearchParams({
-        lat: spot.lat,
-        lng: spot.lng,
-        time: spot.time
-      });
-      const shareURL = `${baseURL}?${params.toString()}`;
       if (navigator.share) {
         navigator.share({
           title: 'My Parking Spot',
-          text: 'Here’s where I parked 🅿️',
+          text: 'Here’s where I parked 🅿️ (via ParkHere)',
           url: 'https://tinyurl.com/parkhere-app'
         }).catch(console.log);
       } else {
@@ -290,6 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (directionsBtn) {
     directionsBtn.addEventListener('click', () => {
+      trackEvent('click', 'Feature', 'Get Directions'); // ✅ Track
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
       const dest = `${spot.lat},${spot.lng}`;
@@ -300,12 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (showQRBtn && qrContainer) {
     showQRBtn.addEventListener('click', () => {
-      if (gtag) {
-        gtag('event', 'click', {
-          'event_category': 'Feature',
-          'event_label': 'Show QR Code'
-        });
-      }
+      trackEvent('click', 'Feature', 'Show QR Code'); // ✅ Track
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
       const baseURL = 'https://parking-pwa-eight.vercel.app';
@@ -327,6 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (testVoiceBtn) {
     testVoiceBtn.addEventListener('click', () => {
+      trackEvent('click', 'Feature', 'Test Voice'); // ✅ Track
       if ('speechSynthesis' in window) {
         const utter = new SpeechSynthesisUtterance('Hello, ParkHere is ready!');
         utter.voice = window.getSelectedVoice ? window.getSelectedVoice() : null;
@@ -341,6 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (sendWABtn && whatsappNumberInput) {
     sendWABtn.addEventListener('click', () => {
+      trackEvent('click', 'Feature', 'WhatsApp reminder'); // ✅ Track
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
       const number = whatsappNumberInput.value.trim();
@@ -353,6 +362,13 @@ document.addEventListener('DOMContentLoaded', () => {
       );
       const waURL = `https://wa.me/${number}?text=${message}`;
       window.open(waURL, '_blank');
+    });
+  }
+
+  if (supportBtn) {
+    supportBtn.addEventListener('click', () => {
+      trackEvent('click', 'Support', 'Buy Me a Coffee'); // ✅ Track
+      window.open('https://buymeacoffee.com/digitalchaos', '_blank');
     });
   }
 });
