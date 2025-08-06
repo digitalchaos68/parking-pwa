@@ -1,6 +1,6 @@
 // Main App Initialization
 document.addEventListener('DOMContentLoaded', () => {
-  // ✅ Get all elements after HTML loads
+  // ✅ Get all DOM elements after HTML loads
   const saveBtn = document.getElementById('saveBtn');
   const findBtn = document.getElementById('findBtn');
   const shareBtn = document.getElementById('shareBtn');
@@ -310,18 +310,14 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const shareURL = `${baseURL}?${params.toString()}`;
       qrContainer.querySelector('#qrcode').innerHTML = '';
-      new QRCode(document.getElementById('qrcode'), {
+      new QRCode(qrContainer.querySelector('#qrcode'), {
         text: shareURL,
         width: 128,
         height: 128
-});
-
-
-
       });
       qrContainer.style.display = 'block';
-    };
-  
+    });
+  }
 
   if (testVoiceBtn) {
     testVoiceBtn.addEventListener('click', () => {
@@ -360,3 +356,4 @@ document.addEventListener('DOMContentLoaded', () => {
       window.open(waURL, '_blank');
     });
   }
+});
