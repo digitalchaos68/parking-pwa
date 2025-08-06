@@ -409,5 +409,47 @@ if (sendWABtn) {
   });
 }
 
+  // —————————————————————————————
+  // WhatsApp Reminder
+  // —————————————————————————————
+  if (whatsappNumberInput && sendWABtn) {
+    whatsappNumberInput.addEventListener('change', () => {
+      localStorage.setItem('whatsappNumber', whatsappNumberInput.value);
+    });
+
+    // Restore saved number
+    const savedWANumber = localStorage.getItem('whatsappNumber');
+    if (savedWANumber) {
+      whatsappNumberInput.value = savedWANumber;
+    }
+
+    sendWABtn.addEventListener('click', () => {
+      const spot = JSON.parse(localStorage.getItem('parkingSpot'));
+      if (!spot) return;
+
+      const notifyDelay = parseInt(document.getElementById('notifyTime').value);
+      const hours = Math.round(notifyDelay / 3600000);
+      const number = whatsappNumberInput.value.trim();
+
+      if (!number) {
+        alert('Please enter a WhatsApp number in international format (e.g., +1234567890)');
+        return;
+      }
+
+      const baseURL = 'https://parking-pwa-eight.vercel.app';
+      const params = new URLSearchParams({
+        lat: spot.lat,
+        lng: spot.lng,
+        time: spot.time
+      });
+      const shareURL = `${baseURL}?${params.toString()}`;
+
+      const message = encodeURIComponent(
+        `🅿️ ParkHere: I parked at ${new Date().toLocaleTimeString()}.\n\nTap to see location:\n${shareURL}`
+      );
+      const waURL =  'https://wa.me/${number}?text=${message}';
+      window.open(waURL, '_blank');
+    });
+  }
 
 });
