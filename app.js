@@ -1,6 +1,6 @@
 // Main App Initialization
 document.addEventListener('DOMContentLoaded', () => {
-  // ✅ Get all DOM elements after HTML loads
+  // ✅ Get all elements after HTML loads
   const saveBtn = document.getElementById('saveBtn');
   const findBtn = document.getElementById('findBtn');
   const shareBtn = document.getElementById('shareBtn');
@@ -17,38 +17,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const qrContainer = document.getElementById('qrContainer');
   const voiceSelect = document.getElementById('voiceSelect');
   const notifyTimeSelect = document.getElementById('notifyTime');
-
   const whatsappNumberInput = document.getElementById('whatsappNumber');
   const sendWABtn = document.getElementById('sendWABtn');
 
   // ✅ Update the map using Google Maps Embed
-// Inside DOMContentLoaded
+  function updateMap(lat, lng) {
+    const mapUrl = `https://www.google.com/maps/embed/v1/view?key=AIzaSyD0iSWh-ke56m_qdHt1IWPnUb7r_Q40sII&center=${lat},${lng}&zoom=18`;
+    mapDiv.style.display = 'block';
+    mapDiv.innerHTML = `<iframe frameborder="0" style="border:0" src="${mapUrl}" allowfullscreen></iframe>`;
+  }
 
-
-function updateMap(lat, lng) {
-  const mapUrl = 'https://www.google.com/maps/embed/v1/view?key=AIzaSyD0iSWh-ke56m_qdHt1IWPnUb7r_Q40sII&center=${lat},${lng}&zoom=18';
-  mapDiv.style.display = 'block';
-  mapDiv.innerHTML = '<iframe frameborder="0" style="border:0" src="${mapUrl}" allowfullscreen></iframe>';
-}
   // ✅ Request notification permission
   function requestNotificationPermission() {
     if ('Notification' in window && Notification.permission !== 'granted') {
       Notification.requestPermission();
     }
   }
-
-
-  // On change
-whatsappNumberInput.addEventListener('change', () => {
-  localStorage.setItem('whatsappNumber', whatsappNumberInput.value);
-});
-
-// On load
-const savedWANumber = localStorage.getItem('whatsappNumber');
-if (savedWANumber) {
-  whatsappNumberInput.value = savedWANumber;
-}
-
 
   // ✅ Theme Toggle
   let isDark = false;
@@ -67,25 +51,18 @@ if (savedWANumber) {
   // ✅ Get URL parameters
   const params = new URLSearchParams(window.location.search);
 
-  // 🔍 Check if this is a shared link (has lat/lng)
+  // 🔍 Check if this is a shared link
   if (params.has('lat') && params.has('lng')) {
-    // Hide all elements with class 'shared-hide'
-    document.querySelectorAll('.shared-hide').forEach(el => {
-      el.style.display = 'none';
-    });
-
-    // Update UI for shared view
+    document.querySelectorAll('.shared-hide').forEach(el => el.style.display = 'none');
     document.querySelector('.container h1').textContent = '📍 Friend’s Parking Spot';
-    status.textContent = 'Parked at ${new Date(params.get('time')).toLocaleTimeString()}';
+    status.textContent = `Parked at ${new Date(params.get('time')).toLocaleTimeString()}`;
     updateMap(parseFloat(params.get('lat')), parseFloat(params.get('lng')));
 
-    // Add Back button
     const backButton = document.createElement('button');
     backButton.textContent = '🔙 Back to My Parking';
     backButton.onclick = () => window.location.href = './';
     document.querySelector('.container').appendChild(backButton);
-
-    return; // Exit early — don't run normal app logic
+    return;
   }
 
   // —————————————————————————————
@@ -104,8 +81,8 @@ if (savedWANumber) {
     showQRBtn.disabled = false;
     testVoiceBtn.disabled = false;
     directionsBtn.disabled = false;
-    sendWABtn.disabled = false; 
-    status.textContent = 'Parking saved on ${new Date(spot.time).toLocaleTimeString()}';
+    sendWABtn.disabled = false;
+    status.textContent = `Parking saved on ${new Date(spot.time).toLocaleTimeString()}`;
     updateMap(spot.lat, spot.lng);
   }
 
@@ -116,10 +93,18 @@ if (savedWANumber) {
     photoPreview.style.display = 'block';
   }
 
-  // ✅ Restore notification time dropdown
+  // ✅ Restore notification time
   if (notifyTimeSelect) {
     const savedNotifyTime = localStorage.getItem('notifyTime') || '7200000';
     notifyTimeSelect.value = savedNotifyTime;
+  }
+
+  // ✅ Restore WhatsApp number
+  if (whatsappNumberInput) {
+    const savedWANumber = localStorage.getItem('whatsappNumber');
+    if (savedWANumber) {
+      whatsappNumberInput.value = savedWANumber;
+    }
   }
 
   // ✅ Start live timer
@@ -133,26 +118,9 @@ if (savedWANumber) {
       const minutes = Math.floor((diff % 3600) / 60);
       const seconds = diff % 60;
       if (timer) {
-        timer.textContent = '🕒 Parked: ${hours}h ${minutes}m ${seconds}s';
+        timer.textContent = `🕒 Parked: ${hours}h ${minutes}m ${seconds}s`;
       }
     }, 1000);
-
-    // Schedule notification
-    const notifyDelay = parseInt(localStorage.getItem('notifyTime') || '7200000');
-    const parkedTime = new Date(spot.time);
-    const now = new Date();
-    const diffMs = now - parkedTime;
-
-    if (diffMs < notifyDelay) {
-      setTimeout(() => {
-        if (Notification.permission === 'granted') {
-          new Notification('🕒 Park Reminder', {
-            body: 'You’ve been parked for a while!',
-            icon: 'image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🅿️</text></svg>'
-          });
-        }
-      }, notifyDelay - diffMs);
-    }
   }
 
   // —————————————————————————————
@@ -171,7 +139,7 @@ if (savedWANumber) {
       voices.forEach((voice, i) => {
         const option = document.createElement('option');
         option.value = i;
-        option.textContent = '${voice.name} (${voice.lang})';
+        option.textContent = `${voice.name} (${voice.lang})`;
         voiceSelect.appendChild(option);
       });
       const savedIndex = localStorage.getItem('preferredVoice');
@@ -209,13 +177,12 @@ if (savedWANumber) {
   // Event Listeners
   // —————————————————————————————
 
-  // 📸 Photo Upload
   if (photoInput) {
     photoInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = (event) => {
           const dataUrl = event.target.result;
           photoImg.src = dataUrl;
           photoPreview.style.display = 'block';
@@ -226,7 +193,6 @@ if (savedWANumber) {
     });
   }
 
-  // 🅿️ Save My Parking Spot
   if (saveBtn) {
     saveBtn.addEventListener('click', () => {
       status.textContent = 'Getting your location...';
@@ -239,43 +205,38 @@ if (savedWANumber) {
             lng: longitude,
             time: new Date().toISOString()
           };
-    // Inside saveBtn click handler
-    localStorage.setItem('parkingSpot', JSON.stringify(spot));
-    localStorage.setItem('notifyTime', notifyDelay);
-    findBtn.disabled = false;
-    shareBtn.disabled = false;
-    showQRBtn.disabled = false;
-    testVoiceBtn.disabled = false;
-    directionsBtn.disabled = false;
-    sendWABtn.disabled = false;
-    status.textContent = '✅ Parking saved! (${latitude.toFixed(5)}, ${longitude.toFixed(5)})';
-    updateMap(latitude, longitude);
-    if (timer) timer.textContent = '🕒 Parked: 0h 0m 0s';
+          localStorage.setItem('parkingSpot', JSON.stringify(spot));
+          localStorage.setItem('notifyTime', notifyDelay);
+          findBtn.disabled = false;
+          shareBtn.disabled = false;
+          showQRBtn.disabled = false;
+          testVoiceBtn.disabled = false;
+          directionsBtn.disabled = false;
+          sendWABtn.disabled = false;
+          status.textContent = `✅ Parking saved! (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
+          updateMap(latitude, longitude);
+          if (timer) timer.textContent = '🕒 Parked: 0h 0m 0s';
         },
         (error) => {
-          status.textContent = '❌ Error: ${error.message}';
+          status.textContent = `❌ Error: ${error.message}`;
         },
         { timeout: 10000 }
       );
     });
   }
 
-  // 🧭 Find My Car
   if (findBtn) {
     findBtn.addEventListener('click', () => {
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
-
       speechSynthesis.cancel();
       updateMap(spot.lat, spot.lng);
-
       const time = new Date(spot.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const utter = new SpeechSynthesisUtterance('You parked at ${time}.');
+      const utter = new SpeechSynthesisUtterance(`You parked at ${time}.`);
       utter.voice = window.getSelectedVoice ? window.getSelectedVoice() : null;
       utter.rate = 0.9;
       utter.pitch = 1;
       speechSynthesis.speak(utter);
-
       status.textContent = 'Calculating distance...';
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -288,9 +249,8 @@ if (savedWANumber) {
           const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
           const distance = R * c;
           const distText = distance >= 1000 ? (distance/1000).toFixed(1) + ' km' : Math.round(distance) + ' m';
-          status.textContent = '🚗 Your car is ${distText} away.';
-
-          const distUtter = new SpeechSynthesisUtterance('Your car is ${Math.round(distance)} meters away.');
+          status.textContent = `🚗 Your car is ${distText} away.`;
+          const distUtter = new SpeechSynthesisUtterance(`Your car is ${Math.round(distance)} meters away.`);
           distUtter.voice = window.getSelectedVoice ? window.getSelectedVoice() : null;
           distUtter.rate = 0.8;
           speechSynthesis.speak(distUtter);
@@ -303,75 +263,62 @@ if (savedWANumber) {
     });
   }
 
-  // 📤 Share My Spot
   if (shareBtn) {
     shareBtn.addEventListener('click', () => {
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
-
       const baseURL = 'https://parking-pwa-eight.vercel.app';
       const params = new URLSearchParams({
         lat: spot.lat,
         lng: spot.lng,
         time: spot.time
       });
-      const shareURL = '${baseURL}?${params.toString()}';
-
+      const shareURL = `${baseURL}?${params.toString()}`;
       if (navigator.share) {
         navigator.share({
           title: 'My Parking Spot',
           text: 'Here’s where I parked 🅿️',
           url: shareURL
-        }).catch(err => console.log('Share canceled', err));
+        }).catch(console.log);
       } else {
         navigator.clipboard.writeText(shareURL).then(() => {
-          alert('Parking link copied to clipboard!\nShare it with your friends.');
+          alert('Link copied to clipboard!');
         });
       }
     });
   }
 
-  // 🗺️ Get Directions
   if (directionsBtn) {
     directionsBtn.addEventListener('click', () => {
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
-
-      const dest = '${spot.lat},${spot.lng}';
-      const url = 'https://www.google.com/maps/dir/?api=1&destination=${dest}';
+      const dest = `${spot.lat},${spot.lng}`;
+      const url = `https://www.google.com/maps/dir/?api=1&destination=${dest}`;
       window.open(url, '_blank');
     });
   }
 
-  // 🔲 Show QR Code
   if (showQRBtn && qrContainer) {
     showQRBtn.addEventListener('click', () => {
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
-
       const baseURL = 'https://parking-pwa-eight.vercel.app';
       const params = new URLSearchParams({
         lat: spot.lat,
         lng: spot.lng,
         time: spot.time
       });
-      const shareURL = '${baseURL}?${params.toString()}';
-
-      // Clear previous QR
+      const shareURL = `${baseURL}?${params.toString()}`;
       qrContainer.querySelector('#qrcode').innerHTML = '';
-
-      // Generate new QR
       new QRCode(qrContainer.querySelector('#qrcode'), {
         text: shareURL,
         width: 128,
         height: 128
       });
-
       qrContainer.style.display = 'block';
     });
   }
 
-  // 🔊 Test Voice
   if (testVoiceBtn) {
     testVoiceBtn.addEventListener('click', () => {
       if ('speechSynthesis' in window) {
@@ -381,79 +328,32 @@ if (savedWANumber) {
         utter.pitch = 1;
         speechSynthesis.speak(utter);
       } else {
-        alert('Speech not supported on this device.');
+        alert('Speech not supported.');
       }
     });
   }
 
-if (sendWABtn) {
-  sendWABtn.addEventListener('click', () => {
-    const spot = JSON.parse(localStorage.getItem('parkingSpot'));
-    if (!spot) return;
-
-    const notifyDelay = parseInt(document.getElementById('notifyTime').value);
-    const hours = Math.round(notifyDelay / 3600000); // convert ms to hours
-
-    const number = whatsappNumberInput.value.trim();
-    if (!number) {
-      alert('Please enter a WhatsApp number in international format (e.g., +1234567890)');
-      return;
-    }
-
-
-    const message = encodeURIComponent(
-      '🅿️ ParkHere: I parked at ${new Date().toLocaleTimeString()}.\n\nTap to see location:\n${shareURL}'
-    );
-
-
-    const waURL = 'https://wa.me/${number}?text=${message}';
-
-    // Open WhatsApp
-    window.open(waURL, '_blank');
-  });
-}
-
-  // —————————————————————————————
-  // WhatsApp Reminder
-  // —————————————————————————————
-  if (whatsappNumberInput && sendWABtn) {
-    whatsappNumberInput.addEventListener('change', () => {
-      localStorage.setItem('whatsappNumber', whatsappNumberInput.value);
-    });
-
-    // Restore saved number
-    const savedWANumber = localStorage.getItem('whatsappNumber');
-    if (savedWANumber) {
-      whatsappNumberInput.value = savedWANumber;
-    }
-
+  if (sendWABtn && whatsappNumberInput) {
     sendWABtn.addEventListener('click', () => {
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
-
-      const notifyDelay = parseInt(document.getElementById('notifyTime').value);
-      const hours = Math.round(notifyDelay / 3600000);
       const number = whatsappNumberInput.value.trim();
-
       if (!number) {
         alert('Please enter a WhatsApp number in international format (e.g., +1234567890)');
         return;
       }
-
       const baseURL = 'https://parking-pwa-eight.vercel.app';
       const params = new URLSearchParams({
         lat: spot.lat,
         lng: spot.lng,
         time: spot.time
       });
-      const shareURL = '${baseURL}?${params.toString()}';
-
+      const shareURL = `${baseURL}?${params.toString()}`;
       const message = encodeURIComponent(
-        '🅿️ ParkHere: I parked at ${new Date().toLocaleTimeString()}.\n\nTap to see location:\n${shareURL}'
+        `🅿️ ParkHere: I parked at ${new Date().toLocaleTimeString()}.\n\nTap to see location:\n${shareURL}`
       );
-      const waURL =  'https://wa.me/${number}?text=${message}';
+      const waURL = `https://wa.me/${number}?text=${message}`;
       window.open(waURL, '_blank');
     });
   }
-
 });

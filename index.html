@@ -7,30 +7,22 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="data:image/x-icon;,">
-
 </head>
 <body>
   <div class="container">
     <h1>ParkHere</h1>
     <p>Remember where you parked — no install needed.</p>
 
-
-
     <!-- Notification Time Selector -->
     <label for="notifyTime" class="shared-hide">🔔 Notify me after:</label>
     <select id="notifyTime" class="shared-hide">
       <option value="1800000">0.5 hour</option>
-      <option value="3600000" selected >1 hour</option>
-      <option value="5400000">1.5 hour</option>
+      <option value="3600000" selected>1 hour</option>
+      <option value="5400000">1.5 hours</option>
       <option value="7200000">2 hours</option>
       <option value="10800000">3 hours</option>
       <option value="18000000">5 hours</option>
     </select>
-<br>
-<p class="hint">💡 Tip: Send this to your WhatsApp chat to save a reminder!</p>
-<label for="whatsappNumber" class="shared-hide">📱 WhatsApp Number (for reminders):</label>
-<input type="tel" id="whatsappNumber" class="shared-hide" placeholder="+1234567890" />
-<button id="saveWABtn" disabled class="shared-hide">📲 Save Reminder in WhatsApp</button>
 
     <!-- Photo Upload Section -->
     <p class="shared-hide">📸 Add a photo:</p>
@@ -43,29 +35,29 @@
     <button id="themeToggle" class="shared-hide">🌙 Dark Mode</button>
     <button id="saveBtn" class="shared-hide">📍 Save My Parking Spot</button>
     <button id="findBtn" disabled class="shared-hide">🧭 Find My Car</button>
-    <button id="directionsBtn" disabled class="shared-hide">🗺️ Get Directions</button>
     <button id="shareBtn" disabled class="shared-hide">📤 Share My Spot</button>
     <button id="showQRBtn" disabled class="shared-hide">🔲 Show QR Code</button>
-
-    <div id="qrContainer">
+    <div id="qrContainer" style="display:none; margin:15px 0; text-align:center;">
       <div id="qrcode"></div>
-      <p>Scan to view parking location</p>
+      <p style="font-size:0.9em; color:#666;">Scan to view parking location</p>
     </div>
-    
+    <button id="directionsBtn" disabled class="shared-hide">🗺️ Get Directions</button>
     <button id="testVoiceBtn" class="shared-hide">🔊 Test Voice</button>
-
-    <!-- Voice Selection -->
     <label for="voiceSelect" class="shared-hide">🗣️ Voice:</label>
-    <select id="voiceSelect" class="shared-hide">
-      <!-- Options will be dynamically populated -->
-    </select>
+    <select id="voiceSelect" class="shared-hide"></select>
+    <label for="whatsappNumber" class="shared-hide">📱 WhatsApp Number:</label>
+    <input type="tel" id="whatsappNumber" class="shared-hide" placeholder="+1234567890" />
+    <button id="sendWABtn" disabled class="shared-hide">💬 Save Reminder in WhatsApp</button>
 
     <!-- Status & Timer -->
     <div id="status"></div>
     <div id="timer"></div>
-    <div id="map"></div>  </div>
+    <div id="map"></div>
+  </div>
 
+  <!-- ✅ Load QRCode.js first -->
   <script src="qrcode.js"></script>
+  <!-- ✅ Then load your app -->
   <script src="app.js"></script>
 </body>
 </html>
