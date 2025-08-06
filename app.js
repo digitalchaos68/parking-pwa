@@ -26,9 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 function updateMap(lat, lng) {
-  const mapUrl = `https://www.google.com/maps/embed/v1/view?key=AIzaSyD0iSWh-ke56m_qdHt1IWPnUb7r_Q40sII&center=${lat},${lng}&zoom=18`;
+  const mapUrl = 'https://www.google.com/maps/embed/v1/view?key=AIzaSyD0iSWh-ke56m_qdHt1IWPnUb7r_Q40sII&center=${lat},${lng}&zoom=18';
   mapDiv.style.display = 'block';
-  mapDiv.innerHTML = `<iframe frameborder="0" style="border:0" src="${mapUrl}" allowfullscreen></iframe>`;
+  mapDiv.innerHTML = '<iframe frameborder="0" style="border:0" src="${mapUrl}" allowfullscreen></iframe>';
 }
   // ✅ Request notification permission
   function requestNotificationPermission() {
@@ -76,7 +76,7 @@ if (savedWANumber) {
 
     // Update UI for shared view
     document.querySelector('.container h1').textContent = '📍 Friend’s Parking Spot';
-    status.textContent = `Parked at ${new Date(params.get('time')).toLocaleTimeString()}`;
+    status.textContent = 'Parked at ${new Date(params.get('time')).toLocaleTimeString()}';
     updateMap(parseFloat(params.get('lat')), parseFloat(params.get('lng')));
 
     // Add Back button
@@ -105,7 +105,7 @@ if (savedWANumber) {
     testVoiceBtn.disabled = false;
     directionsBtn.disabled = false;
     sendWABtn.disabled = false; 
-    status.textContent = `Parking saved on ${new Date(spot.time).toLocaleTimeString()}`;
+    status.textContent = 'Parking saved on ${new Date(spot.time).toLocaleTimeString()}';
     updateMap(spot.lat, spot.lng);
   }
 
@@ -133,7 +133,7 @@ if (savedWANumber) {
       const minutes = Math.floor((diff % 3600) / 60);
       const seconds = diff % 60;
       if (timer) {
-        timer.textContent = `🕒 Parked: ${hours}h ${minutes}m ${seconds}s`;
+        timer.textContent = '🕒 Parked: ${hours}h ${minutes}m ${seconds}s';
       }
     }, 1000);
 
@@ -171,7 +171,7 @@ if (savedWANumber) {
       voices.forEach((voice, i) => {
         const option = document.createElement('option');
         option.value = i;
-        option.textContent = `${voice.name} (${voice.lang})`;
+        option.textContent = '${voice.name} (${voice.lang})';
         voiceSelect.appendChild(option);
       });
       const savedIndex = localStorage.getItem('preferredVoice');
@@ -248,12 +248,12 @@ if (savedWANumber) {
     testVoiceBtn.disabled = false;
     directionsBtn.disabled = false;
     sendWABtn.disabled = false;
-    status.textContent = `✅ Parking saved! (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
+    status.textContent = '✅ Parking saved! (${latitude.toFixed(5)}, ${longitude.toFixed(5)})';
     updateMap(latitude, longitude);
     if (timer) timer.textContent = '🕒 Parked: 0h 0m 0s';
         },
         (error) => {
-          status.textContent = `❌ Error: ${error.message}`;
+          status.textContent = '❌ Error: ${error.message}';
         },
         { timeout: 10000 }
       );
@@ -270,7 +270,7 @@ if (savedWANumber) {
       updateMap(spot.lat, spot.lng);
 
       const time = new Date(spot.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const utter = new SpeechSynthesisUtterance(`You parked at ${time}.`);
+      const utter = new SpeechSynthesisUtterance('You parked at ${time}.');
       utter.voice = window.getSelectedVoice ? window.getSelectedVoice() : null;
       utter.rate = 0.9;
       utter.pitch = 1;
@@ -288,9 +288,9 @@ if (savedWANumber) {
           const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
           const distance = R * c;
           const distText = distance >= 1000 ? (distance/1000).toFixed(1) + ' km' : Math.round(distance) + ' m';
-          status.textContent = `🚗 Your car is ${distText} away.`;
+          status.textContent = '🚗 Your car is ${distText} away.';
 
-          const distUtter = new SpeechSynthesisUtterance(`Your car is ${Math.round(distance)} meters away.`);
+          const distUtter = new SpeechSynthesisUtterance('Your car is ${Math.round(distance)} meters away.');
           distUtter.voice = window.getSelectedVoice ? window.getSelectedVoice() : null;
           distUtter.rate = 0.8;
           speechSynthesis.speak(distUtter);
@@ -315,7 +315,7 @@ if (savedWANumber) {
         lng: spot.lng,
         time: spot.time
       });
-      const shareURL = `${baseURL}?${params.toString()}`;
+      const shareURL = '${baseURL}?${params.toString()}';
 
       if (navigator.share) {
         navigator.share({
@@ -337,8 +337,8 @@ if (savedWANumber) {
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
 
-      const dest = `${spot.lat},${spot.lng}`;
-      const url = `https://www.google.com/maps/dir/?api=1&destination=${dest}`;
+      const dest = '${spot.lat},${spot.lng}';
+      const url = 'https://www.google.com/maps/dir/?api=1&destination=${dest}';
       window.open(url, '_blank');
     });
   }
@@ -355,7 +355,7 @@ if (savedWANumber) {
         lng: spot.lng,
         time: spot.time
       });
-      const shareURL = `${baseURL}?${params.toString()}`;
+      const shareURL = '${baseURL}?${params.toString()}';
 
       // Clear previous QR
       qrContainer.querySelector('#qrcode').innerHTML = '';
@@ -402,11 +402,11 @@ if (sendWABtn) {
 
 
     const message = encodeURIComponent(
-      `🅿️ ParkHere: I parked at ${new Date().toLocaleTimeString()}.\n\nTap to see location:\n${shareURL}`
+      '🅿️ ParkHere: I parked at ${new Date().toLocaleTimeString()}.\n\nTap to see location:\n${shareURL}'
     );
 
 
-    const waURL = `https://wa.me/${number}?text=${message}`;
+    const waURL = 'https://wa.me/${number}?text=${message}';
 
     // Open WhatsApp
     window.open(waURL, '_blank');
@@ -446,10 +446,10 @@ if (sendWABtn) {
         lng: spot.lng,
         time: spot.time
       });
-      const shareURL = `${baseURL}?${params.toString()}`;
+      const shareURL = '${baseURL}?${params.toString()}';
 
       const message = encodeURIComponent(
-        `🅿️ ParkHere: I parked at ${new Date().toLocaleTimeString()}.\n\nTap to see location:\n${shareURL}`
+        '🅿️ ParkHere: I parked at ${new Date().toLocaleTimeString()}.\n\nTap to see location:\n${shareURL}'
       );
       const waURL =  'https://wa.me/${number}?text=${message}';
       window.open(waURL, '_blank');
