@@ -1,12 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
+
+
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ParkHere 🅿️</title>
-  <link rel="stylesheet" href="style.css" />
+  
+  <!-- App Title for iOS -->
+  <meta name="apple-mobile-web-app-title" content="ParkHere">
+  
+  <!-- Favicon (small icon in tab) -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  
+  <!-- Apple Touch Icon (for iOS homescreen) -->
+  <link rel="apple-touch-icon" href="Parkhere logo.png">
+  
+  <!-- Manifest -->
   <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="data:image/x-icon;,">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css" />
+
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' https://cdnjs.cloudflare.com https://www.google.com/maps/;
+  style-src 'self' 'unsafe-inline';
+  img-src * data:;
+  frame-src https://www.google.com;
+  object-src 'none';
+  base-uri 'self';
+">
+
 </head>
 <body>
   <div class="container">
