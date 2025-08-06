@@ -326,7 +326,6 @@ console.log('QR Container:', qrContainer);
 
 
   });
-}
 
   if (testVoiceBtn) {
     testVoiceBtn.addEventListener('click', () => {
@@ -341,4 +340,3 @@ console.log('QR Container:', qrContainer);
       }
     });
   }
-});
