@@ -1,6 +1,6 @@
 // Main App Initialization
 document.addEventListener('DOMContentLoaded', () => {
-  // ✅ Get all DOM elements after HTML loads
+  // ✅ Get all elements after HTML loads
   const saveBtn = document.getElementById('saveBtn');
   const findBtn = document.getElementById('findBtn');
   const shareBtn = document.getElementById('shareBtn');
@@ -37,13 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapUrl = `https://www.google.com/maps/embed/v1/view?key=AIzaSyD0iSWh-ke56m_qdHt1IWPnUb7r_Q40sII&center=${lat},${lng}&zoom=18`;
     mapDiv.style.display = 'block';
     mapDiv.innerHTML = `<iframe frameborder="0" style="border:0" src="${mapUrl}" allowfullscreen></iframe>`;
-  }
-
-  // ✅ Request notification permission
-  function requestNotificationPermission() {
-    if ('Notification' in window && Notification.permission !== 'granted') {
-      Notification.requestPermission();
-    }
   }
 
   // ✅ Theme Toggle
@@ -83,8 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Normal App Logic (Owner View)
   // —————————————————————————————
 
-  requestNotificationPermission();
-
   const savedSpot = localStorage.getItem('parkingSpot');
 
   // ✅ Restore saved spot
@@ -97,6 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
     directionsBtn.disabled = false;
     sendWABtn.disabled = false;
     supportBtn.disabled = false;
+    resetBtn.disabled = false;
     status.textContent = `Parking saved on ${new Date(spot.time).toLocaleTimeString()}`;
     updateMap(spot.lat, spot.lng);
   }
@@ -230,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
           directionsBtn.disabled = false;
           sendWABtn.disabled = false;
           supportBtn.disabled = false;
-          resetBtn.disabled = false; // ✅ Enable reset button
+          resetBtn.disabled = false;
           status.textContent = `✅ Parking saved! (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
           updateMap(latitude, longitude);
           if (timer) timer.textContent = '🕒 Parked: 0h 0m 0s';
@@ -331,7 +323,6 @@ document.addEventListener('DOMContentLoaded', () => {
         height: 128
       });
       qrContainer.style.display = 'block';
-      qrContainer.style.textAlign = 'center'; // Optional if needed
     });
   }
 
@@ -375,25 +366,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-    // 🗑️ Reset Parking Spot
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
-      // Confirm with user
       if (!confirm('Are you sure you want to reset your parking spot?')) {
         return;
       }
 
-      // Clear data
       localStorage.removeItem('parkingSpot');
       localStorage.removeItem('parkingPhoto');
 
-      // Reset UI
       findBtn.disabled = true;
       shareBtn.disabled = true;
       showQRBtn.disabled = true;
+      testVoiceBtn.disabled = true;
       directionsBtn.disabled = true;
       sendWABtn.disabled = true;
-      testVoiceBtn.disabled = true;
       resetBtn.disabled = true;
 
       photoPreview.style.display = 'none';
@@ -406,7 +393,4 @@ document.addEventListener('DOMContentLoaded', () => {
       if (timer) timer.textContent = '';
     });
   }
-
-
-
 });
