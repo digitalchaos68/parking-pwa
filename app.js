@@ -212,6 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
         status.textContent = '❌ Timed out getting location. Please try again.';
       }
     }, 10000);
+    
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
