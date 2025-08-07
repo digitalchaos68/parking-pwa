@@ -200,40 +200,62 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+ 
   if (saveBtn) {
-    saveBtn.addEventListener('click', () => {
-      trackEvent('click', 'Feature', 'Save My Parking Spot');
-      status.textContent = 'Getting your location...';
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          const notifyDelay = parseInt(notifyTimeSelect.value);
-          const spot = {
-            lat: latitude,
-            lng: longitude,
-            time: new Date().toISOString()
-          };
-          localStorage.setItem('parkingSpot', JSON.stringify(spot));
-          localStorage.setItem('notifyTime', notifyDelay);
-          findBtn.disabled = false;
-          shareBtn.disabled = false;
-          showQRBtn.disabled = false;
-          testVoiceBtn.disabled = false;
-          directionsBtn.disabled = false;
-          sendWABtn.disabled = false;
-          supportBtn.disabled = false;
-          resetBtn.disabled = false;
-          status.textContent = `✅ Parking saved! (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
-          updateMap(latitude, longitude);
-          if (timer) timer.textContent = '🕒 Parked: 0h 0m 0s';
-        },
-        (error) => {
-          status.textContent = `❌ Error: ${error.message}`;
-        },
-        { timeout: 10000 }
-      );
-    });
-  }
+  saveBtn.addEventListener('click', () => {
+    trackEvent('click', 'Feature', 'Save My Parking Spot');
+    status.textContent = 'Getting your location...';
+
+    // Set up a timeout to catch slow responses
+    const timeoutId = setTimeout(() => {
+      if (!status.textContent.includes('✅')) {
+        status.textContent = '❌ Timed out getting location. Please try again.';
+      }
+    }, 10000);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        console.log('Location fetched:', position);
+        clearTimeout(timeoutId); // ✅ Cancel the timeout
+
+        const { latitude, longitude } = position.coords;
+        const notifyDelay = parseInt(notifyTimeSelect.value);
+        const spot = {
+          lat: latitude,
+          lng: longitude,
+          time: new Date().toISOString()
+        };
+
+        localStorage.setItem('parkingSpot', JSON.stringify(spot));
+        localStorage.setItem('notifyTime', notifyDelay);
+
+        // Enable buttons
+        findBtn.disabled = false;
+        shareBtn.disabled = false;
+        showQRBtn.disabled = false;
+        testVoiceBtn.disabled = false;
+        directionsBtn.disabled = false;
+        sendWABtn.disabled = false;
+        supportBtn.disabled = false;
+        resetBtn.disabled = false;
+
+        status.textContent = `✅ Parking saved! (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
+        updateMap(latitude, longitude);
+        if (timer) timer.textContent = '🕒 Parked: 0h 0m 0s';
+      },
+      (error) => {
+        clearTimeout(timeoutId); // ✅ Cancel timeout on error
+        console.error('Geolocation error:', error);
+        status.textContent = `❌ Error: ${error.message}`;
+      },
+      { 
+        timeout: 10000,   // Browser timeout
+        enableHighAccuracy: true 
+      }
+    );
+  });
+}
+
 
   if (findBtn) {
     findBtn.addEventListener('click', () => {
