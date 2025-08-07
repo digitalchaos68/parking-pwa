@@ -265,3 +265,44 @@ body.dark #supportBtn:hover {
   background: #ffac2f;
 }
 
+#nearbyContainer {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  font-size: 0.9em;
+  color: #333;
+}
+
+body.dark #nearbyContainer {
+  background: #2d2d2d;
+  color: #e0e0e0;
+}
+
+.nearby-place {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+body.dark .nearby-place {
+  border-bottom: 1px solid #444;
+}
+
+.nearby-place:last-child {
+  border-bottom: none;
+}
+
+.nearby-place h4 {
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+}
+
+.nearby-place p {
+  margin: 2px 0;
+  color: #666;
+}
+
+body.dark .nearby-place p {
+  color: #bbb;
+}
