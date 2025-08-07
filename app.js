@@ -467,16 +467,13 @@ if (nearbyBtn) {
       // Dynamically import the places library
       const { Place } = await google.maps.importLibrary("places");
 
-      // ✅ Use google.maps.LatLng to ensure compatibility
-      const lat = parseFloat(spot.lat);
-      const lng = parseFloat(spot.lng);
+      // ✅ Use google.maps.LatLng to ensure valid location
+      const location = new google.maps.LatLng(parseFloat(spot.lat), parseFloat(spot.lng));
 
-      if (!isFinite(lat) || !isFinite(lng)) {
+      // Validate
+      if (!isFinite(location.lat()) || !isFinite(location.lng())) {
         throw new Error('Invalid coordinates');
       }
-
-      // ✅ Create a clean LatLng object
-      const location = new google.maps.LatLng(lat, lng);
 
       // ✅ Correct request format
       const request = {
