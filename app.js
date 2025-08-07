@@ -468,6 +468,7 @@ if (nearbyBtn) {
     fetch(url)
       .then(response => response.json())
       .then(data => {
+        console.log('Places ', data);
         if (!data.results || data.results.length === 0) {
           nearbyContainer.innerHTML = '<p>No nearby places found.</p>';
           return;
@@ -516,6 +517,7 @@ if (nearbyBtn) {
       })
       .catch(err => {
         console.error('Nearby search error:', err);
+        nearbyContainer.innerHTML = '<p>❌ Failed: ${err.message}</p>';
         nearbyContainer.innerHTML = '<p>Failed to load nearby places. Try again later.</p>';
       });
   });
