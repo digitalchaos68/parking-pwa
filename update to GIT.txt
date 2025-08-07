@@ -1,3 +1,10 @@
+https://parking-pwa-eight-git-dev-<your-name>.vercel.app
+
+git add .
+git commit -m "feat: add Reset Parking button in dev"
+git push origin dev
+
+
 git add .
 git commit -m "Add: Push notification and share parking spot feature"
 git push origin main
@@ -9,14 +16,65 @@ git branch -M main
 git remote add origin https://github.com/digitalchaos68/parking-pwa.git
 git push -f origin main
 
+<!-- Content Security Policy (CSP) -->
+<!-- Development CSP -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://analytics.google.com https://www.googletagmanager.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://www.google.com/maps/ https://www.googletagmanager.com https://analytics.google.com; script-src-elem 'self' https://cdnjs.cloudflare.com https://www.google.com/maps/ https://www.googletagmanager.com https://analytics.google.com; style-src 'self' 'unsafe-inline'; img-src * data:; frame-src 'self' https://www.google.com; object-src 'none'; base-uri 'self'; connect-src 'self' https://analytics.google.com https://www.google-analytics.com;">
 
-place this at the top of app.js ? just before document.addEventListener('DOMContentLoaded', () => {
+<!-- Production CSP -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://analytics.google.com https://www.googletagmanager.com; script-src 'self' https://cdnjs.cloudflare.com https://www.google.com/maps/ https://www.googletagmanager.com https://analytics.google.com; script-src-elem 'self' https://cdnjs.cloudflare.com https://www.google.com/maps/ https://www.googletagmanager.com https://analytics.google.com; style-src 'self' 'unsafe-inline'; img-src * data:; frame-src 'self' https://www.google.com; object-src 'none'; base-uri 'self'; connect-src 'self' https://analytics.google.com https://www.google-analytics.com;">
 
-navigator.share({
-  title: 'My Parking Spot',
-  text: 'Here’s where I parked 🅿️ (via ParkHere)',
-  url: 'https://bit.ly/parkhere-app' // ← Use short link
-})
+<!-- Content Security Policy (CSP) -->
+<!-- 
+dev version
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self' https://analytics.google.com https://www.googletagmanager.com;
+  script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://www.google.com/maps/ https://www.googletagmanager.com https://analytics.google.com;
+  script-src-elem 'self' https://cdnjs.cloudflare.com https://www.google.com/maps/ https://www.googletagmanager.com https://analytics.google.com;
+  style-src 'self' 'unsafe-inline';
+  img-src * data:;
+  frame-src 'self' https://www.google.com;
+  object-src 'none';
+  base-uri 'self';
+  connect-src 'self' https://analytics.google.com https://www.google-analytics.com;
+">
+
+prd version
+
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self' https://analytics.google.com https://www.googletagmanager.com;
+    script-src 'self' https://cdnjs.cloudflare.com https://www.google.com/maps/ https://www.googletagmanager.com https://analytics.google.com;
+    script-src-elem 'self' https://cdnjs.cloudflare.com https://www.google.com/maps/ https://www.googletagmanager.com https://analytics.google.com;
+    style-src 'self' 'unsafe-inline';
+    img-src * data:;
+    frame-src 'self' https://www.google.com;
+    object-src 'none';
+    base-uri 'self';
+    connect-src 'self' https://analytics.google.com https://www.google-analytics.com;
+  ">
+
+-->
 
 
-how to setup google analytics to track the usage, and what's the admob monetization plan and criteria ?
+
+
+# 1. Work on dev branch
+git checkout dev
+
+# 2. Make changes
+# ... edit files ...
+
+# 3. Test locally
+# Open http://localhost:3000
+
+# 4. Push to GitHub
+git add .
+git commit -m "Fix: improve QR code centering"
+git push origin dev
+
+# 5. Open Vercel Preview URL
+# Test on https://parking-pwa-eight-git-dev-...
+
+# 6. Merge to main (only when ready)
+git checkout main
+git merge dev
+git push origin main
