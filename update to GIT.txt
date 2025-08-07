@@ -8,3 +8,15 @@ git commit -m "Add PWA files"
 git branch -M main
 git remote add origin https://github.com/digitalchaos68/parking-pwa.git
 git push -f origin main
+
+
+place this at the top of app.js ? just before document.addEventListener('DOMContentLoaded', () => {
+
+navigator.share({
+  title: 'My Parking Spot',
+  text: 'Here’s where I parked 🅿️ (via ParkHere)',
+  url: 'https://bit.ly/parkhere-app' // ← Use short link
+})
+
+
+how to setup google analytics to track the usage, and what's the admob monetization plan and criteria ?

@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const whatsappNumberInput = document.getElementById('whatsappNumber');
   const sendWABtn = document.getElementById('sendWABtn');
   const supportBtn = document.getElementById('supportBtn');
+  const resetBtn = document.getElementById('resetBtn');
 
   // ✅ Safe gtag wrapper (prevents "gtag is not defined")
   function trackEvent(action, category = 'Feature', label = '') {
@@ -229,6 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
           directionsBtn.disabled = false;
           sendWABtn.disabled = false;
           supportBtn.disabled = false;
+          resetBtn.disabled = false; // ✅ Enable reset button
           status.textContent = `✅ Parking saved! (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
           updateMap(latitude, longitude);
           if (timer) timer.textContent = '🕒 Parked: 0h 0m 0s';
@@ -372,4 +374,39 @@ document.addEventListener('DOMContentLoaded', () => {
       window.open('https://buymeacoffee.com/digitalchaos', '_blank');
     });
   }
+
+    // 🗑️ Reset Parking Spot
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      // Confirm with user
+      if (!confirm('Are you sure you want to reset your parking spot?')) {
+        return;
+      }
+
+      // Clear data
+      localStorage.removeItem('parkingSpot');
+      localStorage.removeItem('parkingPhoto');
+
+      // Reset UI
+      findBtn.disabled = true;
+      shareBtn.disabled = true;
+      showQRBtn.disabled = true;
+      directionsBtn.disabled = true;
+      sendWABtn.disabled = true;
+      testVoiceBtn.disabled = true;
+      resetBtn.disabled = true;
+
+      photoPreview.style.display = 'none';
+      photoImg.src = '';
+      mapDiv.style.display = 'none';
+      mapDiv.innerHTML = '';
+      qrContainer.style.display = 'none';
+      qrContainer.querySelector('#qrcode').innerHTML = '';
+      status.textContent = 'Parking spot reset.';
+      if (timer) timer.textContent = '';
+    });
+  }
+
+
+
 });
