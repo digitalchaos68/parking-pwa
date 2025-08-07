@@ -1,6 +1,8 @@
 // Main App Initialization
 document.addEventListener('DOMContentLoaded', () => {
-  // ✅ Get all elements after HTML loads
+  console.log('ParkHere: App initializing...');
+
+  // ✅ Get all DOM elements after HTML loads
   const saveBtn = document.getElementById('saveBtn');
   const findBtn = document.getElementById('findBtn');
   const shareBtn = document.getElementById('shareBtn');
@@ -29,11 +31,15 @@ document.addEventListener('DOMContentLoaded', () => {
         'event_category': category,
         'event_label': label
       });
+      console.log('Analytics event tracked:', { action, category, label });
+    } else {
+      console.warn('gtag not loaded yet', { action, category, label });
     }
   }
 
   // ✅ Update the map using Google Maps Embed
   function updateMap(lat, lng) {
+    console.log('Updating map:', { lat, lng });
     const mapUrl = `https://www.google.com/maps/embed/v1/view?key=AIzaSyD0iSWh-ke56m_qdHt1IWPnUb7r_Q40sII&center=${lat},${lng}&zoom=18`;
     mapDiv.style.display = 'block';
     mapDiv.innerHTML = `<iframe frameborder="0" style="border:0" src="${mapUrl}" allowfullscreen></iframe>`;
@@ -51,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.toggle('dark', isDark);
     themeToggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
     localStorage.setItem('darkMode', isDark);
+    trackEvent('click', 'UI', 'Toggle Dark Mode');
   });
 
   // ✅ Get URL parameters
@@ -58,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 🔍 Check if this is a shared link
   if (params.has('lat') && params.has('lng')) {
+    console.log('Shared view detected:', params.toString());
     document.querySelectorAll('.shared-hide').forEach(el => el.style.display = 'none');
     document.querySelector('.container h1').textContent = '📍 Friend’s Parking Spot';
     status.textContent = `Parked at ${new Date(params.get('time')).toLocaleTimeString()}`;
@@ -66,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const backButton = document.createElement('button');
     backButton.textContent = '🔙 Back to My Parking';
     backButton.addEventListener('click', () => {
+      console.log('Back to My Parking clicked');
       window.location.href = './';
     });
     document.querySelector('.container').appendChild(backButton);
@@ -80,17 +89,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ✅ Restore saved spot
   if (savedSpot) {
-    const spot = JSON.parse(savedSpot);
-    findBtn.disabled = false;
-    shareBtn.disabled = false;
-    showQRBtn.disabled = false;
-    testVoiceBtn.disabled = false;
-    directionsBtn.disabled = false;
-    sendWABtn.disabled = false;
-    supportBtn.disabled = false;
-    resetBtn.disabled = false;
-    status.textContent = `Parking saved on ${new Date(spot.time).toLocaleTimeString()}`;
-    updateMap(spot.lat, spot.lng);
+    try {
+      const spot = JSON.parse(savedSpot);
+      findBtn.disabled = false;
+      shareBtn.disabled = false;
+      showQRBtn.disabled = false;
+      testVoiceBtn.disabled = false;
+      directionsBtn.disabled = false;
+      sendWABtn.disabled = false;
+      supportBtn.disabled = false;
+      resetBtn.disabled = false;
+      status.textContent = `Parking saved on ${new Date(spot.time).toLocaleTimeString()}`;
+      updateMap(spot.lat, spot.lng);
+      console.log('Restored saved spot:', spot);
+    } catch (e) {
+      console.error('Failed to parse saved spot:', e);
+      localStorage.removeItem('parkingSpot');
+    }
   }
 
   // ✅ Restore photo
@@ -98,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (savedPhoto) {
     photoImg.src = savedPhoto;
     photoPreview.style.display = 'block';
+    console.log('Restored photo preview');
   }
 
   // ✅ Restore notification time
@@ -166,12 +182,13 @@ document.addEventListener('DOMContentLoaded', () => {
     populateVoiceList();
     setTimeout(populateVoiceList, 500);
     setTimeout(populateVoiceList, 1000);
-    if (speechSynthesis.onvoiceschanged === null) {
+    if (speechSynthesis.onvoiceschanged !== undefined) {
       speechSynthesis.onvoiceschanged = populateVoiceList;
     }
 
     voiceSelect.addEventListener('change', () => {
       localStorage.setItem('preferredVoice', voiceSelect.value);
+      console.log('Voice preference saved:', voiceSelect.value);
     });
 
     window.getSelectedVoice = getSelectedVoice;
@@ -194,69 +211,75 @@ document.addEventListener('DOMContentLoaded', () => {
           photoImg.src = dataUrl;
           photoPreview.style.display = 'block';
           localStorage.setItem('parkingPhoto', dataUrl);
+          console.log('Photo uploaded and saved');
         };
         reader.readAsDataURL(file);
       }
     });
   }
 
- 
   if (saveBtn) {
-  saveBtn.addEventListener('click', () => {
-    trackEvent('click', 'Feature', 'Save My Parking Spot');
-    status.textContent = 'Getting your location...';
+    saveBtn.addEventListener('click', () => {
+      trackEvent('click', 'Feature', 'Save My Parking Spot');
+      status.textContent = 'Getting your location...';
+      console.log('Requesting geolocation...');
 
-    // Set up a timeout to catch slow responses
-    const timeoutId = setTimeout(() => {
-      if (!status.textContent.includes('✅')) {
-        status.textContent = '❌ Timed out getting location. Please try again.';
-      }
-    }, 10000);
-    
+      // Set up timeout
+      const timeoutId = setTimeout(() => {
+        if (!status.textContent.includes('✅')) {
+          status.textContent = '❌ Timed out getting location. Please try again.';
+          console.warn('Geolocation timeout');
+        }
+      }, 10000);
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        console.log('Location fetched:', position);
-        clearTimeout(timeoutId); // ✅ Cancel the timeout
-
-        const { latitude, longitude } = position.coords;
-        const notifyDelay = parseInt(notifyTimeSelect.value);
-        const spot = {
-          lat: latitude,
-          lng: longitude,
-          time: new Date().toISOString()
-        };
-
-        localStorage.setItem('parkingSpot', JSON.stringify(spot));
-        localStorage.setItem('notifyTime', notifyDelay);
-
-        // Enable buttons
-        findBtn.disabled = false;
-        shareBtn.disabled = false;
-        showQRBtn.disabled = false;
-        testVoiceBtn.disabled = false;
-        directionsBtn.disabled = false;
-        sendWABtn.disabled = false;
-        supportBtn.disabled = false;
-        resetBtn.disabled = false;
-
-        status.textContent = `✅ Parking saved! (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
-        updateMap(latitude, longitude);
-        if (timer) timer.textContent = '🕒 Parked: 0h 0m 0s';
-      },
-      (error) => {
-        clearTimeout(timeoutId); // ✅ Cancel timeout on error
-        console.error('Geolocation error:', error);
-        status.textContent = `❌ Error: ${error.message}`;
-      },
-      { 
-        timeout: 10000,   // Browser timeout
-        enableHighAccuracy: true 
-      }
-    );
-  });
-}
-
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          clearTimeout(timeoutId);
+          console.log('Geolocation success:', position);
+          const { latitude, longitude } = position.coords;
+          const notifyDelay = parseInt(notifyTimeSelect.value);
+          const spot = {
+            lat: latitude,
+            lng: longitude,
+            time: new Date().toISOString()
+          };
+          localStorage.setItem('parkingSpot', JSON.stringify(spot));
+          localStorage.setItem('notifyTime', notifyDelay);
+          findBtn.disabled = false;
+          shareBtn.disabled = false;
+          showQRBtn.disabled = false;
+          testVoiceBtn.disabled = false;
+          directionsBtn.disabled = false;
+          sendWABtn.disabled = false;
+          supportBtn.disabled = false;
+          resetBtn.disabled = false;
+          status.textContent = `✅ Parking saved! (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
+          updateMap(latitude, longitude);
+          if (timer) timer.textContent = '🕒 Parked: 0h 0m 0s';
+        },
+        (error) => {
+          clearTimeout(timeoutId);
+          console.error('Geolocation error:', error);
+          let errorMsg = 'Unknown error';
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              errorMsg = 'Location access denied. Please enable location.';
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMsg = 'Location unavailable. Check GPS/Wi-Fi.';
+              break;
+            case error.TIMEOUT:
+              errorMsg = 'Location request timed out. Please try again.';
+              break;
+            default:
+              errorMsg = error.message;
+          }
+          status.textContent = `❌ Error: ${errorMsg}`;
+        },
+        { timeout: 10000, enableHighAccuracy: true }
+      );
+    });
+  }
 
   if (findBtn) {
     findBtn.addEventListener('click', () => {
@@ -291,6 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         (err) => {
           status.textContent = 'Unable to get your location for distance.';
+          console.error('Distance calculation error:', err);
         },
         { enableHighAccuracy: true, timeout: 10000 }
       );
@@ -307,10 +331,13 @@ document.addEventListener('DOMContentLoaded', () => {
           title: 'My Parking Spot',
           text: 'Here’s where I parked 🅿️ (via ParkHere)',
           url: 'https://tinyurl.com/parkhere-app'
-        }).catch(console.log);
+        }).catch(err => console.log('Share canceled:', err));
       } else {
         navigator.clipboard.writeText('https://tinyurl.com/parkhere-app').then(() => {
           alert('Link copied to clipboard! (via tinyurl)');
+        }).catch(err => {
+          console.error('Failed to copy:', err);
+          alert('Failed to copy link. Please try again.');
         });
       }
     });
@@ -394,10 +421,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!confirm('Are you sure you want to reset your parking spot?')) {
         return;
       }
-
+      trackEvent('click', 'Feature', 'Reset Parking Spot');
       localStorage.removeItem('parkingSpot');
       localStorage.removeItem('parkingPhoto');
-
       findBtn.disabled = true;
       shareBtn.disabled = true;
       showQRBtn.disabled = true;
@@ -405,7 +431,6 @@ document.addEventListener('DOMContentLoaded', () => {
       directionsBtn.disabled = true;
       sendWABtn.disabled = true;
       resetBtn.disabled = true;
-
       photoPreview.style.display = 'none';
       photoImg.src = '';
       mapDiv.style.display = 'none';
