@@ -467,10 +467,10 @@ if (nearbyBtn) {
       // Dynamically import the places library
       const { Place } = await google.maps.importLibrary("places");
 
-      // ✅ Use google.maps.LatLng to ensure valid location
+      // ✅ Use google.maps.LatLng to ensure compatibility
       const location = new google.maps.LatLng(parseFloat(spot.lat), parseFloat(spot.lng));
 
-      // Validate
+      // ✅ Validate
       if (!isFinite(location.lat()) || !isFinite(location.lng())) {
         throw new Error('Invalid coordinates');
       }
