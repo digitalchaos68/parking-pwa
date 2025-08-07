@@ -2,7 +2,7 @@
 let isGoogleMapsLoaded = false;
 
 // Called when Google Maps API is ready
-function googleMapsInitialized() {
+function onGoogleMapsLoaded() {
   console.log('Google Maps API loaded');
   isGoogleMapsLoaded = true;
 }
@@ -457,79 +457,75 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 🔍 Nearby Places Button
-if (nearbyBtn) {
-  nearbyBtn.addEventListener('click', async () => {
-    trackEvent('click', 'Feature', 'Nearby Places');
-    const spot = JSON.parse(localStorage.getItem('parkingSpot'));
-    if (!spot) return;
+  if (nearbyBtn) {
+    nearbyBtn.addEventListener('click', async () => {
+      trackEvent('click', 'Feature', 'Nearby Places');
+      const spot = JSON.parse(localStorage.getItem('parkingSpot'));
+      if (!spot) return;
 
-    nearbyContainer.innerHTML = '<p>Searching for nearby places...</p>';
-    nearbyContainer.style.display = 'block';
+      nearbyContainer.innerHTML = '<p>Searching for nearby places...</p>';
+      nearbyContainer.style.display = 'block';
 
-    try {
-      // Dynamically import the places library
-      const { Place } = await google.maps.importLibrary("places");
+      try {
+        // Dynamically import the places library
+        const { Place } = await google.maps.importLibrary("places");
 
-      // ✅ Correct request format
-      const request = {
-        // ✅ Use 'center' with LatLngLiteral
-        center: { lat: spot.lat, lng: spot.lng },
-        // ✅ Use 'radius' in meters
-        radius: 1000,
-        // ✅ Use 'includedTypes' (not 'type')
-        includedTypes: ['restaurant', 'shopping_mall', 'cafe', 'supermarket', 'gas_station']
-      };
-      const response = await Place.searchNearby(request);
+        // ✅ Correct request format for new API
+        const request = {
+          location: { lat: spot.lat, lng: spot.lng },
+          radius: 1000,
+          includedTypes: ['restaurant', 'shopping_mall', 'cafe', 'supermarket', 'gas_station']
+        };
 
-      if (!response.places || response.places.length === 0) {
-        nearbyContainer.innerHTML = '<p>No nearby places found.</p>';
-        return;
-      }
+        const response = await Place.searchNearby(request);
 
-      // Group by type
-      const grouped = {};
-      const typeLabels = {
-        restaurant: '🍽️ Restaurants',
-        shopping_mall: '🛍️ Shopping Malls',
-        cafe: '☕ Cafes',
-        supermarket: '🛒 Supermarkets',
-        gas_station: '⛽ Gas Stations'
-      };
+        if (!response.places || response.places.length === 0) {
+          nearbyContainer.innerHTML = '<p>No nearby places found.</p>';
+          return;
+        }
 
-      response.places.forEach(place => {
-        const type = place.types.find(t => Object.keys(typeLabels).includes(t));
-        if (type && !grouped[type]) grouped[type] = [];
-        if (type) grouped[type].push(place);
-      });
+        // Group by type
+        const grouped = {};
+        const typeLabels = {
+          restaurant: '🍽️ Restaurants',
+          shopping_mall: '🛍️ Shopping Malls',
+          cafe: '☕ Cafes',
+          supermarket: '🛒 Supermarkets',
+          gas_station: '⛽ Gas Stations'
+        };
 
-      let html = '';
-
-      Object.keys(grouped).forEach(type => {
-        html += `<h3 style="margin:15px 0 8px 0; color:#2c7be5;">${typeLabels[type]}</h3>`;
-        grouped[type].slice(0, 5).forEach(place => {
-          const dist = Math.round(google.maps.geometry.spherical.computeDistanceBetween(
-            new google.maps.LatLng(spot.lat, spot.lng),
-            new google.maps.LatLng(place.location.lat(), place.location.lng())
-          ));
-          const distText = dist >= 1000 ? (dist/1000).toFixed(1) + ' km' : dist + ' m';
-
-          html += `
-            <div class="nearby-place">
-              <h4>${place.displayName}</h4>
-              <p>⭐ ${place.rating || 'N/A'} • ${distText} away</p>
-              <p><small>${place.formattedAddress || place.vicinity}</small></p>
-            </div>
-          `;
+        response.places.forEach(place => {
+          const type = place.types.find(t => Object.keys(typeLabels).includes(t));
+          if (type && !grouped[type]) grouped[type] = [];
+          if (type) grouped[type].push(place);
         });
-      });
 
-      nearbyContainer.innerHTML = html;
-    } catch (err) {
-      console.error('Nearby search failed:', err);
-      nearbyContainer.innerHTML = `<p>❌ Failed: ${err.message}</p>`;
-    }
-  });
-}
+        let html = '';
 
+        Object.keys(grouped).forEach(type => {
+          html += `<h3 style="margin:15px 0 8px 0; color:#2c7be5;">${typeLabels[type]}</h3>`;
+          grouped[type].slice(0, 5).forEach(place => {
+            const dist = Math.round(google.maps.geometry.spherical.computeDistanceBetween(
+              new google.maps.LatLng(spot.lat, spot.lng),
+              new google.maps.LatLng(place.location.lat(), place.location.lng())
+            ));
+            const distText = dist >= 1000 ? (dist/1000).toFixed(1) + ' km' : dist + ' m';
 
+            html += `
+              <div class="nearby-place">
+                <h4>${place.displayName}</h4>
+                <p>⭐ ${place.rating || 'N/A'} • ${distText} away</p>
+                <p><small>${place.formattedAddress || place.vicinity}</small></p>
+              </div>
+            `;
+          });
+        });
+
+        nearbyContainer.innerHTML = html;
+      } catch (err) {
+        console.error('Nearby search failed:', err);
+        nearbyContainer.innerHTML = `<p>❌ Failed: ${err.message}</p>`;
+      }
+    });
+  }
 });
