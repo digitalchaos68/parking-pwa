@@ -93,7 +93,15 @@
 
   <!-- Load QRCode.js first -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
   <!-- Load Google Maps JS API with Places Library -->
+  <script>
+    // Define onload function before loading the script
+    function onGoogleMapsLoaded() {
+      console.log('Google Maps API loaded');
+      window.isGoogleMapsLoaded = true;
+    }
+  </script>
   <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0iSWh-ke56m_qdHt1IWPnUb7r_Q40sII&libraries=places&loading=async"
     async
