@@ -518,7 +518,7 @@ if (nearbyBtn) {
       .catch(err => {
         console.error('Nearby search error:', err);
         nearbyContainer.innerHTML = '<p>❌ Failed: ${err.message}</p>';
-        nearbyContainer.innerHTML = '<p>Failed to load nearby places. Try again later.</p>';
+//        nearbyContainer.innerHTML = '<p>Failed to load nearby places. Try again later.</p>';
       });
   });
 }
