@@ -187,17 +187,20 @@ body.dark #voiceSelect {
 /* WhatsApp Input */
 #whatsappNumber {
   width: 100%;
-  padding: 10px;
+  padding: 14px 20px; /* Match button padding */
   margin-bottom: 8px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  font-size: 16px; /* Match button font size */
+  border: none; /* Remove default border */
+  border-radius: 8px; /* Match button border radius */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Match button shadow */
 }
 
 body.dark #whatsappNumber {
   background-color: #2d2d2d;
   color: #e0e0e0;
-  border-color: #555;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 /* Photo Preview */
