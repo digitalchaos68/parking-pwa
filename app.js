@@ -467,15 +467,15 @@ if (nearbyBtn) {
       // Dynamically import the places library
       const { Place } = await google.maps.importLibrary("places");
 
-      // ✅ Correct request with required fields
+      // ✅ Clean, valid request with minimal fields
       const request = {
-        textQuery: 'restaurants, shopping malls, cafes, supermarkets, gas stations near me',
+        textQuery: 'nearby restaurants, shopping malls, cafes, supermarkets, gas stations',
         locationBias: {
           center: { lat: spot.lat, lng: spot.lng },
           radius: 1000
         },
-        // ✅ Required: fields must be an array
-        fields: ['displayName', 'formattedAddress', 'location', 'rating', 'types', 'vicinity']
+        // ✅ Only use supported fields, as an array
+        fields: ['displayName', 'formattedAddress', 'location', 'rating', 'types']
       };
 
       const response = await Place.searchByText(request);
