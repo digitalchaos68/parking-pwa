@@ -136,7 +136,7 @@ button:disabled {
 #resetBtn       { background-color: #7f8c8d; color: white; }
 #supportBtn     { background-color: #f39c12; color: white; }
 
-/* Hover Effects */
+/* Hover Effects (Light Mode) */
 button:not(:disabled):hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
@@ -155,17 +155,17 @@ body.dark button {
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-/* Dark Mode Button Text Colors */
-body.dark #saveBtn        { color: #a8e6a1; }
-body.dark #findBtn        { color: #f5c287; }
-body.dark #shareBtn       { color: #f5a9a9; }
-body.dark #showQRBtn      { color: #a9cfeb; }
-body.dark #directionsBtn  { color: #d5b6e6; }
-body.dark #testVoiceBtn   { color: #a9d8f0; }
-body.dark #nearbyBtn      { color: #a8e6c1; }
-body.dark #sendWABtn      { color: #a8e6a1; }
-body.dark #resetBtn       { color: #c9cacb; }
-body.dark #supportBtn     { color: #f5d7a7; }
+/* Now override text color per button */
+body.dark #saveBtn        { color: #a8e6a1 !important; }
+body.dark #findBtn        { color: #f5c287 !important; }
+body.dark #shareBtn       { color: #f5a9a9 !important; }
+body.dark #showQRBtn      { color: #a9cfeb !important; }
+body.dark #directionsBtn  { color: #d5b6e6 !important; }
+body.dark #testVoiceBtn   { color: #a9d8f0 !important; }
+body.dark #nearbyBtn      { color: #a8e6c1 !important; }
+body.dark #sendWABtn      { color: #a8e6a1 !important; }
+body.dark #resetBtn       { color: #c9cacb !important; }
+body.dark #supportBtn     { color: #f5d7a7 !important; }
 
 /* Dark Mode Hover */
 body.dark button:not(:disabled):hover {
