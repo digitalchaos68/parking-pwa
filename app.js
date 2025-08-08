@@ -459,22 +459,18 @@ if (nearbyBtn) {
     nearbyContainer.style.display = 'block';
 
     try {
-      // Wait for Google Maps and Places to be fully loaded
       if (typeof google === 'undefined' || typeof google.maps === 'undefined') {
-        throw new Error('Google Maps is not loaded');
+        throw new Error('Google Maps not loaded');
       }
 
-      // Dynamically import the places library
       const { Place } = await google.maps.importLibrary("places");
 
-      // ✅ Clean, valid request with minimal fields
       const request = {
-        textQuery: 'nearby restaurants, shopping malls, cafes, supermarkets, gas stations',
+        textQuery: 'restaurants, shopping malls, cafes, supermarkets, gas stations near me',
         locationBias: {
           center: { lat: spot.lat, lng: spot.lng },
           radius: 1000
         },
-        // ✅ Only use supported fields, as an array
         fields: ['displayName', 'formattedAddress', 'location', 'rating', 'types']
       };
 
