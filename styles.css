@@ -168,20 +168,22 @@ body.dark button:not(:disabled):hover {
 /* Voice Select Dropdown */
 #voiceSelect {
   width: 100%;
-  padding: 10px;
+  padding: 14px 20px;
   margin-bottom: 8px;
   font-size: 16px;
-  border: 1px solid #ccc;
+  border: none;
   border-radius: 8px;
   background-color: white;
   color: #333;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 body.dark #voiceSelect {
   background-color: #2d2d2d;
   color: #e0e0e0;
-  border-color: #555;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 /* WhatsApp Input */
