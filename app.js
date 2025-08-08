@@ -467,13 +467,15 @@ if (nearbyBtn) {
       // Dynamically import the places library
       const { Place } = await google.maps.importLibrary("places");
 
-      // ✅ Use searchByText as a reliable fallback
+      // ✅ Correct request with required fields
       const request = {
-        textQuery: 'restaurants, shopping malls, cafes, supermarkets, gas stations',
+        textQuery: 'restaurants, shopping malls, cafes, supermarkets, gas stations near me',
         locationBias: {
           center: { lat: spot.lat, lng: spot.lng },
           radius: 1000
-        }
+        },
+        // ✅ Required: fields must be an array
+        fields: ['displayName', 'formattedAddress', 'location', 'rating', 'types', 'vicinity']
       };
 
       const response = await Place.searchByText(request);
@@ -483,7 +485,7 @@ if (nearbyBtn) {
         return;
       }
 
-      // Group by primary type
+      // Group by type
       const grouped = {};
       const typeLabels = {
         restaurant: '🍽️ Restaurants',
