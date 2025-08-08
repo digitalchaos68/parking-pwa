@@ -1,308 +1,69 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: #f4f7f9;
-  color: #333;
-  line-height: 1.6;
-}
-
-.hint {
-  font-size: 0.8em;
-  color: #666;
-  text-align: center;
-  margin: 5px 0;
-  font-style: italic;
-}
-
-.container {
-  max-width: 480px;
-  margin: 40px auto;
-  padding: 20px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  text-align: center;
-}
-
-h1 {
-  font-size: 1.8rem;
-  color: #2c7be5;
-  margin-bottom: 10px;
-}
-
-p {
-  color: #666;
-  margin-bottom: 20px;
-  font-size: 1rem;
-}
-
 /* General button styles */
 button {
   display: block;
   width: 100%;
-  padding: 10px;
-  margin-bottom: 5px;
+  padding: 14px 20px;
+  margin-bottom: 8px;
   font-size: 16px;
+  font-weight: 600;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  opacity: 0.8;
-  transform: translateY(-1px);
+  transition: all 0.3s ease;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Specific button styles */
-
-#saveBtn {
-  background-color: #2ecc71; /* Green for "Save My Parking Spot" */
-  color: white;
+/* Remove shadow on disabled */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
-#findBtn {
-  background-color: #ff9f43; /* Orange for "Find My Car" */
-  color: white;
-}
+/* Light Mode Colors */
+#saveBtn              { background-color: #27ae60; color: white; } /* Green */
+#findBtn              { background-color: #e67e22; color: white; } /* Orange */
+#shareBtn             { background-color: #c0392b; color: white; } /* Red */
+#showQRBtn            { background-color: #2980b9; color: white; } /* Blue */
+#directionsBtn        { background-color: #8e44ad; color: white; } /* Purple */
+#testVoiceBtn         { background-color: #34495e; color: white; } /* Dark Blue */
+#nearbyBtn            { background-color: #16a085; color: white; } /* Teal */
+#sendWABtn            { background-color: #27ae60; color: white; } /* Green */
+#resetBtn             { background-color: #7f8c8d; color: white; } /* Gray */
+#supportBtn           { background-color: #f39c12; color: white; } /* Orange */
 
-#directionsBtn {
-  background-color: #3498db; /* Blue for "Get Directions" */
-  color: white;
-}
-
-#shareBtn {
-  background-color: #e74c3c; /* Red for "Share My Spot" */
-  color: white;
-}
-
-#showQRBtn {
-  background-color: #27ae60; /* Teal (#27ae60) */
-  color: black;
-}
-
-#testVoiceBtn {
-  background-color: #8e44ad; /* Purple for "Test Voice" */
-  color: white;
-}
-
-/* Save Reminder Button */
-#sendWABtn {
-  background-color: #6c5ce7; /* Indigo */
-  color: white;
-}
-
-
-#status {
-  margin: 15px 0;
-  font-size: 0.9rem;
-  color: #d9534f;
-  min-height: 20px;
-}
-
-#map {
-  margin-top: 20px;
-  height: 200px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  display: none;
-  background: #f0f0f0;
-  position: relative;
-}
-
-#map iframe {
-  width: 100%;
-  height: 100%;
-  border-radius: 8px;
-}
-
-body {
-  transition: background 0.3s, color 0.3s;
-}
-
-
-body.dark {
-  background: #121212;
-  color: #e0e0e0;
-}
-
-body.dark .container {
-  background: #1e1e1e;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-}
-
+/* Dark Mode Overrides */
 body.dark button {
-  background: #6200ea;
+  background-color: #3a3a3a !important;
+  color: white !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-body.dark #saveBtn {
-  background-color: #27ae60; /* Darker green for dark mode */
-}
+/* Dark Mode: Specific Button Text Colors */
+body.dark #saveBtn       { color: #a8e6a1; }
+body.dark #findBtn       { color: #f5c287; }
+body.dark #shareBtn      { color: #f5a9a9; }
+body.dark #showQRBtn     { color: #a9cfeb; }
+body.dark #directionsBtn { color: #d5b6e6; }
+body.dark #testVoiceBtn  { color: #b8d8e8; }
+body.dark #nearbyBtn     { color: #a8e6c1; }
+body.dark #sendWABtn     { color: #a8e6a1; }
+body.dark #resetBtn      { color: #c9cacb; }
+body.dark #supportBtn    { color: #f5d7a7; }
 
-body.dark #findBtn {
-  background-color: #f39c12; /* Darker orange for dark mode */
-}
-
-body.dark #directionsBtn {
-  background-color: #3498db; /* Darker blue for dark mode */
-}
-
-body.dark #shareBtn {
-  background-color: #e74c3c; /* Darker red for dark mode */
-}
-
-body.dark #showQRBtn {
-  background-color: #2ecc71; /* Bright green — dark mode friendly */
-}
-
-body.dark #testVoiceBtn {
-  background-color: #9b59b6; /* Same purple for dark mode */
-}
-
-body.dark #sendWABtn {
-  background-color: #a29bfe; /* Light Lavender */
-  color: #2d3436; /* Dark text for contrast */
-}
-
-body.dark #status, body.dark p {
-  color: #bb86fc;
-}
-
-/* QR Code Container */
-#qrContainer {
-  display: none;
-  margin: 15px auto; /* Centers horizontally */
-  text-align: center; /* Centers content inside */
-  width: fit-content;
-  max-width: 100%;
-  padding: 10px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  border: 1px solid #eee;
-
-  /* Dark mode */
-  background: #1e1e1e;
-  color: white;
-}
-
-/* QR Code Wrapper */
-#qrcode-wrapper {
-  display: inline-block;
-  text-align: center;
-  margin: 0 auto; /* Centers horizontally */
-  padding: 10px;
-  background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* QR Code Canvas */
-#qrcode canvas {
-  display: block;
-  margin: 0 auto; /* Centers horizontally */
-  width: 128px !important;
-  height: 128px !important;
-}
-
-
-
-/* QR Code Text */
-#qrContainer p {
-  font-size: 0.9em;
-  color: #666;
-  margin-top: 8px;
-  text-align: center;
-}
-
-/* Align voiceSelect with button sizes */
-#voiceSelect {
-  width: 100%; /* Full width */
-  padding: 10px; /* Match button padding */
-  font-size: 16px; /* Match button font size */
-  border: none; /* Remove default border */
-  border-radius: 8px; /* Match button border radius */
-  background-color: #f5f5f5; /* Light gray background */
-  color: #333; /* Dark text color */
-}
-
-/* Optional: Hover effect */
-#voiceSelect:hover {
-  background-color: #e0e0e0; /* Slightly darker on hover */
-}
-
-#supportBtn {
-  background: #ff8f00; /* Buy Me a Coffee orange */
-  color: white;
-  font-weight: 600;
-  border: none;
-  padding: 10px;
-  margin: 20px auto 10px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 300px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-#supportBtn:hover {
-  background: #e67e00;
+/* Hover Effects (Light Mode) */
+button:not(:disabled):hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
-body.dark #supportBtn {
-  background: #f0932b;
-  color: white;
+/* Active Press Effect */
+button:not(:disabled):active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
-body.dark #supportBtn:hover {
-  background: #ffac2f;
-}
-
-#nearbyContainer {
-  background: #f9f9f9;
-  border-radius: 8px;
-  padding: 10px;
-  max-height: 300px;
-  overflow-y: auto;
-  font-size: 0.9em;
-  color: #333;
-}
-
-body.dark #nearbyContainer {
-  background: #2d2d2d;
-  color: #e0e0e0;
-}
-
-.nearby-place {
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
-}
-
-body.dark .nearby-place {
-  border-bottom: 1px solid #444;
-}
-
-.nearby-place:last-child {
-  border-bottom: none;
-}
-
-.nearby-place h4 {
-  margin: 0 0 4px 0;
-  font-size: 1rem;
-}
-
-.nearby-place p {
-  margin: 2px 0;
-  color: #666;
-}
-
-body.dark .nearby-place p {
-  color: #bbb;
+/* Dark Mode Hover */
+body.dark button:not(:disabled):hover {
+  background-color: #4a4a4a !important;
 }
