@@ -448,6 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
+
 // 🔍 Nearby Places Button
 if (nearbyBtn) {
   nearbyBtn.addEventListener('click', async () => {
@@ -465,43 +466,50 @@ if (nearbyBtn) {
 
       const { Place } = await google.maps.importLibrary("places");
 
-      const request = {
-        textQuery: 'restaurants, shopping malls, cafes, supermarkets, parks, carparks, gas stations near me',
-        locationBias: {
-          center: { lat: spot.lat, lng: spot.lng },
-          radius: 1000
-        },
-        fields: ['displayName', 'formattedAddress', 'location', 'rating', 'types']
+      // ✅ Define types to search
+      const typeQueries = {
+        restaurant: '🍽️ Restaurants',
+        cafe: '☕ Cafes',
+        supermarket: '🛒 Supermarkets',
+        shopping_mall: '🛍️ Shopping Malls',
+        park: '🌳 Parks',
+        parking: '🅿️ Carparks',
+        gas_station: '⛽ Gas Stations'
       };
 
-      const response = await Place.searchByText(request);
+      let allResults = {};
 
-      if (!response || !response.places || response.places.length === 0) {
+      // ✅ Search each type individually
+      for (const [type, label] of Object.entries(typeQueries)) {
+        const request = {
+          textQuery: `${type} near me`,
+          locationBias: {
+            center: { lat: spot.lat, lng: spot.lng },
+            radius: 1000
+          },
+          fields: ['displayName', 'formattedAddress', 'location', 'rating', 'types']
+        };
+
+        try {
+          const response = await Place.searchByText(request);
+          if (response?.places?.length > 0) {
+            allResults[label] = response.places.slice(0, 3); // Top 3 per type
+          }
+        } catch (err) {
+          console.warn(`Search for ${type} failed:`, err);
+        }
+      }
+
+      // ✅ Render results
+      if (Object.keys(allResults).length === 0) {
         nearbyContainer.innerHTML = '<p>No nearby places found.</p>';
         return;
       }
 
-      // Group by type
-      const grouped = {};
-      const typeLabels = {
-        restaurant: '🍽️ Restaurants',
-        shopping_mall: '🛍️ Shopping Malls',
-        cafe: '☕ Cafes',
-        supermarket: '🛒 Supermarkets',
-        gas_station: '⛽ Gas Stations'
-      };
-
-      response.places.forEach(place => {
-        const type = place.types.find(t => Object.keys(typeLabels).includes(t));
-        if (type && !grouped[type]) grouped[type] = [];
-        if (type) grouped[type].push(place);
-      });
-
       let html = '';
-
-      Object.keys(grouped).forEach(type => {
-        html += `<h3 style="margin:15px 0 8px 0; color:#2c7be5;">${typeLabels[type]}</h3>`;
-        grouped[type].slice(0, 5).forEach(place => {
+      for (const [label, places] of Object.entries(allResults)) {
+        html += `<h3 style="margin:15px 0 8px 0; color:#2c7be5;">${label}</h3>`;
+        places.forEach(place => {
           const dist = Math.round(google.maps.geometry.spherical.computeDistanceBetween(
             new google.maps.LatLng(spot.lat, spot.lng),
             new google.maps.LatLng(place.location.lat(), place.location.lng())
@@ -516,7 +524,7 @@ if (nearbyBtn) {
             </div>
           `;
         });
-      });
+      }
 
       nearbyContainer.innerHTML = html;
     } catch (err) {
