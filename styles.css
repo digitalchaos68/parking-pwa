@@ -50,7 +50,7 @@ p {
 }
 
 body.dark p {
-  color: #ccc;
+  color: #aaa;
 }
 
 /* Hint Text */
@@ -63,7 +63,7 @@ body.dark p {
 }
 
 body.dark .hint {
-  color: #aaa;
+  color: #ccc;
 }
 
 /* Status & Timer */
@@ -299,29 +299,32 @@ body.dark .nearby-place {
 
 /* Support Button */
 #supportBtn {
-  background: #ff8f00;
-  color: white;
+  display: block;
+  width: 100%;
+  padding: 14px 20px;
+  margin-bottom: 8px;
+  font-size: 16px;
   font-weight: 600;
   border: none;
-  padding: 14px 20px;
-  margin: 20px auto 10px;
   border-radius: 8px;
-  width: 90%;
-  max-width: 300px;
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background-color: #f39c12;
+  color: white;
+}
+
+body.dark #supportBtn {
+  background-color: #f5d7a7;
+  color: black;
 }
 
 #supportBtn:hover {
-  background: #e67e00;
+  background-color: #e67e20;
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
-body.dark #supportBtn {
-  background: #f0932b;
-}
-
 body.dark #supportBtn:hover {
-  background: #ffac2f;
+  background-color: #f5d7a7;
 }
