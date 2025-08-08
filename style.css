@@ -1,3 +1,33 @@
+/* TEST: Should see red background */
+body {
+  background: white;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #333;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 480px;
+  margin: 40px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+h1 {
+  font-size: 1.8rem;
+  color: #2c7be5;
+  margin-bottom: 10px;
+}
+
+p {
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 1rem;
+}
+
 /* General button styles */
 button {
   display: block;
@@ -13,7 +43,6 @@ button {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Disabled state */
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -21,25 +50,39 @@ button:disabled {
 }
 
 /* Light Mode Colors */
-#saveBtn        { background-color: #27ae60; color: white; } /* Green */
-#findBtn        { background-color: #e67e22; color: white; } /* Orange */
-#shareBtn       { background-color: #c0392b; color: white; } /* Red */
-#showQRBtn      { background-color: #2980b9; color: white; } /* Blue */
-#directionsBtn  { background-color: #8e44ad; color: white; } /* Purple */
-#testVoiceBtn   { background-color: #3498db; color: white; } /* Blue */
-#nearbyBtn      { background-color: #16a085; color: white; } /* Teal */
-#sendWABtn      { background-color: #27ae60; color: white; } /* Green */
-#resetBtn       { background-color: #7f8c8d; color: white; } /* Gray */
-#supportBtn     { background-color: #f39c12; color: white; } /* Orange */
+#saveBtn        { background-color: #27ae60; color: white; }
+#findBtn        { background-color: #e67e22; color: white; }
+#shareBtn       { background-color: #c0392b; color: white; }
+#showQRBtn      { background-color: #2980b9; color: white; }
+#directionsBtn  { background-color: #8e44ad; color: white; }
+#testVoiceBtn   { background-color: #3498db; color: white; }
+#nearbyBtn      { background-color: #16a085; color: white; }
+#sendWABtn      { background-color: #27ae60; color: white; }
+#resetBtn       { background-color: #7f8c8d; color: white; }
+#supportBtn     { background-color: #f39c12; color: white; }
 
 /* Dark Mode Overrides */
+body.dark {
+  background: #1a1a1a !important;
+  color: #e0e0e0;
+}
+
+body.dark .container {
+  background: #2d2d2d;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+body.dark h1 {
+  color: #4dabf7;
+}
+
 body.dark button {
   background-color: #3a3a3a !important;
   color: white !important;
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-/* Dark Mode: Enhanced Text Colors for Readability */
+/* Dark Mode Text Colors */
 body.dark #saveBtn        { color: #a8e6a1; }
 body.dark #findBtn        { color: #f5c287; }
 body.dark #shareBtn       { color: #f5a9a9; }
@@ -57,13 +100,20 @@ button:not(:disabled):hover {
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
+body.dark button:not(:disabled):hover {
+  background-color: #4a4a4a !important;
+}
+
 /* Active Press Effect */
 button:not(:disabled):active {
   transform: translateY(0);
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
-/* Dark Mode Hover */
-body.dark button:not(:disabled):hover {
-  background-color: #4a4a4a !important;
+.hint {
+  font-size: 0.8em;
+  color: #666;
+  text-align: center;
+  margin: 5px 0;
+  font-style: italic;
 }
