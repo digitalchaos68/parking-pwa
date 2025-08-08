@@ -1,4 +1,101 @@
-/* General button styles */
+/* Base Styles */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f4f7f9;
+  color: #333;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Dark Mode Base */
+body.dark {
+  background: #121212;
+  color: #e0e0e0;
+}
+
+/* Container */
+.container {
+  max-width: 480px;
+  margin: 40px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+body.dark .container {
+  background: #1e1e1e;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Headings */
+h1 {
+  font-size: 1.8rem;
+  color: #2c7be5;
+  margin-bottom: 10px;
+}
+
+body.dark h1 {
+  color: #4dabf7;
+}
+
+/* Paragraphs */
+p {
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 1rem;
+}
+
+body.dark p {
+  color: #ccc;
+}
+
+/* Hint Text */
+.hint {
+  font-size: 0.8em;
+  color: #666;
+  text-align: center;
+  margin: 5px 0;
+  font-style: italic;
+}
+
+body.dark .hint {
+  color: #aaa;
+}
+
+/* Status & Timer */
+#status, #timer {
+  margin: 15px 0;
+  font-size: 0.9rem;
+  min-height: 20px;
+  color: #d9534f;
+}
+
+body.dark #status, body.dark #timer {
+  color: #ff8f00;
+}
+
+/* Map */
+#map {
+  margin-top: 20px;
+  height: 200px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  display: none;
+  background: #f0f0f0;
+}
+
+#map iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 8px;
+}
+
+/* General Button Styles */
 button {
   display: block;
   width: 100%;
@@ -13,7 +110,14 @@ button {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Light Mode Colors */
+/* Disabled State */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Light Mode Button Colors */
 #saveBtn        { background-color: #27ae60; color: white; }
 #findBtn        { background-color: #e67e22; color: white; }
 #shareBtn       { background-color: #c0392b; color: white; }
@@ -25,14 +129,14 @@ button {
 #resetBtn       { background-color: #7f8c8d; color: white; }
 #supportBtn     { background-color: #f39c12; color: white; }
 
-/* Dark Mode Overrides */
+/* Dark Mode Button Overrides */
 body.dark button {
   background-color: #3a3a3a !important;
   color: white !important;
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-/* Dark Mode Text Colors */
+/* Dark Mode Button Text Colors */
 body.dark #saveBtn        { color: #a8e6a1; }
 body.dark #findBtn        { color: #f5c287; }
 body.dark #shareBtn       { color: #f5a9a9; }
@@ -60,26 +164,55 @@ button:not(:disabled):active {
 body.dark button:not(:disabled):hover {
   background-color: #4a4a4a !important;
 }
-.voice-section, .whatsapp-section {
-  display: flex;
-  align-items: center;
+
+/* Voice Select Dropdown */
+#voiceSelect {
+  width: 100%;
+  padding: 10px;
   margin-bottom: 8px;
-  flex-grow: 1;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: white;
+  color: #333;
+  cursor: pointer;
 }
 
-.voice-section label, .whatsapp-section label {
-  margin-right: 10px;
+body.dark #voiceSelect {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+  border-color: #555;
 }
 
-.whatsapp-section input {
-  flex-grow: 1;
+/* WhatsApp Input */
+#whatsappNumber {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+body.dark #whatsappNumber {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+  border-color: #555;
+}
+
+/* Photo Preview */
+#photoPreview {
+  margin: 10px 0;
+}
+
+#photoImg {
+  width: 100%;
+  border-radius: 8px;
 }
 
 /* QR Code Container */
 #qrContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: none;
   margin: 15px auto;
   text-align: center;
   width: fit-content;
@@ -87,13 +220,22 @@ body.dark button:not(:disabled):hover {
   padding: 10px;
   background: #f9f9f9;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #eee;
+}
+
+body.dark #qrContainer {
+  background: #2d2d2d;
+  border-color: #444;
 }
 
 /* QR Code Wrapper */
 #qrcode-wrapper {
   display: inline-block;
   text-align: center;
+  padding: 10px;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* QR Code Canvas */
@@ -109,5 +251,77 @@ body.dark button:not(:disabled):hover {
   font-size: 0.9em;
   color: #666;
   margin-top: 8px;
-  text-align: center;
+}
+
+body.dark #qrContainer p {
+  color: #aaa;
+}
+
+/* Nearby Places Container */
+#nearbyContainer {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  font-size: 0.9em;
+  color: #333;
+  text-align: left;
+}
+
+body.dark #nearbyContainer {
+  background: #2d2d2d;
+  color: #e0e0e0;
+}
+
+.nearby-place {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+body.dark .nearby-place {
+  border-bottom: 1px solid #444;
+}
+
+.nearby-place:last-child {
+  border-bottom: none;
+}
+
+.nearby-place h4 {
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+}
+
+.nearby-place p {
+  margin: 2px 0;
+  font-size: 0.9em;
+}
+
+/* Support Button */
+#supportBtn {
+  background: #ff8f00;
+  color: white;
+  font-weight: 600;
+  border: none;
+  padding: 14px 20px;
+  margin: 20px auto 10px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 300px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#supportBtn:hover {
+  background: #e67e00;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+body.dark #supportBtn {
+  background: #f0932b;
+}
+
+body.dark #supportBtn:hover {
+  background: #ffac2f;
 }
