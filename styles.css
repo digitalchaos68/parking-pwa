@@ -166,7 +166,7 @@ body.dark #testVoiceBtn   { color: #a9d8f0 !important; }
 body.dark #nearbyBtn      { color: #a8e6c1 !important; }
 body.dark #sendWABtn      { color: #a8e6a1 !important; }
 body.dark #resetBtn       { color: #c9cacb !important; }
-body.dark #supportBtn     { color: #f5d7a7 !important; } 
+/* body.dark #supportBtn     { color: #f5d7a7 !important; }  */
 
 /* Dark Mode: Change text color to black */
 body.dark #supportBtn {
