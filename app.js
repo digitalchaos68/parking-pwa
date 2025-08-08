@@ -466,7 +466,7 @@ if (nearbyBtn) {
       const { Place } = await google.maps.importLibrary("places");
 
       const request = {
-        textQuery: 'restaurants, shopping malls, cafes, supermarkets, gas stations near me',
+        textQuery: 'restaurants, shopping malls, cafes, supermarkets, parks, carparks, gas stations near me',
         locationBias: {
           center: { lat: spot.lat, lng: spot.lng },
           radius: 1000
