@@ -44,43 +44,19 @@ body.dark #sendWABtn      { color: #a8e6a1; }
 body.dark #resetBtn       { color: #c9cacb; }
 body.dark #supportBtn     { color: #f5d7a7; }
 
-/* Voice Dropdown Styling */
-select {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 8px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-label[for="voiceSelect"] {
-  display: block;
-  margin-bottom: 5px;
-  font-size: 16px;
-  font-weight: 600;
-}
-
 /* Hover Effects */
-button:not(:disabled):hover,
-select:hover {
+button:not(:disabled):hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
 /* Active Press Effect */
-button:not(:disabled):active,
-select:active {
+button:not(:disabled):active {
   transform: translateY(0);
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 /* Dark Mode Hover */
-body.dark button:not(:disabled):hover,
-body.dark select:hover {
+body.dark button:not(:disabled):hover {
   background-color: #4a4a4a !important;
 }
