@@ -171,7 +171,7 @@ body.dark #supportBtn     { color: #f5d7a7 !important; }
 /* Dark Mode: Change text color to black */
 body.dark #supportBtn {
   background-color: #f5d7a7; /* Lighter orange for dark mode */
-  color: black; /* Ensure text is black in dark mode */
+  color: #f39c12; /* Ensure text is black in dark mode */
 }
 /* Dark Mode Hover */
 body.dark button:not(:disabled):hover {
