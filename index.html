@@ -76,10 +76,16 @@
     <div id="nearbyContainer" style="display:none; margin:15px 0; text-align:left;"></div>
 
     <button id="testVoiceBtn" class="shared-hide">🔊 Test Voice</button>
-    <label for="voiceSelect" class="shared-hide">🗣️ Voice:</label>
-    <select id="voiceSelect" class="shared-hide"></select>
-    <label for="whatsappNumber" class="shared-hide">📱 WhatsApp Number:</label>
-    <input type="tel" id="whatsappNumber" class="shared-hide" placeholder="+1234567890" />
+
+    <div class="voice-section">
+      <label for="voiceSelect">Voice:</label>
+      <select id="voiceSelect"></select>
+    </div>
+    <div class="whatsapp-section">
+      <label for="whatsappNumber">WhatsApp Number:</label>
+      <input type="tel" id="whatsappNumber" placeholder="+1234567890" />
+    </div>
+
     <button id="sendWABtn" disabled class="shared-hide">💬 Save Reminder in WhatsApp</button>
     <button id="resetBtn" class="shared-hide">🗑️ Reset Parking Spot</button>
     <button id="supportBtn" class="shared-hide">☕ Support This App</button>
