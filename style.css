@@ -13,7 +13,7 @@ button {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Remove shadow on disabled */
+/* Disabled state */
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -21,16 +21,16 @@ button:disabled {
 }
 
 /* Light Mode Colors */
-#saveBtn              { background-color: #27ae60; color: white; } /* Green */
-#findBtn              { background-color: #e67e22; color: white; } /* Orange */
-#shareBtn             { background-color: #c0392b; color: white; } /* Red */
-#showQRBtn            { background-color: #2980b9; color: white; } /* Blue */
-#directionsBtn        { background-color: #8e44ad; color: white; } /* Purple */
-#testVoiceBtn         { background-color: #34495e; color: white; } /* Dark Blue */
-#nearbyBtn            { background-color: #16a085; color: white; } /* Teal */
-#sendWABtn            { background-color: #27ae60; color: white; } /* Green */
-#resetBtn             { background-color: #7f8c8d; color: white; } /* Gray */
-#supportBtn           { background-color: #f39c12; color: white; } /* Orange */
+#saveBtn        { background-color: #27ae60; color: white; } /* Green */
+#findBtn        { background-color: #e67e22; color: white; } /* Orange */
+#shareBtn       { background-color: #c0392b; color: white; } /* Red */
+#showQRBtn      { background-color: #2980b9; color: white; } /* Blue */
+#directionsBtn  { background-color: #8e44ad; color: white; } /* Purple */
+#testVoiceBtn   { background-color: #3498db; color: white; } /* Blue */
+#nearbyBtn      { background-color: #16a085; color: white; } /* Teal */
+#sendWABtn      { background-color: #27ae60; color: white; } /* Green */
+#resetBtn       { background-color: #7f8c8d; color: white; } /* Gray */
+#supportBtn     { background-color: #f39c12; color: white; } /* Orange */
 
 /* Dark Mode Overrides */
 body.dark button {
@@ -39,19 +39,19 @@ body.dark button {
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-/* Dark Mode: Specific Button Text Colors */
-body.dark #saveBtn       { color: #a8e6a1; }
-body.dark #findBtn       { color: #f5c287; }
-body.dark #shareBtn      { color: #f5a9a9; }
-body.dark #showQRBtn     { color: #a9cfeb; }
-body.dark #directionsBtn { color: #d5b6e6; }
-body.dark #testVoiceBtn  { color: #b8d8e8; }
-body.dark #nearbyBtn     { color: #a8e6c1; }
-body.dark #sendWABtn     { color: #a8e6a1; }
-body.dark #resetBtn      { color: #c9cacb; }
-body.dark #supportBtn    { color: #f5d7a7; }
+/* Dark Mode: Enhanced Text Colors for Readability */
+body.dark #saveBtn        { color: #a8e6a1; }
+body.dark #findBtn        { color: #f5c287; }
+body.dark #shareBtn       { color: #f5a9a9; }
+body.dark #showQRBtn      { color: #a9cfeb; }
+body.dark #directionsBtn  { color: #d5b6e6; }
+body.dark #testVoiceBtn   { color: #a9d8f0; }
+body.dark #nearbyBtn      { color: #a8e6c1; }
+body.dark #sendWABtn      { color: #a8e6a1; }
+body.dark #resetBtn       { color: #c9cacb; }
+body.dark #supportBtn     { color: #f5d7a7; }
 
-/* Hover Effects (Light Mode) */
+/* Hover Effects */
 button:not(:disabled):hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
