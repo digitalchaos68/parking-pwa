@@ -420,32 +420,48 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  if (resetBtn) {
-    resetBtn.addEventListener('click', () => {
-      if (!confirm('Are you sure you want to reset your parking spot?')) {
-        return;
-      }
-      trackEvent('click', 'Feature', 'Reset Parking Spot');
-      localStorage.removeItem('parkingSpot');
-      localStorage.removeItem('parkingPhoto');
-      findBtn.disabled = true;
-      shareBtn.disabled = true;
-      showQRBtn.disabled = true;
-      testVoiceBtn.disabled = true;
-      directionsBtn.disabled = true;
-      sendWABtn.disabled = true;
-      resetBtn.disabled = true;
-      nearbyBtn.disabled = true;
-      photoPreview.style.display = 'none';
-      photoImg.src = '';
-      mapDiv.style.display = 'none';
-      mapDiv.innerHTML = '';
-      qrContainer.style.display = 'none';
-      qrContainer.querySelector('#qrcode').innerHTML = '';
-      status.textContent = 'Parking spot reset.';
-      if (timer) timer.textContent = '';
-    });
-  }
+if (resetBtn) {
+  resetBtn.addEventListener('click', () => {
+    if (!confirm('Are you sure you want to reset your parking spot?')) {
+      return;
+    }
+    trackEvent('click', 'Feature', 'Reset Parking Spot');
+
+    // Clear data
+    localStorage.removeItem('parkingSpot');
+    localStorage.removeItem('parkingPhoto');
+
+    // Reset UI
+    findBtn.disabled = true;
+    shareBtn.disabled = true;
+    showQRBtn.disabled = true;
+    testVoiceBtn.disabled = true;
+    directionsBtn.disabled = true;
+    sendWABtn.disabled = true;
+    resetBtn.disabled = true;
+    nearbyBtn.disabled = true; // Disable nearby button too
+
+    // Hide and clear photo preview
+    photoPreview.style.display = 'none';
+    photoImg.src = '';
+
+    // Hide and clear map
+    mapDiv.style.display = 'none';
+    mapDiv.innerHTML = '';
+
+    // Hide and clear QR code
+    qrContainer.style.display = 'none';
+    qrContainer.querySelector('#qrcode').innerHTML = '';
+
+    // ✅ Hide and clear nearby places
+    nearbyContainer.style.display = 'none';
+    nearbyContainer.innerHTML = '';
+
+    // Update status
+    status.textContent = 'Parking spot reset.';
+    if (timer) timer.textContent = '';
+  });
+}
 
 
 
