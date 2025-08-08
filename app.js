@@ -47,21 +47,28 @@ document.addEventListener('DOMContentLoaded', () => {
     mapDiv.innerHTML = `<iframe frameborder="0" style="border:0" src="${mapUrl}" allowfullscreen></iframe>`;
   }
 
-  // ✅ Theme Toggle
-  let isDark = false;
-  if (localStorage.getItem('darkMode') === 'true') {
-    document.body.classList.add('dark');
-    themeToggle.textContent = '☀️ Light Mode';
-    isDark = true;
-  }
+
+// ✅ Theme Toggle
+let isDark = false;
+
+// Check localStorage
+if (localStorage.getItem('darkMode') === 'true') {
+  document.body.classList.add('dark');
+  if (themeToggle) themeToggle.textContent = '☀️ Light Mode';
+  isDark = true;
+}
+
+if (themeToggle) {
   themeToggle.addEventListener('click', () => {
     isDark = !isDark;
     document.body.classList.toggle('dark', isDark);
     themeToggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
     localStorage.setItem('darkMode', isDark);
-    trackEvent('click', 'UI', 'Toggle Dark Mode');
+    console.log('Dark mode:', isDark);
   });
-
+}
+  
+ 
   // ✅ Get URL parameters
   const params = new URLSearchParams(window.location.search);
 
