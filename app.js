@@ -205,21 +205,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // —————————————————————————————
 
   if (photoInput) {
-    photoInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const dataUrl = event.target.result;
-          photoImg.src = dataUrl;
-          photoPreview.style.display = 'block';
-          localStorage.setItem('parkingPhoto', dataUrl);
-          console.log('Photo uploaded and saved');
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-  }
+  photoInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // ✅ Use blob URL instead of data URL
+      const blobUrl = URL.createObjectURL(file);
+      photoImg.src = blobUrl;
+      photoPreview.style.display = 'block';
+
+      // Store blob URL in localStorage (note: blobs are not persistent after page reload)
+      localStorage.setItem('parkingPhoto', blobUrl);
+      localStorage.setItem('parkingPhotoFile', file.name); // Optional: track filename
+    }
+  });
+}
 
   if (saveBtn) {
     saveBtn.addEventListener('click', () => {
