@@ -64,6 +64,7 @@ body.dark button:not(:disabled):hover {
   display: flex;
   align-items: center;
   margin-bottom: 8px;
+  flex-grow: 1;
 }
 
 .voice-section label, .whatsapp-section label {
@@ -72,4 +73,41 @@ body.dark button:not(:disabled):hover {
 
 .whatsapp-section input {
   flex-grow: 1;
+}
+
+/* QR Code Container */
+#qrContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 15px auto;
+  text-align: center;
+  width: fit-content;
+  max-width: 100%;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* QR Code Wrapper */
+#qrcode-wrapper {
+  display: inline-block;
+  text-align: center;
+}
+
+/* QR Code Canvas */
+#qrcode canvas {
+  display: block;
+  margin: 0 auto;
+  width: 128px !important;
+  height: 128px !important;
+}
+
+/* QR Code Text */
+#qrContainer p {
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 8px;
+  text-align: center;
 }
