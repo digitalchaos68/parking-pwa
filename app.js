@@ -106,7 +106,7 @@ async function searchNearbyPhoton(lat, lng) {
     'shopping_mall',
     'park',
     'parking',  // ✅ Correct key
-    'fuel'
+    'gas station'
   ];
 
   const results = {};
