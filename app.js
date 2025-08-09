@@ -106,7 +106,7 @@ async function searchNearbyPhoton(lat, lng) {
     'shopping_mall',
     'park',
     'parking',  // ✅ Correct key
-    'gas_station'
+    'gas station'
   ];
 
   const results = {};
@@ -140,7 +140,7 @@ function displayNearbyResults(results, spot) {
     shopping_mall: '🛍️ Shopping Malls',
     park: '🌳 Parks',
     parking: '🅿️ Carparks',    // ✅ Matches 'parking'
-    gas_station: '⛽ Gas Stations'
+    gas station: '⛽ Gas Stations'
   };
 
   for (const [type, places] of Object.entries(results)) {
