@@ -217,33 +217,32 @@ async function searchNearbyPhoton(lat, lng) {
   // 📍 Save My Parking Spot
   if (saveBtn) {
     saveBtn.addEventListener('click', () => {
-      navigator.geolocation.getCurrentPosition(async (position) => {
-        const { latitude: lat, longitude: lng } = position;
-        const time = new Date().toISOString();
+      navigator.geolocation.getCurrentPosition((position) => {
+  const lat = position.coords.latitude;
+  const lng = position.coords.longitude;
 
-        // Reverse geocode
-        const locationName = await reverseGeocode(lat, lng);
+  if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
+    status.textContent = '❌ Invalid location received';
+    return;
+  }
 
-        // Save to localStorage
-        const spot = { lat, lng, time, locationName };
-        localStorage.setItem('parkingSpot', JSON.stringify(spot));
+  // Save spot
+  const spot = { lat, lng, time: new Date().toISOString() };
+  localStorage.setItem('parkingSpot', JSON.stringify(spot));
 
-        // Update UI
-        updateMap(lat, lng);
-        status.textContent = `✅ Parking saved: ${locationName}`;
-        if (timer) timer.textContent = '';
-        findBtn.disabled = false;
-        shareBtn.disabled = false;
-        showQRBtn.disabled = false;
-        directionsBtn.disabled = false;
-        nearbyBtn.disabled = false;
-        resetBtn.disabled = false;
-        sendWABtn.disabled = false;
+  // Update UI
+  updateMap(lat, lng);
+  findBtn.disabled = false;
+  shareBtn.disabled = false;
+  showQRBtn.disabled = false;
+  directionsBtn.disabled = false;
+  nearbyBtn.disabled = false;
+  resetBtn.disabled = false;
+  sendWABtn.disabled = false;
 
-        trackEvent('click', 'Action', 'Save Parking Spot');
-      }, (err) => {
-        status.textContent = `❌ Error: ${err.message}`;
-      }, { enableHighAccuracy: true });
+  status.textContent = '✅ Parking saved!';
+  if (timer) timer.textContent = '';
+});
     });
   }
 
