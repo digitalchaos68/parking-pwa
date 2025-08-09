@@ -40,32 +40,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ✅ Update the map using Google Maps Embed
-  // function updateMap(lat, lng) {
-  // console.log('Updating map:', { lat, lng });
-  //  const mapUrl = `https://www.google.com/maps/embed/v1/view?key=AIzaSyD0iSWh-ke56m_qdHt1IWPnUb7r_Q40sII&center=${lat},${lng}&zoom=18`;
-  //  mapDiv.style.display = 'block';
-  //  mapDiv.innerHTML = `<iframe frameborder="0" style="border:0" src="${mapUrl}" allowfullscreen></iframe>`;
-  // }
-// ✅ Initialize Leaflet map
-let leafletMap;
-
-function updateMap(lat, lng) {
-  mapDiv.style.display = 'block';
-
-  // Create map if not already created
-  if (!leafletMap) {
-    leafletMap = L.map('map').setView([lat, lng], 18);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(leafletMap);
-  } else {
-    leafletMap.setView([lat, lng], 18);
+  function updateMap(lat, lng) {
+    console.log('Updating map:', { lat, lng });
+    const mapUrl = `https://www.google.com/maps/embed/v1/view?key=AIzaSyD0iSWh-ke56m_qdHt1IWPnUb7r_Q40sII&center=${lat},${lng}&zoom=18`;
+    mapDiv.style.display = 'block';
+    mapDiv.innerHTML = `<iframe frameborder="0" style="border:0" src="${mapUrl}" allowfullscreen></iframe>`;
   }
-
-  // Add/refresh marker
-  if (leafletMap._marker) leafletMap.removeLayer(leafletMap._marker);
-  leafletMap._marker = L.marker([lat, lng]).addTo(leafletMap);
-}
 
 
 // ✅ Theme Toggle
@@ -118,18 +98,6 @@ if (themeToggle) {
 
   // ✅ Restore saved spot
   if (savedSpot) {
-
-// Add this inside the "Restore saved spot" block
-if (savedSpot && !params.has('lat')) {  // Only in owner view
-  const spot = JSON.parse(savedSpot);
-  const googleMapsBtn = document.createElement('button');
-  googleMapsBtn.textContent = '🌐 View in Google Maps';
-  googleMapsBtn.onclick = () => {
-    window.open(`https://www.google.com/maps?q=${spot.lat},${spot.lng}`, '_blank');
-  };
-  document.querySelector('.container').appendChild(googleMapsBtn);
-}
-    
     try {
       const spot = JSON.parse(savedSpot);
       findBtn.disabled = false;
@@ -506,95 +474,85 @@ if (resetBtn) {
 // 🔍 Nearby Places Button
 if (nearbyBtn) {
   nearbyBtn.addEventListener('click', async () => {
+    trackEvent('click', 'Feature', 'Nearby Places');
     const spot = JSON.parse(localStorage.getItem('parkingSpot'));
     if (!spot) return;
 
-    nearbyContainer.innerHTML = '<p>🔍 Searching for nearby places...</p>';
+    nearbyContainer.innerHTML = '<p>Searching for nearby places...</p>';
     nearbyContainer.style.display = 'block';
 
     try {
-      const results = await searchNearbyPhoton(spot.lat, spot.lng);
-      displayNearbyResults(results, spot);
+      if (typeof google === 'undefined' || typeof google.maps === 'undefined') {
+        throw new Error('Google Maps not loaded');
+      }
+
+      const { Place } = await google.maps.importLibrary("places");
+
+      // ✅ Define types to search
+      const typeQueries = {
+        restaurant: '🍽️ Restaurants',
+        cafe: '☕ Cafes',
+        supermarket: '🛒 Supermarkets',
+        shopping_mall: '🛍️ Shopping Malls',
+        park: '🌳 Parks',
+        parking: '🅿️ Carparks',
+        gas_station: '⛽ Gas Stations'
+      };
+
+      let allResults = {};
+
+      // ✅ Search each type individually
+      for (const [type, label] of Object.entries(typeQueries)) {
+        const request = {
+          textQuery: `${type} near me`,
+          locationBias: {
+            center: { lat: spot.lat, lng: spot.lng },
+            radius: 1000
+          },
+          fields: ['displayName', 'formattedAddress', 'location', 'rating', 'types']
+        };
+
+        try {
+          const response = await Place.searchByText(request);
+          if (response?.places?.length > 0) {
+            allResults[label] = response.places.slice(0, 3); // Top 3 per type
+          }
+        } catch (err) {
+          console.warn(`Search for ${type} failed:`, err);
+        }
+      }
+
+      // ✅ Render results
+      if (Object.keys(allResults).length === 0) {
+        nearbyContainer.innerHTML = '<p>No nearby places found.</p>';
+        return;
+      }
+
+      let html = '';
+      for (const [label, places] of Object.entries(allResults)) {
+        html += `<h3 style="margin:15px 0 8px 0; color:#2c7be5;">${label}</h3>`;
+        places.forEach(place => {
+          const dist = Math.round(google.maps.geometry.spherical.computeDistanceBetween(
+            new google.maps.LatLng(spot.lat, spot.lng),
+            new google.maps.LatLng(place.location.lat(), place.location.lng())
+          ));
+          const distText = dist >= 1000 ? (dist/1000).toFixed(1) + ' km' : dist + ' m';
+
+          html += `
+            <div class="nearby-place">
+              <h4>${place.displayName}</h4>
+              <p>⭐ ${place.rating || 'N/A'} • ${distText} away</p>
+              <p><small>${place.formattedAddress || place.vicinity}</small></p>
+            </div>
+          `;
+        });
+      }
+
+      nearbyContainer.innerHTML = html;
     } catch (err) {
       console.error('Nearby search failed:', err);
       nearbyContainer.innerHTML = `<p>❌ Failed: ${err.message}</p>`;
     }
   });
 }
-
-// ✅ Search using Photon (OpenStreetMap)
-async function searchNearbyPhoton(lat, lng) {
-  const radius = 1000; // 1km
-  const types = ['restaurant', 'cafe', 'supermarket', 'shopping_mall', 'park', 'parking', 'fuel'];
-  const results = {};
-
-  for (const type of types) {
-    const url = `https://photon.komoot.io/api/?lat=${lat}&lon=${lng}&radius=${radius}&q=${type}&limit=5`;
-    const response = await fetch(url);
-    const data = await response.json();
-    results[type] = data.features || [];
-  }
-
-  return results;
-}
-
-// ✅ Display results
-function displayNearbyResults(results, spot) {
-  let html = '';
-
-  const labels = {
-    restaurant: '🍽️ Restaurants',
-    cafe: '☕ Cafes',
-    supermarket: '🛒 Supermarkets',
-    shopping_mall: '🛍️ Shopping Malls',
-    park: '🌳 Parks',
-    parking: '🅿️ Carparks',
-    fuel: '⛽ Gas Stations'
-  };
-
-  for (const [type, places] of Object.entries(results)) {
-    if (places.length === 0) continue;
-    html += `<h3 style="margin:15px 0 8px 0; color:#2c7be5;">${labels[type]}</h3>`;
-    places.slice(0, 5).forEach(place => {
-      const dist = computeDistance(spot.lat, spot.lng, place.geometry.coordinates[1], place.geometry.coordinates[0]);
-      const distText = dist >= 1000 ? (dist/1000).toFixed(1) + ' km' : dist + ' m';
-      const name = place.properties.name || 'Unknown';
-      const address = place.properties.street || place.properties.osm_id ? 'Nearby' : '';
-      html += `<div class="nearby-place">
-        <h4>${name}</h4>
-        <p>📍 ${distText} away</p>
-        <p><small>${address}</small></p>
-      </div>`;
-    });
-  }
-
-  nearbyContainer.innerHTML = html || '<p>📭 No nearby places found.</p>';
-}
-
-// ✅ Distance helper (haversine formula)
-function computeDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371e3; // Earth radius in meters
-  const φ1 = lat1 * Math.PI / 180;
-  const φ2 = lat2 * Math.PI / 180;
-  const Δφ = (lat2 - lat1) * Math.PI / 180;
-  const Δλ = (lon2 - lon1) * Math.PI / 180;
-
-  const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-            Math.cos(φ1) * Math.cos(φ2) *
-            Math.sin(Δλ/2) * Math.sin(Δλ/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-  return Math.round(R * c);
-}
-
-// Add after updateMap()
-const googleMapsBtn = document.createElement('button');
-googleMapsBtn.textContent = '🌐 View in Google Maps';
-googleMapsBtn.onclick = () => {
-  const spot = JSON.parse(localStorage.getItem('parkingSpot'));
-  window.open(`https://www.google.com/maps?q=${spot.lat},${spot.lng}`, '_blank');
-};
-document.querySelector('.container').appendChild(googleMapsBtn);
-
-
 });
