@@ -98,21 +98,22 @@ async function searchNearbyPhoton(lat, lng) {
   const east = lng + delta;
   const north = lat + delta;
 
-  // ✅ Use 'parking' (matches labels), not 'carpark'
+  // ✅ Use consistent keys that match labels
   const types = [
     'restaurant',
     'cafe',
     'supermarket',
     'shopping_mall',
     'park',
-    'parking',  // ✅ Correct key
-    'gas station'
+    'parking',
+    'gas station'  // ✅ Now matches label key
   ];
 
   const results = {};
 
   for (const type of types) {
-    const term = type === 'parking' ? 'car park' : type; // ✅ Search "car park" but keep type as "parking"
+    // ✅ Use correct search term for each type
+    const term = type === 'parking' ? 'car park' : type;
     const url = `https://photon.komoot.io/api/?lat=${lat}&lon=${lng}&q=${encodeURIComponent(term)}&bbox=${west},${south},${east},${north}&limit=5`;
 
     try {
@@ -128,29 +129,34 @@ async function searchNearbyPhoton(lat, lng) {
   return results;
 }
 
-
-  // ✅ Display Nearby Results
+// ✅ Display Nearby Results
 function displayNearbyResults(results, spot) {
   let html = '';
 
+  // ✅ Keys must match exactly what's in `results`
   const labels = {
     restaurant: '🍽️ Restaurants',
     cafe: '☕ Cafes',
     supermarket: '🛒 Supermarkets',
     shopping_mall: '🛍️ Shopping Malls',
     park: '🌳 Parks',
-    parking: '🅿️ Carparks',    // ✅ Matches 'parking'
-    gas station: '⛽ Gas Stations'
+    parking: '🅿️ Carparks',
+    'gas station': '⛽ Gas Stations'  // ✅ Key matches 'gas station'
   };
 
   for (const [type, places] of Object.entries(results)) {
     if (places.length === 0) continue;
-    html += `<h3 style="margin:15px 0 8px 0; color:#2c7be5;">${labels[type]}</h3>`;
+    const label = labels[type];
+    if (!label) {
+      console.warn('No label found for type:', type);
+      continue;
+    }
+    html += `<h3 style="margin:15px 0 8px 0; color:#2c7be5;">${label}</h3>`;
     places.slice(0, 5).forEach(place => {
       const dist = computeDistance(spot.lat, spot.lng, place.geometry.coordinates[1], place.geometry.coordinates[0]);
       const distText = dist >= 1000 ? (dist/1000).toFixed(1) + ' km' : dist + ' m';
       const name = place.properties.name || 'Unknown';
-      const address = place.properties.street || place.properties.osm_id ? 'Nearby' : '';
+      const address = place.properties.street || '';
       html += `<div class="nearby-place">
         <h4>${name}</h4>
         <p>📍 ${distText} away</p>
