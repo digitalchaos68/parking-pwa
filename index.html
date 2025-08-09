@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-title" content="ParkHere">
 
   <!-- Favicon -->
-  <link rel="icon" href="favicon.ico" type="image/favicon.ico">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
   <link rel="apple-touch-icon" href="logo.png">
 
   <!-- Manifest -->
@@ -17,8 +17,6 @@
 
   <!-- Styles -->
   <link rel="stylesheet" href="styles.css" />
-
-
 
   <!-- Google Analytics 4 (inline) -->
   <script>
@@ -33,17 +31,8 @@
     <h1>ParkHere test</h1>
     <p>Remember where you parked — no install needed.</p>
 
-
-<!-- <select id="notifyTime" disabled class="shared-hide">
-  <option value="1800000">0.5 hour</option>
-  <option value="3600000" selected>1 hour</option>
-  <option value="5400000">1.5 hours</option>
-  <option value="7200000">2 hours</option>
-  <option value="10800000">3 hours</option>
-  <option value="18000000">5 hours</option>
-</select>
--->
     <input type="hidden" id="notifyTime" value="3600000">
+
     <!-- Photo Upload Section -->
     <p class="shared-hide">📸 Add a photo:</p>
     <input 
@@ -97,26 +86,21 @@
     <div id="map"></div>
   </div>
 
-    <!-- Load QRCode.js first -->
-  <<script src="/lib/qrcode.min.js"></script>
+  <!-- Load QRCode.js first -->
+  <script src="/lib/qrcode.min.js"></script>
 
-  <!-- Load Google Maps JS API with Places Library -->
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="/lib/leaflet.css" />
+
+  <!-- Leaflet JS -->
+  <script src="/lib/leaflet.js"></script>
+
+  <!-- Fix Leaflet image path -->
   <script>
-    function onGoogleMapsLoaded() {
-      console.log('Google Maps API loaded');
-    }
+    L.Icon.Default.imagePath = '/lib/images/';
   </script>
-
-
-
-<!-- Leaflet CSS -->
-<link rel="stylesheet" href="/lib/leaflet.css" />
-
-<!-- Leaflet JS -->
-<script src="/lib/leaflet.js"></script>
 
   <!-- Then load your app -->
   <script src="app.js"></script>
 </body>
-
 </html>
