@@ -91,51 +91,18 @@ async function searchNearbyPhoton(lat, lng) {
     return {};
   }
 
-  const radius = 0.01; // ~1km
-  const west = lng - radius;
-  const south = lat - radius;
-  const east = lng + radius;
-  const north = lat + radius;
-
-  const types = [
-    { type: 'restaurant', osm_tag: 'amenity=restaurant' },
-    { type: 'cafe', osm_tag: 'amenity=cafe' },
-    { type: 'supermarket', osm_tag: 'shop=supermarket' },
-    { type: 'shopping_mall', osm_tag: 'shop=mall' },
-    { type: 'park', osm_tag: 'leisure=park' },
-    { type: 'parking', osm_tag: 'amenity=parking' },
-    { type: 'fuel', osm_tag: 'amenity=fuel' }
-  ];
-
+  const radius = 1000; // 1km
+  const types = ['restaurant', 'cafe', 'supermarket', 'shopping_mall', 'park', 'parking', 'fuel'];
   const results = {};
 
-  for (const item of types) {
-    const { type, osm_tag } = item;
-    // ✅ Use q=lat,lon with bounded=1
-    const url = `https://nominatim.openstreetmap.org/search?${osm_tag}&format=json&q=${lat},${lng}&bounded=1&viewbox=${west},${south},${east},${north}&limit=5`;
+  for (const type of types) {
+    // ✅ Use Photon: supports q + lat/lon/radius
+    const url = `https://photon.komoot.io/api/?lat=${lat}&lon=${lng}&radius=${radius}&q=${type}&limit=5`;
 
     try {
-      const response = await fetch(url, {
-        headers: {
-          'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)'
-        }
-      });
-
-      if (!response.ok) {
-        const text = await response.text();
-        console.warn(`Nominatim ${response.status}:`, text);
-        results[type] = [];
-        continue;
-      }
-
+      const response = await fetch(url);
       const data = await response.json();
-      results[type] = data.map(place => ({
-        geometry: { coordinates: [parseFloat(place.lon), parseFloat(place.lat)] },
-        properties: { 
-          name: place.display_name.split(',')[0] || 'Unknown',
-          street: place.address?.road || ''
-        }
-      }));
+      results[type] = data.features || [];
     } catch (err) {
       console.warn(`Search failed for ${type}:`, err);
       results[type] = [];
