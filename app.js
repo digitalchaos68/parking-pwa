@@ -37,26 +37,36 @@ document.addEventListener('DOMContentLoaded', () => {
   // 🗺️ Initialize Leaflet map
   let leafletMap;
 
-  function updateMap(lat, lng) {
-    console.log('Updating map:', { lat, lng });
-    mapDiv.style.display = 'block';
-
-    if (!leafletMap) {
-      leafletMap = L.map('map').setView([lat, lng], 18);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      }).addTo(leafletMap);
-    } else {
-      leafletMap.setView([lat, lng], 18);
-    }
-
-    if (leafletMap._marker) leafletMap.removeLayer(leafletMap._marker);
-    leafletMap._marker = L.marker([lat, lng]).addTo(leafletMap);
+function updateMap(lat, lng) {
+  // ✅ Safety check
+  if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
+    console.warn('updateMap called with invalid coordinates:', { lat, lng });
+    return;
   }
+
+  // ✅ Show map container
+  mapDiv.style.display = 'block';
+
+  // ✅ Create map only once
+  if (!leafletMap) {
+    leafletMap = L.map('map').setView([lat, lng], 18);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(leafletMap);
+  } else {
+    // ✅ Just update view if map exists
+    leafletMap.setView([lat, lng], 18);
+  }
+
+  // ✅ Update or create marker
+  if (leafletMap._marker) {
+    leafletMap.removeLayer(leafletMap._marker);
+  }
+  leafletMap._marker = L.marker([lat, lng]).addTo(leafletMap);
+}
 
   // 🔍 Reverse Geocode using Photon (OpenStreetMap)
 async function reverseGeocode(lat, lng) {
-  // ✅ Safety check
   if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
     console.warn('Invalid coordinates in reverseGeocode:', { lat, lng });
     return 'Unknown Location';
