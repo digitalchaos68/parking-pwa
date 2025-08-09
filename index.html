@@ -18,9 +18,10 @@
   <!-- Styles -->
   <link rel="stylesheet" href="styles.css" />
 
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="/lib/leaflet.css" />
 
-  <!-- Google Analytics 4 -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WFEPX8LJMT"></script>
+  <!-- Inline gtag with hash (no external script) -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
@@ -33,17 +34,8 @@
     <h1>ParkHere</h1>
     <p>Remember where you parked — no install needed.</p>
 
-
-<!-- <select id="notifyTime" disabled class="shared-hide">
-  <option value="1800000">0.5 hour</option>
-  <option value="3600000" selected>1 hour</option>
-  <option value="5400000">1.5 hours</option>
-  <option value="7200000">2 hours</option>
-  <option value="10800000">3 hours</option>
-  <option value="18000000">5 hours</option>
-</select>
--->
     <input type="hidden" id="notifyTime" value="3600000">
+    
     <!-- Photo Upload Section -->
     <p class="shared-hide">📸 Add a photo:</p>
     <input 
@@ -96,16 +88,14 @@
     <div id="timer"></div>
     <div id="map"></div>
   </div>
-<!-- Load QRCode.js first -->
-<script src="/lib/qrcode.min.js"></script>
 
-<!-- Self-hosted Leaflet -->
-<link rel="stylesheet" href="/lib/leaflet.css" />
-<script src="/lib/leaflet.js"></script>
+  <!-- Load QRCode.js first -->
+  <script src="/lib/qrcode.min.js"></script>
 
-<!-- Then load your app -->
-<script src="app.js"></script>
+  <!-- Self-hosted Leaflet -->
+  <script src="/lib/leaflet.js"></script>
 
-
+  <!-- Then load your app -->
+  <script src="app.js"></script>
 </body>
 </html>
