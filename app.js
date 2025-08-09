@@ -52,20 +52,19 @@ let leafletMap;
 function updateMap(lat, lng) {
   mapDiv.style.display = 'block';
 
-  // Create map if not already created
   if (!leafletMap) {
     leafletMap = L.map('map').setView([lat, lng], 18);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      attribution: '© OpenStreetMap contributors'
     }).addTo(leafletMap);
   } else {
     leafletMap.setView([lat, lng], 18);
   }
 
-  // Add/refresh marker
   if (leafletMap._marker) leafletMap.removeLayer(leafletMap._marker);
   leafletMap._marker = L.marker([lat, lng]).addTo(leafletMap);
 }
+
 
 
 // ✅ Theme Toggle

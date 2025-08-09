@@ -96,32 +96,19 @@
     <div id="timer"></div>
     <div id="map"></div>
   </div>
-
-    <!-- Load QRCode.js first -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-
-  <!-- Load Google Maps JS API with Places Library -->
-  <script>
-    function onGoogleMapsLoaded() {
-      console.log('Google Maps API loaded');
-    }
-  </script>
-  <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0iSWh-ke56m_qdHt1IWPnUb7r_Q40sII&libraries=places&loading=async"
-    async
-    defer
-    onload="onGoogleMapsLoaded()"
-  ></script>
-
-  <!-- Then load your app -->
-  <script src="app.js"></script>
+<!-- Load QRCode.js first -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-<!-- Leaflet JS (add before </body>) -->
+<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+<!-- Then load your app -->
+<script src="app.js"></script>
+
+<!-- Google Maps (optional, for fallback) -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0iSWh-ke56m_qdHt1IWPnUb7r_Q40sII&libraries=places&loading=async" async defer onload="onGoogleMapsLoaded()"></script>
 </body>
 </html>
