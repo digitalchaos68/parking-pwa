@@ -111,9 +111,8 @@ async function searchNearbyPhoton(lat, lng) {
 
   for (const item of types) {
     const { type, osm_tag } = item;
-    // ✅ Correct viewbox format: left,bottom,right,top
-    const viewbox = `${west},${south},${east},${north}`;
-    const url = `https://nominatim.openstreetmap.org/search?${osm_tag}&format=json&viewbox=${viewbox}&bounded=1&limit=5`;
+    // ✅ Use q=lat,lon with bounded=1
+    const url = `https://nominatim.openstreetmap.org/search?${osm_tag}&format=json&q=${lat},${lng}&bounded=1&viewbox=${west},${south},${east},${north}&limit=5`;
 
     try {
       const response = await fetch(url, {
@@ -123,7 +122,8 @@ async function searchNearbyPhoton(lat, lng) {
       });
 
       if (!response.ok) {
-        console.warn(`Nominatim returned ${response.status}:`, await response.text());
+        const text = await response.text();
+        console.warn(`Nominatim ${response.status}:`, text);
         results[type] = [];
         continue;
       }
