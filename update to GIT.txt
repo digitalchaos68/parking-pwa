@@ -8,7 +8,7 @@ git checkout main
 git merge dev
 git push origin main
 
-dev
+------------start of new dev
 # Switch to main (ensure it's up to date)
 git checkout main
 git pull origin main
@@ -18,7 +18,22 @@ git checkout -b dev
 
 # Push dev branch to GitHub
 git push origin dev
+----------------- end of new dev
+# Switch to the existing dev branch
+git checkout dev
 
+# Make sure it's up to date with your latest changes from main
+git merge main
+
+# If there are conflicts, resolve them, then:
+git add .
+git commit -m "Merge main into dev"
+
+git add .
+git commit -m "feat(dev): Migrate to Leaflet + Photon, keep Google Maps as fallback"
+git push origin dev
+
+--- end of dev push
 
 git add .
 git commit -m "Add: Push notification and share parking spot feature"
