@@ -83,7 +83,6 @@ async function reverseGeocode(lat, lng) {
   }
 }
 
-  // 🔍 Find Nearby Places using Photon
 // 🔍 Find Nearby Places using Photon
 async function searchNearbyPhoton(lat, lng) {
   // ✅ Safety check
@@ -92,22 +91,22 @@ async function searchNearbyPhoton(lat, lng) {
     return {};
   }
 
-  // ✅ Define a ~1-3km bounding box (0.03 deg ≈ 3.3km)
+  // ✅ Define a ~3km bounding box (0.03 deg ≈ 3.3km)
   const delta = 0.03;
   const west = lng - delta;
   const south = lat - delta;
   const east = lng + delta;
   const north = lat + delta;
 
-  // ✅ Use terms that Photon actually finds
+  // ✅ Use terms that Photon actually finds in OSM
   const typeMap = [
     { type: 'restaurant', term: 'restaurant', label: '🍽️ Restaurants' },
     { type: 'cafe', term: 'cafe', label: '☕ Cafes' },
     { type: 'supermarket', term: 'supermarket', label: '🛒 Supermarkets' },
     { type: 'shopping_mall', term: 'mall', label: '🛍️ Shopping Malls' },
     { type: 'park', term: 'park', label: '🌳 Parks' },
-    { type: 'parking', term: 'parking', label: '🅿️ Carparks' },
-    { type: 'fuel', term: 'fuel', label: '⛽ Gas Stations' }
+    { type: 'carpark', term: 'car park', label: '🅿️ Carparks' }, // ✅ "car park" > "parking"
+    { type: 'fuel', term: 'gas station', label: '⛽ Gas Stations' } // ✅ "gas station" > "fuel"
   ];
 
   const results = {};
