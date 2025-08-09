@@ -91,13 +91,19 @@ async function searchNearbyPhoton(lat, lng) {
     return {};
   }
 
-  const radius = 1000; // 1km
+  // ✅ Define a ~1km bounding box (approx 0.01 deg = ~1.1km)
+  const delta = 0.009; // ~1km in degrees
+  const west = lng - delta;
+  const south = lat - delta;
+  const east = lng + delta;
+  const north = lat + delta;
+
   const types = ['restaurant', 'cafe', 'supermarket', 'shopping_mall', 'park', 'parking', 'fuel'];
   const results = {};
 
   for (const type of types) {
-    // ✅ Use Photon: supports q + lat/lon/radius
-    const url = `https://photon.komoot.io/api/?lat=${lat}&lon=${lng}&radius=${radius}&q=${type}&limit=5`;
+    // ✅ Use bbox instead of radius
+    const url = `https://photon.komoot.io/api/?lat=${lat}&lon=${lng}&q=${type}&bbox=${west},${south},${east},${north}&limit=5`;
 
     try {
       const response = await fetch(url);
