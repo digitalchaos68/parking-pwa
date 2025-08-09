@@ -117,7 +117,7 @@ async function searchNearbyPhoton(lat, lng) {
 
   return results;
 }
-}
+
 
   // ✅ Display Nearby Results
   function displayNearbyResults(results, spot) {
