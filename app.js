@@ -91,22 +91,22 @@ async function searchNearbyPhoton(lat, lng) {
     return {};
   }
 
-  // ✅ Define a ~3km bounding box (0.03 deg ≈ 3.3km)
-  const delta = 0.05;
+  // ✅ Define a ~3km bounding box
+  const delta = 0.03;
   const west = lng - delta;
   const south = lat - delta;
   const east = lng + delta;
   const north = lat + delta;
 
-  // ✅ Use terms that Photon actually finds in OSM
+  // ✅ Use better terms for real carparks
   const typeMap = [
     { type: 'restaurant', term: 'restaurant', label: '🍽️ Restaurants' },
     { type: 'cafe', term: 'cafe', label: '☕ Cafes' },
     { type: 'supermarket', term: 'supermarket', label: '🛒 Supermarkets' },
     { type: 'shopping_mall', term: 'mall', label: '🛍️ Shopping Malls' },
     { type: 'park', term: 'park', label: '🌳 Parks' },
-    { type: 'carpark', term: 'car park', label: '🅿️ Carparks' }, // ✅ "car park" > "parking"
-    { type: 'fuel', term: 'gas station', label: '⛽ Gas Stations' } // ✅ "gas station" > "fuel"
+    { type: 'carpark', term: 'car park', label: '🅿️ Carparks' },
+    { type: 'fuel', term: 'gas station', label: '⛽ Gas Stations' }
   ];
 
   const results = {};
@@ -118,7 +118,18 @@ async function searchNearbyPhoton(lat, lng) {
     try {
       const response = await fetch(url);
       const data = await response.json();
-      results[type] = data.features || [];
+
+      // ✅ Filter out generic "Parking" names unless no better result
+      const filtered = (data.features || []).filter(place => {
+        const name = (place.properties.name || '').toLowerCase();
+        // Keep if it has a real name, or is clearly a lot/garage
+        return !['parking', 'parkplatz', 'paking'].includes(name) ||
+               name.includes('car park') ||
+               name.includes('garage') ||
+               name.includes('lot');
+      });
+
+      results[type] = filtered.length > 0 ? filtered : (data.features || []).slice(0, 5);
     } catch (err) {
       console.warn(`Search failed for ${label}:`, err);
       results[type] = [];
