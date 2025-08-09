@@ -5,7 +5,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'sha256-vrIbkO/8y/W9ln0AlgYZY+Y2j6iT+4yagPpedYnBoZg='; style-src 'self' 'unsafe-inline'; style-src-elem 'self'; img-src 'self' https://*.tile.openstreetmap.org blob: ; connect-src 'self' https://photon.komoot.io https://nominatim.openstreetmap.org; frame-src 'self' https://www.google.com; object-src 'none'; base-uri 'self'"
+          "value": "default-src 'self'; script-src 'self' 'sha256-vrIbkO/8y/W9ln0AlgYZY+Y2j6iT+4yagPpedYnBoZg=' 'sha256-pG3mnCtujA9mnqBdfQBQoCxmAbwKR8Dwt8clGqiDqzk='; style-src 'self' 'unsafe-inline'; style-src-elem 'self'; img-src 'self' https://*.tile.openstreetmap.org blob: ; connect-src 'self' https://photon.komoot.io https://nominatim.openstreetmap.org; frame-src 'self' https://www.google.com; object-src 'none'; base-uri 'self'"
         },
         {
           "key": "X-Content-Type-Options",

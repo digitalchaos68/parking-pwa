@@ -55,20 +55,38 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 🔍 Reverse Geocode using Photon (OpenStreetMap)
-  async function reverseGeocode(lat, lng) {
-    try {
-      const response = await fetch(`https://photon.komoot.io/reverse?lat=${lat}&lon=${lng}`);
-      const data = await response.json();
-      return data.features[0]?.properties.name || `Parking Spot`;
-    } catch (err) {
-      console.warn('Geocode failed, using coordinates');
-      return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-    }
+async function reverseGeocode(lat, lng) {
+  // ✅ Safety check
+  if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
+    console.warn('Invalid coordinates in reverseGeocode:', { lat, lng });
+    return 'Unknown Location';
   }
+
+  try {
+    const response = await fetch(`https://photon.komoot.io/reverse?lat=${lat}&lon=${lng}`);
+    const data = await response.json();
+    const name = data.features?.[0]?.properties?.name;
+    return name || `Parking Spot at ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  } catch (err) {
+    console.warn('Reverse geocode failed:', err);
+    return `Parking Spot at ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  }
+}
 
   // 🔍 Find Nearby Places using Photon
 async function searchNearbyPhoton(lat, lng) {
-  const radius = 1000; // 1km
+  // ✅ Validate inputs
+  if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
+    console.warn('Invalid coordinates in searchNearbyPhoton:', { lat, lng });
+    return {};
+  }
+
+  const radius = 0.01; // ~1km
+  const west = lng - radius;
+  const south = lat - radius;
+  const east = lng + radius;
+  const north = lat + radius;
+
   const types = [
     { type: 'restaurant', osm_tag: 'amenity=restaurant' },
     { type: 'cafe', osm_tag: 'amenity=cafe' },
@@ -83,16 +101,13 @@ async function searchNearbyPhoton(lat, lng) {
 
   for (const item of types) {
     const { type, osm_tag } = item;
-    const west = lng - 0.01;
-    const south = lat - 0.01;
-    const east = lng + 0.01;
-    const north = lat + 0.01;
-
     const url = `https://nominatim.openstreetmap.org/search?${osm_tag}&format=json&bounded=1&viewbox=${west},${south},${east},${north}&limit=5`;
 
     try {
       const response = await fetch(url, {
-        headers: { 'User-Agent': 'ParkHere/1.0 (jason@digitalchaos.com.sg)' }
+        headers: {
+          'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)'
+        }
       });
       const data = await response.json();
       results[type] = data.map(place => ({
