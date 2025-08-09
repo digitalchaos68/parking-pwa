@@ -85,15 +85,17 @@ async function reverseGeocode(lat, lng) {
 
   // 🔍 Find Nearby Places using Photon
 async function searchNearbyPhoton(lat, lng) {
+  // ✅ Safety check
   if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
     console.warn('Invalid coordinates in searchNearbyPhoton:', { lat, lng });
     return {};
   }
 
-  const west = lng - 0.01;
-  const south = lat - 0.01;
-  const east = lng + 0.01;
-  const north = lat + 0.01;
+  const radius = 0.01; // ~1km
+  const west = lng - radius;
+  const south = lat - radius;
+  const east = lng + radius;
+  const north = lat + radius;
 
   const types = [
     { type: 'restaurant', osm_tag: 'amenity=restaurant' },
@@ -109,7 +111,9 @@ async function searchNearbyPhoton(lat, lng) {
 
   for (const item of types) {
     const { type, osm_tag } = item;
-    const url = `https://nominatim.openstreetmap.org/search?${osm_tag}&format=json&bounded=1&viewbox=${west},${south},${east},${north}&limit=5`;
+    // ✅ Correct viewbox format: left,bottom,right,top
+    const viewbox = `${west},${south},${east},${north}`;
+    const url = `https://nominatim.openstreetmap.org/search?${osm_tag}&format=json&viewbox=${viewbox}&bounded=1&limit=5`;
 
     try {
       const response = await fetch(url, {
@@ -117,6 +121,13 @@ async function searchNearbyPhoton(lat, lng) {
           'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)'
         }
       });
+
+      if (!response.ok) {
+        console.warn(`Nominatim returned ${response.status}:`, await response.text());
+        results[type] = [];
+        continue;
+      }
+
       const data = await response.json();
       results[type] = data.map(place => ({
         geometry: { coordinates: [parseFloat(place.lon), parseFloat(place.lat)] },
