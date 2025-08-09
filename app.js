@@ -67,20 +67,42 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 🔍 Find Nearby Places using Photon
-  async function searchNearbyPhoton(lat, lng) {
-    const radius = 1000; // 1km
-    const types = ['restaurant', 'cafe', 'supermarket', 'shopping_mall', 'park', 'parking', 'fuel'];
-    const results = {};
+async function searchNearbyPhoton(lat, lng) {
+  const radius = 1000;
+  const types = [
+    { type: 'restaurant', osm_tag: 'amenity=restaurant' },
+    { type: 'cafe', osm_tag: 'amenity=cafe' },
+    { type: 'supermarket', osm_tag: 'shop=supermarket' },
+    { type: 'shopping_mall', osm_tag: 'shop=mall' },
+    { type: 'park', osm_tag: 'leisure=park' },
+    { type: 'parking', osm_tag: 'amenity=parking' },
+    { type: 'fuel', osm_tag: 'amenity=fuel' }
+  ];
 
-    for (const type of types) {
-      const url = `https://photon.komoot.io/api/?lat=${lat}&lon=${lng}&radius=${radius}&q=${type}&limit=5`;
-      const response = await fetch(url);
+  const results = {};
+
+  for (const item of types) {
+    const { type, osm_tag } = item;
+    const url = `https://nominatim.openstreetmap.org/search?${osm_tag}&format=json&bounded=1&viewbox=${lng-0.01},${lat-0.01},${lng+0.01},${lat+0.01}&limit=5`;
+
+    try {
+      const response = await fetch(url, {
+        headers: { 'User-Agent': 'ParkHere/1.0' }
+      });
       const data = await response.json();
-      results[type] = data.features || [];
+      results[type] = data.map(place => ({
+        geometry: { coordinates: [parseFloat(place.lon), parseFloat(place.lat)] },
+        properties: { name: place.display_name }
+      }));
+    } catch (err) {
+      console.warn(`Search failed for ${type}:`, err);
+      results[type] = [];
     }
-
-    return results;
   }
+
+  return results;
+}
+
 
   // ✅ Display Nearby Results
   function displayNearbyResults(results, spot) {
