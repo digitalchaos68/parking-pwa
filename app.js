@@ -91,41 +91,32 @@ async function searchNearbyPhoton(lat, lng) {
     return {};
   }
 
-  // ✅ Define ~1km bounding box (0.01 deg ≈ 1.1km)
-  const delta = 0.5;
+  // ✅ Define a ~1km bounding box (approx 0.01 deg = ~1.1km)
+  const delta = 0.03; // ~3km in degrees
   const west = lng - delta;
   const south = lat - delta;
   const east = lng + delta;
   const north = lat + delta;
 
-  const typeMap = [
-    { type: 'restaurant', tag: 'amenity:restaurant', label: '🍽️ Restaurants' },
-    { type: 'cafe', tag: 'amenity:cafe', label: '☕ Cafes' },
-    { type: 'supermarket', tag: 'shop:supermarket', label: '🛒 Supermarkets' },
-    { type: 'shopping_mall', tag: 'building:mall', label: '🛍️ Shopping Malls' },
-    { type: 'park', tag: 'leisure:park', label: '🌳 Parks' },
-    { type: 'parking', tag: 'amenity:parking', label: '🅿️ Carparks' },
-    { type: 'fuel', tag: 'amenity:fuel', label: '⛽ Gas Stations' }
-  ];
-
+  const types = ['restaurant', 'cafe', 'supermarket', 'shopping_mall', 'park', 'parking', 'fuel'];
   const results = {};
 
-  for (const item of typeMap) {
-    const { type, tag, label } = item;
+  for (const type of types) {
     // ✅ Use bbox instead of radius
-    const url = `https://photon.komoot.io/api/?lat=${lat}&lon=${lng}&q=${encodeURIComponent(tag)}&bbox=${west},${south},${east},${north}&limit=5`;
+    const url = `https://photon.komoot.io/api/?lat=${lat}&lon=${lng}&q=${type}&bbox=${west},${south},${east},${north}&limit=5`;
 
     try {
       const response = await fetch(url);
       const data = await response.json();
       results[type] = data.features || [];
     } catch (err) {
-      console.warn(`Search failed for ${label}:`, err);
+      console.warn(`Search failed for ${type}:`, err);
       results[type] = [];
     }
   }
 
   return results;
+}
 }
 
   // ✅ Display Nearby Results
