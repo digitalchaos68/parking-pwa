@@ -94,8 +94,15 @@
   <!-- Load QRCode.js first -->
   <script src="/lib/qrcode.min.js"></script>
 
-  <!-- Self-hosted Leaflet -->
-  <script src="/lib/leaflet.js"></script>
+<!-- Self-hosted Leaflet -->
+<link rel="stylesheet" href="/lib/leaflet.css" />
+<script src="/lib/leaflet.js"></script>
+
+<!-- Fix Leaflet image paths -->
+<script>
+  L.Icon.Default.imagePath = '/lib/images/';
+</script>
+
 
   <!-- Then load your app -->
   <script src="app.js"></script>
