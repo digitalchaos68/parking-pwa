@@ -75,17 +75,15 @@ async function reverseGeocode(lat, lng) {
 
   // 🔍 Find Nearby Places using Photon
 async function searchNearbyPhoton(lat, lng) {
-  // ✅ Validate inputs
   if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
     console.warn('Invalid coordinates in searchNearbyPhoton:', { lat, lng });
     return {};
   }
 
-  const radius = 0.01; // ~1km
-  const west = lng - radius;
-  const south = lat - radius;
-  const east = lng + radius;
-  const north = lat + radius;
+  const west = lng - 0.01;
+  const south = lat - 0.01;
+  const east = lng + 0.01;
+  const north = lat + 0.01;
 
   const types = [
     { type: 'restaurant', osm_tag: 'amenity=restaurant' },
