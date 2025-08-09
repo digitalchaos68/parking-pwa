@@ -98,40 +98,29 @@ async function searchNearbyPhoton(lat, lng) {
   const east = lng + delta;
   const north = lat + delta;
 
-  // ✅ Use better terms for real carparks
-  const typeMap = [
-    { type: 'restaurant', term: 'restaurant', label: '🍽️ Restaurants' },
-    { type: 'cafe', term: 'cafe', label: '☕ Cafes' },
-    { type: 'supermarket', term: 'supermarket', label: '🛒 Supermarkets' },
-    { type: 'shopping_mall', term: 'mall', label: '🛍️ Shopping Malls' },
-    { type: 'park', term: 'park', label: '🌳 Parks' },
-    { type: 'carpark', term: 'car park', label: '🅿️ Carparks' },
-    { type: 'fuel', term: 'gas station', label: '⛽ Gas Stations' }
+  // ✅ Use 'parking' (matches labels), not 'carpark'
+  const types = [
+    'restaurant',
+    'cafe',
+    'supermarket',
+    'shopping_mall',
+    'park',
+    'parking',  // ✅ Correct key
+    'fuel'
   ];
 
   const results = {};
 
-  for (const item of typeMap) {
-    const { type, term, label } = item;
+  for (const type of types) {
+    const term = type === 'parking' ? 'car park' : type; // ✅ Search "car park" but keep type as "parking"
     const url = `https://photon.komoot.io/api/?lat=${lat}&lon=${lng}&q=${encodeURIComponent(term)}&bbox=${west},${south},${east},${north}&limit=5`;
 
     try {
       const response = await fetch(url);
       const data = await response.json();
-
-      // ✅ Filter out generic "Parking" names unless no better result
-      const filtered = (data.features || []).filter(place => {
-        const name = (place.properties.name || '').toLowerCase();
-        // Keep if it has a real name, or is clearly a lot/garage
-        return !['parking', 'parkplatz', 'paking'].includes(name) ||
-               name.includes('car park') ||
-               name.includes('garage') ||
-               name.includes('lot');
-      });
-
-      results[type] = filtered.length > 0 ? filtered : (data.features || []).slice(0, 5);
+      results[type] = data.features || [];
     } catch (err) {
-      console.warn(`Search failed for ${label}:`, err);
+      console.warn(`Search failed for ${type}:`, err);
       results[type] = [];
     }
   }
@@ -141,37 +130,37 @@ async function searchNearbyPhoton(lat, lng) {
 
 
   // ✅ Display Nearby Results
-  function displayNearbyResults(results, spot) {
-    let html = '';
+function displayNearbyResults(results, spot) {
+  let html = '';
 
-    const labels = {
-      restaurant: '🍽️ Restaurants',
-      cafe: '☕ Cafes',
-      supermarket: '🛒 Supermarkets',
-      shopping_mall: '🛍️ Shopping Malls',
-      park: '🌳 Parks',
-      parking: '🅿️ Carparks',
-      fuel: '⛽ Gas Stations'
-    };
+  const labels = {
+    restaurant: '🍽️ Restaurants',
+    cafe: '☕ Cafes',
+    supermarket: '🛒 Supermarkets',
+    shopping_mall: '🛍️ Shopping Malls',
+    park: '🌳 Parks',
+    parking: '🅿️ Carparks',    // ✅ Matches 'parking'
+    fuel: '⛽ Gas Stations'
+  };
 
-    for (const [type, places] of Object.entries(results)) {
-      if (places.length === 0) continue;
-      html += `<h3 style="margin:15px 0 8px 0; color:#2c7be5;">${labels[type]}</h3>`;
-      places.slice(0, 5).forEach(place => {
-        const dist = computeDistance(spot.lat, spot.lng, place.geometry.coordinates[1], place.geometry.coordinates[0]);
-        const distText = dist >= 1000 ? (dist/1000).toFixed(1) + ' km' : dist + ' m';
-        const name = place.properties.name || 'Unknown';
-        const address = place.properties.street || place.properties.osm_id ? 'Nearby' : '';
-        html += `<div class="nearby-place">
-          <h4>${name}</h4>
-          <p>📍 ${distText} away</p>
-          <p><small>${address}</small></p>
-        </div>`;
-      });
-    }
-
-    nearbyContainer.innerHTML = html || '<p>📭 No nearby places found.</p>';
+  for (const [type, places] of Object.entries(results)) {
+    if (places.length === 0) continue;
+    html += `<h3 style="margin:15px 0 8px 0; color:#2c7be5;">${labels[type]}</h3>`;
+    places.slice(0, 5).forEach(place => {
+      const dist = computeDistance(spot.lat, spot.lng, place.geometry.coordinates[1], place.geometry.coordinates[0]);
+      const distText = dist >= 1000 ? (dist/1000).toFixed(1) + ' km' : dist + ' m';
+      const name = place.properties.name || 'Unknown';
+      const address = place.properties.street || place.properties.osm_id ? 'Nearby' : '';
+      html += `<div class="nearby-place">
+        <h4>${name}</h4>
+        <p>📍 ${distText} away</p>
+        <p><small>${address}</small></p>
+      </div>`;
+    });
   }
+
+  nearbyContainer.innerHTML = html || '<p>📭 No nearby places found.</p>';
+}
 
   // ✅ Distance helper (haversine formula)
   function computeDistance(lat1, lon1, lat2, lon2) {
