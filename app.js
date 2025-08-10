@@ -225,7 +225,8 @@ function displayNearbyResults(results, spot) {
     });
   }
 
-  // 📍 Save My Parking Spot
+
+// 📍 Save My Parking Spot
 if (saveBtn) {
   saveBtn.addEventListener('click', () => {
     status.textContent = '📍 Getting your location...';
@@ -246,9 +247,13 @@ if (saveBtn) {
         lat,
         lng,
         time: new Date().toISOString(),
-        locationName  // ✅ Now it will be available on restore
+        locationName
       };
       localStorage.setItem('parkingSpot', JSON.stringify(spot));
+
+      // ✅ Clear nearby results (new fix!)
+      nearbyContainer.innerHTML = '';
+      nearbyContainer.style.display = 'none';
 
       // ✅ Update UI
       updateMap(lat, lng);
@@ -267,7 +272,9 @@ if (saveBtn) {
       status.textContent = `❌ Error: ${err.message}`;
     }, { enableHighAccuracy: true });
   });
-}
+}  
+
+
 
 // 🧭 Find My Car
 if (findBtn) {
@@ -294,19 +301,31 @@ if (findBtn) {
     const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
     const time = parkedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    // ✅ Check if locationName is meaningful (not auto-generated)
-    const isMeaningfulLocation = spot.locationName && 
+    // ✅ Format duration for speech
+    let durationText = '';
+    if (hours === 0) {
+      durationText = `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+    } else {
+      durationText = `${hours} hour${hours !== 1 ? 's' : ''}`;
+      if (minutes > 0) {
+        durationText += ` and ${minutes} minute${minutes !== 1 ? 's' : ''}`;
+      }
+    }
+
+    // ✅ Check if locationName is meaningful
+    const isMeaningfulLocation = spot.locationName &&
       !spot.locationName.startsWith('Parking Spot at') &&
       !spot.locationName.includes('Unknown') &&
       spot.locationName.trim().length > 0;
 
+    // ✅ Build voice message
     let baseMessage = `You parked at ${time}`;
     if (isMeaningfulLocation) {
       baseMessage += ` near ${spot.locationName}`;
     }
-    baseMessage += ` for ${hours ? hours + ' hour' + (hours !== 1 ? 's' : '') : ''}${hours && minutes ? ' and ' : ''}${minutes ? minutes + ' minute' + (minutes !== 1 ? 's' : '') : ''}.`;
+    baseMessage += ` for ${durationText}.`;
 
-    // ✅ Speak the base message
+    // ✅ Speak the message
     const utter = new SpeechSynthesisUtterance(baseMessage);
     utter.voice = window.getSelectedVoice ? window.getSelectedVoice() : null;
     utter.rate = 0.9;
@@ -316,32 +335,35 @@ if (findBtn) {
     // ✅ Show status
     status.textContent = `🚗 Parked for ${hours ? hours + 'h ' : ''}${minutes}m.`;
 
-    // ✅ Only announce distance if we have a meaningful location
-    if (isMeaningfulLocation) {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        const R = 6371e3;
-        const φ1 = pos.coords.latitude * Math.PI / 180;
-        const φ2 = spot.lat * Math.PI / 180;
-        const Δφ = (spot.lat - pos.coords.latitude) * Math.PI / 180;
-        const Δλ = (spot.lng - pos.coords.longitude) * Math.PI / 180;
-        const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        const distance = R * c;
-        const distText = Math.round(distance);
+    // ✅ ALWAYS calculate and announce distance (user wants to know how far their car is)
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const R = 6371e3;
+      const φ1 = pos.coords.latitude * Math.PI / 180;
+      const φ2 = spot.lat * Math.PI / 180;
+      const Δφ = (spot.lat - pos.coords.latitude) * Math.PI / 180;
+      const Δλ = (spot.lng - pos.coords.longitude) * Math.PI / 180;
+      const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      const distance = R * c;
+      const distText = Math.round(distance);
 
-        // ✅ Wait for first message to finish
-        setTimeout(() => {
-          const distUtter = new SpeechSynthesisUtterance(`Your car is ${distText} meters away.`);
-          distUtter.voice = window.getSelectedVoice ? window.getSelectedVoice() : null;
-          distUtter.rate = 0.8;
-          speechSynthesis.speak(distUtter);
-        }, 2000);
-      }, (err) => {
-        console.warn('Failed to get current location for distance:', err);
-      }, { enableHighAccuracy: true, timeout: 10000 });
-    }
+      // ✅ Wait for first message to finish
+      setTimeout(() => {
+        const distUtter = new SpeechSynthesisUtterance(`Your car is ${distText} meters away.`);
+        distUtter.voice = window.getSelectedVoice ? window.getSelectedVoice() : null;
+        distUtter.rate = 0.8;
+        speechSynthesis.speak(distUtter);
+      }, 2000); // Adjust based on message length
+
+      // ✅ Update status with distance
+      status.textContent = `🚗 Your car is ${distText} meters away.`;
+    }, (err) => {
+      console.warn('Failed to get current location for distance:', err);
+      status.textContent = '📍 Unable to get your location for distance.';
+    }, { enableHighAccuracy: true, timeout: 10000 });
   });
 }
+
 
 // 📤 Share My Spot
   if (shareBtn) {
