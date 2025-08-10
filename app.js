@@ -90,13 +90,19 @@ async function searchNearbyPhoton(lat, lng) {
     return {};
   }
 
-  // Define bounding box (~1km)
   const west = lng - 0.01;
   const south = lat - 0.01;
   const east = lng + 0.01;
   const north = lat + 0.01;
 
   const typeMap = [
+    { 
+      type: 'parking', 
+      term: 'car park', 
+      filter: (place) => 
+        (place.class === 'amenity' && place.type === 'parking') ||
+        (place.name && place.name.toLowerCase().includes('parking'))
+    },
     { 
       type: 'park', 
       term: 'park', 
@@ -115,16 +121,7 @@ async function searchNearbyPhoton(lat, lng) {
       type: 'shopping_mall', 
       term: 'mall', 
       filter: (place) => 
-        // ✅ Catch all variations of "mall"
-        (place.name && (
-          place.name.toLowerCase().includes('mall') || 
-          place.name.toLowerCase().includes('shopping centre') || 
-          place.name.toLowerCase().includes('shopping center')
-        )) ||
-        (place.type && (
-          place.type.toLowerCase().includes('mall') || 
-          place.type.toLowerCase().includes('centre')
-        ))
+        (place.name && (place.name.toLowerCase().includes('mall') || place.name.toLowerCase().includes('shopping centre')))
     },
     { 
       type: 'restaurant', 
@@ -139,13 +136,6 @@ async function searchNearbyPhoton(lat, lng) {
       filter: (place) => 
         (place.class === 'amenity' && place.type === 'cafe') ||
         (place.name && place.name.toLowerCase().includes('cafe'))
-    },
-    { 
-      type: 'parking', 
-      term: 'car park', 
-      filter: (place) => 
-        (place.class === 'amenity' && place.type === 'parking') ||
-        (place.name && place.name.toLowerCase().includes('parking'))
     },
     { 
       type: 'fuel', 
@@ -189,6 +179,7 @@ async function searchNearbyPhoton(lat, lng) {
 
   return results;
 }
+
 
 
 // ✅ Display Nearby Results
