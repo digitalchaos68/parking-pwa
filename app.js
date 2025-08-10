@@ -84,6 +84,7 @@ async function reverseGeocode(lat, lng) {
 }
 
 // 🔍 Find Nearby Places using Photon
+// 🔍 Find Nearby Places using Photon
 async function searchNearbyPhoton(lat, lng) {
   if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
     console.warn('Invalid coordinates:', { lat, lng });
@@ -91,10 +92,10 @@ async function searchNearbyPhoton(lat, lng) {
   }
 
   // Define bounding box (~1km)
-  const west = lng - 0.05;
-  const south = lat - 0.05;
-  const east = lng + 0.05;
-  const north = lat + 0.05;
+  const west = lng - 0.03;
+  const south = lat - 0.03;
+  const east = lng + 0.03;
+  const north = lat + 0.03;
 
   const typeMap = [
     { 
@@ -141,13 +142,6 @@ async function searchNearbyPhoton(lat, lng) {
         (place.name && place.name.toLowerCase().includes('cafe'))
     },
     { 
-      type: 'parking', 
-      term: 'car park', 
-      filter: (place) => 
-        (place.class === 'amenity' && place.type === 'parking') ||
-        (place.name && place.name.toLowerCase().includes('parking'))
-    },
-    { 
       type: 'fuel', 
       term: 'fuel', 
       filter: (place) => 
@@ -158,6 +152,7 @@ async function searchNearbyPhoton(lat, lng) {
 
   const results = {};
 
+  // ✅ Search for all types except parking
   for (const item of typeMap) {
     const { type, term, filter } = item;
     const url = `https://nominatim.openstreetmap.org/search.php?q=${encodeURIComponent(term)}&format=json&viewbox=${west},${south},${east},${north}&bounded=1&limit=10`;
@@ -187,8 +182,33 @@ async function searchNearbyPhoton(lat, lng) {
     }
   }
 
+  // ✅ Special case: Car Parks — use direct OSM tag search
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?amenity=parking&format=json&bounded=1&viewbox=${west},${south},${east},${north}&limit=5`;
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)'
+      }
+    });
+    const data = await response.json();
+
+    results.parking = data.map(place => ({
+      geometry: {
+        coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
+      },
+      properties: {
+        name: place.name || 'Car Park',
+        street: place.address?.road || place.address?.pedestrian || 'Nearby'
+      }
+    }));
+  } catch (err) {
+    console.warn('Search failed for parking:', err);
+    results.parking = [];
+  }
+
   return results;
 }
+
 
 
 
