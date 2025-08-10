@@ -226,37 +226,48 @@ function displayNearbyResults(results, spot) {
   }
 
   // 📍 Save My Parking Spot
-  if (saveBtn) {
-    saveBtn.addEventListener('click', () => {
-      navigator.geolocation.getCurrentPosition((position) => {
-  const lat = position.coords.latitude;
-  const lng = position.coords.longitude;
+if (saveBtn) {
+  saveBtn.addEventListener('click', () => {
+    status.textContent = '📍 Getting your location...';
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
 
-  if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
-    status.textContent = '❌ Invalid location received';
-    return;
-  }
+      if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
+        status.textContent = '❌ Invalid location received';
+        return;
+      }
 
-  // Save spot
-  const spot = { lat, lng, time: new Date().toISOString() };
-  localStorage.setItem('parkingSpot', JSON.stringify(spot));
+      // ✅ Reverse geocode to get location name
+      const locationName = await reverseGeocode(lat, lng);
 
-  // Update UI
-  updateMap(lat, lng);
-  findBtn.disabled = false;
-  shareBtn.disabled = false;
-  showQRBtn.disabled = false;
-  directionsBtn.disabled = false;
-  nearbyBtn.disabled = false;
-  resetBtn.disabled = false;
-  sendWABtn.disabled = false;
+      // ✅ Save spot with locationName
+      const spot = {
+        lat,
+        lng,
+        time: new Date().toISOString(),
+        locationName  // ✅ Now it will be available on restore
+      };
+      localStorage.setItem('parkingSpot', JSON.stringify(spot));
 
-  status.textContent = '✅ Parking saved!';
-  if (timer) timer.textContent = '';
-});
-    });
-  }
+      // ✅ Update UI
+      updateMap(lat, lng);
+      findBtn.disabled = false;
+      shareBtn.disabled = false;
+      showQRBtn.disabled = false;
+      directionsBtn.disabled = false;
+      nearbyBtn.disabled = false;
+      resetBtn.disabled = false;
+      sendWABtn.disabled = false;
 
+      status.textContent = `✅ Parking saved: ${locationName}`;
+      if (timer) timer.textContent = '';
+      trackEvent('click', 'Action', 'Save Parking Spot');
+    }, (err) => {
+      status.textContent = `❌ Error: ${err.message}`;
+    }, { enableHighAccuracy: true });
+  });
+}
   // 🧭 Find My Car
   if (findBtn) {
     findBtn.addEventListener('click', () => {
