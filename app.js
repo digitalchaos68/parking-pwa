@@ -102,7 +102,7 @@ async function searchNearbyPhoton(lat, lng) {
       term: 'park', 
       filter: (place) => 
         (place.class === 'leisure' && place.type === 'park') ||
-        (place.name && (place.name.toLowerCase().includes('park') || place.type === 'park'))
+        (place.name && place.name.toLowerCase().includes('park'))
     },
     { 
       type: 'supermarket', 
@@ -115,8 +115,16 @@ async function searchNearbyPhoton(lat, lng) {
       type: 'shopping_mall', 
       term: 'mall', 
       filter: (place) => 
-        (place.name && (place.name.toLowerCase().includes('mall') || place.name.toLowerCase().includes('shopping centre'))) ||
-        (place.type && (place.type.includes('mall') || place.type.includes('centre')))
+        // ✅ Catch all variations of "mall"
+        (place.name && (
+          place.name.toLowerCase().includes('mall') || 
+          place.name.toLowerCase().includes('shopping centre') || 
+          place.name.toLowerCase().includes('shopping center')
+        )) ||
+        (place.type && (
+          place.type.toLowerCase().includes('mall') || 
+          place.type.toLowerCase().includes('centre')
+        ))
     },
     { 
       type: 'restaurant', 
@@ -162,7 +170,6 @@ async function searchNearbyPhoton(lat, lng) {
       });
       const data = await response.json();
 
-      // Filter results by name and type
       results[type] = data
         .filter(filter)
         .map(place => ({
