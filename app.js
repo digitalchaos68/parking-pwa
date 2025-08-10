@@ -130,7 +130,7 @@ async function searchNearbyPhoton(lat, lng) {
       place.type.toLowerCase().includes('centre') || 
       place.type.toLowerCase().includes('center')
     ))
-}
+},
     { 
       type: 'restaurant', 
       term: 'restaurant', 
