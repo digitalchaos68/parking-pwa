@@ -4,32 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Privacy Policy</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 20px;
-      line-height: 1.6;
-      color: #333;
+  <!-- Link to styles.css -->
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Theme Toggle Script -->
+  <script>
+    let isDark = false;
+
+    // Check localStorage for dark mode
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.body.classList.add('dark');
+      isDark = true;
     }
-    h1 { color: #2c7be5; }
-    .back-button {
-      display: inline-block;
-      margin: 20px 0;
-      padding: 10px 20px;
-      background-color: #2c7be5;
-      color: white;
-      text-decoration: none;
-      border-radius: 8px;
-      font-size: 16px;
+
+    // Add theme toggle functionality
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        isDark = !isDark;
+        document.body.classList.toggle('dark', isDark);
+        themeToggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+        localStorage.setItem('darkMode', isDark);
+      });
     }
-    .back-button:hover { background-color: #1a68d1; }
-  </style>
+  </script>
 </head>
 <body>
-  <a href="./" class="back-button">← Back to ParkHere</a>
-
+  <div class="container">
   <h1>Privacy Policy</h1>
   <p><strong>ParkHere 🅿️</strong> does not collect or store any personal data.</p>
 
@@ -52,6 +53,7 @@
   </ul>
   <p>See their privacy policies for details.</p>
 
-  <a href="./" class="back-button">← Back to ParkHere</a>
+
+  </div>
 </body>
 </html>
