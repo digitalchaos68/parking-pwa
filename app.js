@@ -97,7 +97,6 @@ async function searchNearbyPhoton(lat, lng) {
   const north = lat + 0.01;
 
   const typeMap = [
-    // ✅ Use free-text search for most types
     { 
       type: 'park', 
       term: 'park', 
@@ -114,9 +113,14 @@ async function searchNearbyPhoton(lat, lng) {
     },
     { 
       type: 'shopping_mall', 
-      term: 'mall', 
+      term: 'mall shopping centre', 
       filter: (place) => 
-        (place.name && (place.name.toLowerCase().includes('mall') || place.name.toLowerCase().includes('shopping centre')))
+        place.name && (
+          place.name.toLowerCase().includes('mall') || 
+          place.name.toLowerCase().includes('shopping') ||
+          place.display_name?.toLowerCase().includes('mall') ||
+          place.display_name?.toLowerCase().includes('shopping')
+        )
     },
     { 
       type: 'restaurant', 
@@ -133,6 +137,13 @@ async function searchNearbyPhoton(lat, lng) {
         (place.name && place.name.toLowerCase().includes('cafe'))
     },
     { 
+      type: 'parking', 
+      term: 'car park', 
+      filter: (place) => 
+        (place.class === 'amenity' && place.type === 'parking') ||
+        (place.name && place.name.toLowerCase().includes('parking'))
+    },
+    { 
       type: 'fuel', 
       term: 'fuel', 
       filter: (place) => 
@@ -143,7 +154,6 @@ async function searchNearbyPhoton(lat, lng) {
 
   const results = {};
 
-  // ✅ Search for all types using q= + filter
   for (const item of typeMap) {
     const { type, term, filter } = item;
     const url = `https://nominatim.openstreetmap.org/search.php?q=${encodeURIComponent(term)}&format=json&viewbox=${west},${south},${east},${north}&bounded=1&limit=10`;
@@ -199,6 +209,7 @@ async function searchNearbyPhoton(lat, lng) {
 
   return results;
 }
+
 
 
 // ✅ Display Nearby Results
