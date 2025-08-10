@@ -97,20 +97,56 @@ async function searchNearbyPhoton(lat, lng) {
   const north = lat + 0.01;
 
   const typeMap = [
-    { type: 'restaurant', key: 'amenity', value: 'restaurant' },
-    { type: 'cafe', key: 'amenity', value: 'cafe' },
-    { type: 'supermarket', key: 'shop', value: 'supermarket' },
-    { type: 'shopping_mall', key: 'shop', value: 'mall' },
-    { type: 'park', key: 'leisure', value: 'park' },
-    { type: 'parking', key: 'amenity', value: 'parking' },
-    { type: 'fuel', key: 'amenity', value: 'fuel' }
+    // ✅ Use free-text search for most types
+    { 
+      type: 'park', 
+      term: 'park', 
+      filter: (place) => 
+        (place.class === 'leisure' && place.type === 'park') ||
+        (place.name && place.name.toLowerCase().includes('park'))
+    },
+    { 
+      type: 'supermarket', 
+      term: 'supermarket', 
+      filter: (place) => 
+        (place.class === 'shop' && place.type === 'supermarket') ||
+        (place.name && place.name.toLowerCase().includes('supermarket'))
+    },
+    { 
+      type: 'shopping_mall', 
+      term: 'mall', 
+      filter: (place) => 
+        (place.name && (place.name.toLowerCase().includes('mall') || place.name.toLowerCase().includes('shopping centre')))
+    },
+    { 
+      type: 'restaurant', 
+      term: 'restaurant', 
+      filter: (place) => 
+        (place.class === 'amenity' && place.type === 'restaurant') ||
+        (place.name && place.name.toLowerCase().includes('restaurant'))
+    },
+    { 
+      type: 'cafe', 
+      term: 'cafe', 
+      filter: (place) => 
+        (place.class === 'amenity' && place.type === 'cafe') ||
+        (place.name && place.name.toLowerCase().includes('cafe'))
+    },
+    { 
+      type: 'fuel', 
+      term: 'fuel', 
+      filter: (place) => 
+        (place.class === 'amenity' && place.type === 'fuel') ||
+        (place.name && place.name.toLowerCase().includes('fuel'))
+    }
   ];
 
   const results = {};
 
+  // ✅ Search for all types using q= + filter
   for (const item of typeMap) {
-    const { type, key, value } = item;
-    const url = `https://nominatim.openstreetmap.org/search?${key}=${value}&format=json&bounded=1&viewbox=${west},${south},${east},${north}&limit=5`;
+    const { type, term, filter } = item;
+    const url = `https://nominatim.openstreetmap.org/search.php?q=${encodeURIComponent(term)}&format=json&viewbox=${west},${south},${east},${north}&bounded=1&limit=10`;
 
     try {
       const response = await fetch(url, {
@@ -120,34 +156,45 @@ async function searchNearbyPhoton(lat, lng) {
       });
       const data = await response.json();
 
-      results[type] = data.map(place => {
-        // ✅ Better name fallback
-        const name = place.name || 
-                     place.display_name.split(',')[0] || 
-                     'Unnamed';
-
-        // ✅ Better address fallback
-        const address = place.address;
-        const street = address?.road || 
-                       address?.pedestrian || 
-                       address?.residential || 
-                       address?.suburb || 
-                       address?.city || 'Nearby';
-
-        return {
+      results[type] = data
+        .filter(filter)
+        .map(place => ({
           geometry: {
             coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
           },
           properties: {
-            name,
-            street
+            name: place.name || 'Unnamed',
+            street: place.address?.road || place.address?.pedestrian || place.address?.suburb || 'Nearby'
           }
-        };
-      });
+        }));
     } catch (err) {
       console.warn(`Search failed for ${type}:`, err);
       results[type] = [];
     }
+  }
+
+  // ✅ Special case: Car Parks — use direct OSM tag search
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?amenity=parking&format=json&bounded=1&viewbox=${west},${south},${east},${north}&limit=5`;
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)'
+      }
+    });
+    const data = await response.json();
+
+    results.parking = data.map(place => ({
+      geometry: {
+        coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
+      },
+      properties: {
+        name: place.name || 'Car Park',
+        street: place.address?.road || place.address?.pedestrian || 'Nearby'
+      }
+    }));
+  } catch (err) {
+    console.warn('Search failed for parking:', err);
+    results.parking = [];
   }
 
   return results;
