@@ -4,20 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Disclaimer</title>
-  <!-- Link to styles.css -->
+  <!-- Link to shared styles -->
   <link rel="stylesheet" href="styles.css" />
 
-  <!-- Apply dark mode from localStorage -->
+  <!-- Apply dark mode from localStorage after DOM loads -->
   <script>
-    // Apply dark mode if set
-    if (localStorage.getItem('darkMode') === 'true') {
-      document.body.classList.add('dark');
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark');
+      }
+    });
   </script>
 </head>
 <body>
   <div class="container">
-    <!-- Back Button -->
+    <!-- Back Button (Top) -->
     <button onclick="window.location.href='/'" style="margin-bottom: 15px;">
       ← Back to ParkHere
     </button>
@@ -40,7 +41,7 @@
     <h2>Contact</h2>
     <p>For questions, contact: <a href="mailto:jason@digitalchaos.com.sg">jason@digitalchaos.com.sg</a></p>
 
-    <!-- Back Button (bottom) -->
+    <!-- Back Button (Bottom) -->
     <button onclick="window.location.href='/'" style="margin-top: 15px;">
       ← Back to ParkHere
     </button>

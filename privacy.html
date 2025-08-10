@@ -7,12 +7,15 @@
   <!-- Link to styles.css -->
   <link rel="stylesheet" href="styles.css" />
 
-  <!-- Apply dark mode from localStorage -->
+  <!-- Apply dark mode from localStorage after DOM loads -->
   <script>
-    // Apply dark mode if set
-    if (localStorage.getItem('darkMode') === 'true') {
-      document.body.classList.add('dark');
-    }
+    // Wait for DOM to load
+    document.addEventListener('DOMContentLoaded', () => {
+      // Apply dark mode if set
+      if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark');
+      }
+    });
   </script>
 </head>
 <body>
