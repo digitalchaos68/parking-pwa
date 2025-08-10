@@ -84,7 +84,6 @@ async function reverseGeocode(lat, lng) {
 }
 
 // 🔍 Find Nearby Places using Photon
-// 🔍 Find Nearby Places using Photon
 async function searchNearbyPhoton(lat, lng) {
   if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
     console.warn('Invalid coordinates:', { lat, lng });
@@ -92,10 +91,10 @@ async function searchNearbyPhoton(lat, lng) {
   }
 
   // Define bounding box (~1km)
-  const west = lng - 0.03;
-  const south = lat - 0.03;
-  const east = lng + 0.03;
-  const north = lat + 0.03;
+  const west = lng - 0.01;
+  const south = lat - 0.01;
+  const east = lng + 0.01;
+  const north = lat + 0.01;
 
   const typeMap = [
     { 
@@ -192,6 +191,7 @@ async function searchNearbyPhoton(lat, lng) {
     });
     const data = await response.json();
 
+    // ✅ Merge safely
     results.parking = data.map(place => ({
       geometry: {
         coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
@@ -208,8 +208,6 @@ async function searchNearbyPhoton(lat, lng) {
 
   return results;
 }
-
-
 
 
 
