@@ -119,15 +119,31 @@ async function searchNearbyPhoton(lat, lng) {
         }
       });
       const data = await response.json();
-      results[type] = data.map(place => ({
-        geometry: {
-          coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
-        },
-        properties: {
-          name: place.display_name.split(',')[0] || 'Unknown',
-          street: place.address?.road || ''
-        }
-      }));
+
+      results[type] = data.map(place => {
+        // ✅ Better name fallback
+        const name = place.name || 
+                     place.display_name.split(',')[0] || 
+                     'Unnamed';
+
+        // ✅ Better address fallback
+        const address = place.address;
+        const street = address?.road || 
+                       address?.pedestrian || 
+                       address?.residential || 
+                       address?.suburb || 
+                       address?.city || 'Nearby';
+
+        return {
+          geometry: {
+            coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
+          },
+          properties: {
+            name,
+            street
+          }
+        };
+      });
     } catch (err) {
       console.warn(`Search failed for ${type}:`, err);
       results[type] = [];
@@ -143,7 +159,6 @@ async function searchNearbyPhoton(lat, lng) {
 function displayNearbyResults(results, spot) {
   let html = '';
 
-  // ✅ Keys must match exactly what's in `results`
   const labels = {
     restaurant: '🍽️ Restaurants',
     cafe: '☕ Cafes',
@@ -151,22 +166,21 @@ function displayNearbyResults(results, spot) {
     shopping_mall: '🛍️ Shopping Malls',
     park: '🌳 Parks',
     parking: '🅿️ Carparks',
-    'gas station': '⛽ Gas Stations'  // ✅ Key matches 'gas station'
+    fuel: '⛽ Gas Stations'
   };
 
   for (const [type, places] of Object.entries(results)) {
-    if (places.length === 0) continue;
+    if (!places || places.length === 0) continue;
     const label = labels[type];
-    if (!label) {
-      console.warn('No label found for type:', type);
-      continue;
-    }
+    if (!label) continue;
+
     html += `<h3 style="margin:15px 0 8px 0; color:#2c7be5;">${label}</h3>`;
     places.slice(0, 5).forEach(place => {
       const dist = computeDistance(spot.lat, spot.lng, place.geometry.coordinates[1], place.geometry.coordinates[0]);
       const distText = dist >= 1000 ? (dist/1000).toFixed(1) + ' km' : dist + ' m';
       const name = place.properties.name || 'Unknown';
-      const address = place.properties.street || '';
+      const address = place.properties.street || 'Nearby';
+
       html += `<div class="nearby-place">
         <h4>${name}</h4>
         <p>📍 ${distText} away</p>
