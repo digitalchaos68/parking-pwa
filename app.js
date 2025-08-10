@@ -269,16 +269,80 @@ if (saveBtn) {
   });
 }
   // 🧭 Find My Car
-  if (findBtn) {
-    findBtn.addEventListener('click', () => {
-      const spot = JSON.parse(localStorage.getItem('parkingSpot'));
-      if (spot) {
-        updateMap(spot.lat, spot.lng);
-        status.textContent = '📍 Your car is here!';
-      }
-    });
-  }
+// 🧭 Find My Car
+if (findBtn) {
+  findBtn.addEventListener('click', () => {
+    trackEvent('click', 'Feature', 'Find My Car');
+    const spot = JSON.parse(localStorage.getItem('parkingSpot'));
+    if (!spot) {
+      status.textContent = '❌ No parking spot saved.';
+      return;
+    }
 
+    // ✅ Cancel any ongoing speech
+    speechSynthesis.cancel();
+
+    // ✅ Update map
+    updateMap(spot.lat, spot.lng);
+
+    // ✅ Get time parked
+    const parkedTime = new Date(spot.time);
+    const now = new Date();
+    const diffMs = now - parkedTime;
+
+    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    const time = parkedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const location = spot.locationName || 'this location';
+
+    // ✅ Format duration for speech
+    let durationText = '';
+    if (hours === 0) {
+      durationText = `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+    } else {
+      durationText = `${hours} hour${hours !== 1 ? 's' : ''}`;
+      if (minutes > 0) {
+        durationText += ` and ${minutes} minute${minutes !== 1 ? 's' : ''}`;
+      }
+    }
+
+    // ✅ Speak full message
+    const utter = new SpeechSynthesisUtterance(
+      `You parked at ${time} near ${location} for ${durationText}.`
+    );
+    utter.voice = window.getSelectedVoice ? window.getSelectedVoice() : null;
+    utter.rate = 0.9;
+    utter.pitch = 1;
+    speechSynthesis.speak(utter);
+
+    // ✅ Show status
+    status.textContent = `🚗 Your car is nearby. Parked for ${durationText}.`;
+
+    // ✅ Get distance (optional, keep if you want)
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const R = 6371e3;
+      const φ1 = pos.coords.latitude * Math.PI / 180;
+      const φ2 = spot.lat * Math.PI / 180;
+      const Δφ = (spot.lat - pos.coords.latitude) * Math.PI / 180;
+      const Δλ = (spot.lng - pos.coords.longitude) * Math.PI / 180;
+      const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      const distance = R * c;
+      const distText = distance >= 1000 ? (distance/1000).toFixed(1) + ' km' : Math.round(distance) + ' m';
+
+      // ✅ Optional: Speak distance after time
+      setTimeout(() => {
+        const distUtter = new SpeechSynthesisUtterance(`Your car is ${Math.round(distance)} meters away.`);
+        distUtter.voice = window.getSelectedVoice ? window.getSelectedVoice() : null;
+        distUtter.rate = 0.8;
+        speechSynthesis.speak(distUtter);
+      }, 2000); // Wait for first message
+
+    }, (err) => {
+      console.warn('Failed to get current location for distance:', err);
+    }, { enableHighAccuracy: true, timeout: 10000 });
+  });
+}
   // 📤 Share My Spot
   if (shareBtn) {
     shareBtn.addEventListener('click', async () => {
