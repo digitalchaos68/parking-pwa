@@ -38,6 +38,11 @@ body.dark .container {
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
+/* Privacy & Disclaimer Specific Styles */
+#privacy-container, #disclaimer-container {
+  text-align: left; /* Left-align for privacy & disclaimer */
+}
+
 /* Headings */
 h1 {
   font-size: 1.8rem;
