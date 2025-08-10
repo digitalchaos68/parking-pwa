@@ -85,41 +85,48 @@ async function reverseGeocode(lat, lng) {
 
 // 🔍 Find Nearby Places using Photon
 async function searchNearbyPhoton(lat, lng) {
-  // ✅ Safety check
   if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
-    console.warn('Invalid coordinates in searchNearbyPhoton:', { lat, lng });
+    console.warn('Invalid coordinates:', { lat, lng });
     return {};
   }
 
-  // ✅ Define a ~3km bounding box
-  const delta = 0.03;
-  const west = lng - delta;
-  const south = lat - delta;
-  const east = lng + delta;
-  const north = lat + delta;
+  // Define bounding box (~1km)
+  const west = lng - 0.01;
+  const south = lat - 0.01;
+  const east = lng + 0.01;
+  const north = lat + 0.01;
 
-  // ✅ Use consistent keys that match labels
-  const types = [
-    'restaurant',
-    'cafe',
-    'supermarket',
-    'shopping_mall',
-    'park',
-    'parking',
-    'gas station'  // ✅ Now matches label key
+  const typeMap = [
+    { type: 'fuel', query: 'amenity=fuel' },
+    { type: 'parking', query: 'amenity=parking' },
+    { type: 'supermarket', query: 'shop=supermarket' },
+    { type: 'restaurant', query: 'amenity=restaurant' },
+    { type: 'cafe', query: 'amenity=cafe' },
+    { type: 'park', query: 'leisure=park' }
   ];
 
   const results = {};
 
-  for (const type of types) {
-    // ✅ Use correct search term for each type
-    const term = type === 'parking' ? 'car park' : type;
-    const url = `https://photon.komoot.io/api/?lat=${lat}&lon=${lng}&q=${encodeURIComponent(term)}&bbox=${west},${south},${east},${north}&limit=5`;
+  for (const item of typeMap) {
+    const { type, query } = item;
+    const url = `https://nominatim.openstreetmap.org/search?${query}&format=json&bounded=1&viewbox=${west},${south},${east},${north}&limit=5`;
 
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        headers: {
+          'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)'
+        }
+      });
       const data = await response.json();
-      results[type] = data.features || [];
+      results[type] = data.map(place => ({
+        geometry: {
+          coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
+        },
+        properties: {
+          name: place.display_name.split(',')[0] || 'Unknown',
+          street: place.address?.road || ''
+        }
+      }));
     } catch (err) {
       console.warn(`Search failed for ${type}:`, err);
       results[type] = [];
@@ -128,6 +135,7 @@ async function searchNearbyPhoton(lat, lng) {
 
   return results;
 }
+
 
 // ✅ Display Nearby Results
 function displayNearbyResults(results, spot) {
