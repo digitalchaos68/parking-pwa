@@ -97,19 +97,20 @@ async function searchNearbyPhoton(lat, lng) {
   const north = lat + 0.01;
 
   const typeMap = [
-    { type: 'fuel', query: 'amenity=fuel' },
-    { type: 'parking', query: 'amenity=parking' },
-    { type: 'supermarket', query: 'shop=supermarket' },
-    { type: 'restaurant', query: 'amenity=restaurant' },
-    { type: 'cafe', query: 'amenity=cafe' },
-    { type: 'park', query: 'leisure=park' }
+    { type: 'restaurant', key: 'amenity', value: 'restaurant' },
+    { type: 'cafe', key: 'amenity', value: 'cafe' },
+    { type: 'supermarket', key: 'shop', value: 'supermarket' },
+    { type: 'shopping_mall', key: 'shop', value: 'mall' },
+    { type: 'park', key: 'leisure', value: 'park' },
+    { type: 'parking', key: 'amenity', value: 'parking' },
+    { type: 'fuel', key: 'amenity', value: 'fuel' }
   ];
 
   const results = {};
 
   for (const item of typeMap) {
-    const { type, query } = item;
-    const url = `https://nominatim.openstreetmap.org/search?${query}&format=json&bounded=1&viewbox=${west},${south},${east},${north}&limit=5`;
+    const { type, key, value } = item;
+    const url = `https://nominatim.openstreetmap.org/search?${key}=${value}&format=json&bounded=1&viewbox=${west},${south},${east},${north}&limit=5`;
 
     try {
       const response = await fetch(url, {
@@ -135,6 +136,7 @@ async function searchNearbyPhoton(lat, lng) {
 
   return results;
 }
+
 
 
 // ✅ Display Nearby Results
