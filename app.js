@@ -97,16 +97,55 @@ async function searchNearbyPhoton(lat, lng) {
   const north = lat + 0.01;
 
   const typeMap = [
-    { type: 'park', term: 'park', filter: (place) => place.class === 'leisure' && place.subclass === 'park' },
-    { type: 'supermarket', term: 'supermarket', filter: (place) => place.class === 'shop' && place.subclass === 'supermarket' },
-    { type: 'shopping_mall', term: 'mall', filter: (place) => 
-      (place.class === 'shop' && place.subclass === 'mall') || 
-      (place.name && (place.name.toLowerCase().includes('mall') || place.name.toLowerCase().includes('shopping centre')))
+    { 
+      type: 'park', 
+      term: 'park', 
+      filter: (place) => 
+        (place.class === 'leisure' && place.type === 'park') ||
+        (place.name && (place.name.toLowerCase().includes('park') || place.type === 'park'))
     },
-    { type: 'restaurant', term: 'restaurant', filter: (place) => place.class === 'amenity' && place.subclass === 'restaurant' },
-    { type: 'cafe', term: 'cafe', filter: (place) => place.class === 'amenity' && place.subclass === 'cafe' },
-    { type: 'parking', term: 'car park', filter: (place) => place.class === 'amenity' && place.subclass === 'parking' },
-    { type: 'fuel', term: 'fuel', filter: (place) => place.class === 'amenity' && place.subclass === 'fuel' }
+    { 
+      type: 'supermarket', 
+      term: 'supermarket', 
+      filter: (place) => 
+        (place.class === 'shop' && place.type === 'supermarket') ||
+        (place.name && place.name.toLowerCase().includes('supermarket'))
+    },
+    { 
+      type: 'shopping_mall', 
+      term: 'mall', 
+      filter: (place) => 
+        (place.name && (place.name.toLowerCase().includes('mall') || place.name.toLowerCase().includes('shopping centre'))) ||
+        (place.type && (place.type.includes('mall') || place.type.includes('centre')))
+    },
+    { 
+      type: 'restaurant', 
+      term: 'restaurant', 
+      filter: (place) => 
+        (place.class === 'amenity' && place.type === 'restaurant') ||
+        (place.name && place.name.toLowerCase().includes('restaurant'))
+    },
+    { 
+      type: 'cafe', 
+      term: 'cafe', 
+      filter: (place) => 
+        (place.class === 'amenity' && place.type === 'cafe') ||
+        (place.name && place.name.toLowerCase().includes('cafe'))
+    },
+    { 
+      type: 'parking', 
+      term: 'car park', 
+      filter: (place) => 
+        (place.class === 'amenity' && place.type === 'parking') ||
+        (place.name && place.name.toLowerCase().includes('parking'))
+    },
+    { 
+      type: 'fuel', 
+      term: 'fuel', 
+      filter: (place) => 
+        (place.class === 'amenity' && place.type === 'fuel') ||
+        (place.name && place.name.toLowerCase().includes('fuel'))
+    }
   ];
 
   const results = {};
@@ -123,7 +162,7 @@ async function searchNearbyPhoton(lat, lng) {
       });
       const data = await response.json();
 
-      // Filter results by OSM class/subclass
+      // Filter results by name and type
       results[type] = data
         .filter(filter)
         .map(place => ({
