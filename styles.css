@@ -417,3 +417,8 @@ a:hover {
 body.dark a {
   color: #4dabf7;
 }
+/* Bottom ad banner */
+.adsbygoogle {
+  margin: 10px auto;
+  text-align: center;
+}
