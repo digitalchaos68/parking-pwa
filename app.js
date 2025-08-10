@@ -84,6 +84,7 @@ async function reverseGeocode(lat, lng) {
 }
 
 // 🔍 Find Nearby Places using Photon
+// 🔍 Find Nearby Places using Photon
 async function searchNearbyPhoton(lat, lng) {
   if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
     console.warn('Invalid coordinates:', { lat, lng });
@@ -111,26 +112,21 @@ async function searchNearbyPhoton(lat, lng) {
         (place.class === 'shop' && place.type === 'supermarket') ||
         (place.name && place.name.toLowerCase().includes('supermarket'))
     },
-{ 
-  type: 'shopping_mall', 
-  term: 'mall', 
-  filter: (place) => 
-    (place.name && (
-      place.name.toLowerCase().includes('mall') || 
-      place.name.toLowerCase().includes('shopping centre') || 
-      place.name.toLowerCase().includes('shopping center')
-    )) ||
-    (place.display_name && (
-      place.display_name.toLowerCase().includes('mall') || 
-      place.display_name.toLowerCase().includes('shopping centre') || 
-      place.display_name.toLowerCase().includes('shopping center')
-    )) ||
-    (place.type && (
-      place.type.toLowerCase().includes('mall') || 
-      place.type.toLowerCase().includes('centre') || 
-      place.type.toLowerCase().includes('center')
-    ))
-},
+    { 
+      type: 'shopping_mall', 
+      term: 'mall', 
+      filter: (place) => 
+        (place.name && (
+          place.name.toLowerCase().includes('mall') || 
+          place.name.toLowerCase().includes('shopping centre') || 
+          place.name.toLowerCase().includes('shopping center')
+        )) ||
+        (place.display_name && (
+          place.display_name.toLowerCase().includes('mall') || 
+          place.display_name.toLowerCase().includes('shopping centre') || 
+          place.display_name.toLowerCase().includes('shopping center')
+        ))
+    },
     { 
       type: 'restaurant', 
       term: 'restaurant', 
@@ -165,6 +161,7 @@ async function searchNearbyPhoton(lat, lng) {
 
   for (const item of typeMap) {
     const { type, term, filter } = item;
+    // ✅ Use search.php for better free-text search
     const url = `https://nominatim.openstreetmap.org/search.php?q=${encodeURIComponent(term)}&format=json&viewbox=${west},${south},${east},${north}&bounded=1&limit=10`;
 
     try {
@@ -218,6 +215,7 @@ async function searchNearbyPhoton(lat, lng) {
 
   return results;
 }
+
 
 
 
