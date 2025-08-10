@@ -5,7 +5,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'sha256-vrIbkO/8y/W9ln0AlgYZY+Y2j6iT+4yagPpedYnBoZg=' 'sha256-pG3mnCtujA9mnqBdfQBQoCxmAbwKR8Dwt8clGqiDqzk='; script-src-elem 'self' https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline'; style-src-elem 'self'; img-src 'self' https://*.tile.openstreetmap.org blob: https:; connect-src 'self' https://photon.komoot.io https://www.google-analytics.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net; frame-src 'self' https://www.google.com https://tpc.googlesyndication.com https://*.doubleclick.net; object-src 'none'; base-uri 'self'"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'sha256-vrIbkO/8y/W9ln0AlgYZY+Y2j6iT+4yagPpedYnBoZg=' 'sha256-pG3mnCtujA9mnqBdfQBQoCxmAbwKR8Dwt8clGqiDqzk='; script-src-elem 'self' https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline'; style-src-elem 'self'; img-src 'self' https://*.tile.openstreetmap.org blob: ; connect-src 'self' https://photon.komoot.io https://www.google-analytics.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://ep1.adtrafficquality.google; frame-src 'self' https://www.google.com https://tpc.googlesyndication.com https://*.doubleclick.net; object-src 'none'; base-uri 'self'"
         },
         {
           "key": "X-Content-Type-Options",
