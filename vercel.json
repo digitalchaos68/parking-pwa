@@ -5,7 +5,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://ep2.adtrafficquality.google; style-src 'self' 'unsafe-inline'; img-src 'self' https://*.tile.openstreetmap.org blob: data:; connect-src 'self' https://photon.komoot.io https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://ep1.adtrafficquality.google; frame-src 'self' https://www.google.com https://tpc.googlesyndication.com https://*.doubleclick.net https://ep2.adtrafficquality.google; object-src 'none'; base-uri 'self'"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://ep2.adtrafficquality.google; style-src 'self' 'unsafe-inline'; img-src 'self' https://*.tile.openstreetmap.org blob: data: https://ep1.adtrafficquality.google; connect-src 'self' https://photon.komoot.io https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://ep1.adtrafficquality.google; frame-src 'self' https://www.google.com https://tpc.googlesyndication.com https://*.doubleclick.net https://ep2.adtrafficquality.google; object-src 'none'; base-uri 'self'"
         },
         {
           "key": "X-Content-Type-Options",
