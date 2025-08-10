@@ -91,10 +91,10 @@ async function searchNearbyPhoton(lat, lng) {
   }
 
   // Define bounding box (~1km)
-  const west = lng - 0.01;
-  const south = lat - 0.01;
-  const east = lng + 0.01;
-  const north = lat + 0.01;
+  const west = lng - 0.05;
+  const south = lat - 0.05;
+  const east = lng + 0.05;
+  const north = lat + 0.05;
 
   const typeMap = [
     { 
