@@ -111,17 +111,26 @@ async function searchNearbyPhoton(lat, lng) {
         (place.class === 'shop' && place.type === 'supermarket') ||
         (place.name && place.name.toLowerCase().includes('supermarket'))
     },
-    { 
-      type: 'shopping_mall', 
-      term: 'mall shopping centre', 
-      filter: (place) => 
-        place.name && (
-          place.name.toLowerCase().includes('mall') || 
-          place.name.toLowerCase().includes('shopping') ||
-          place.display_name?.toLowerCase().includes('mall') ||
-          place.display_name?.toLowerCase().includes('shopping')
-        )
-    },
+{ 
+  type: 'shopping_mall', 
+  term: 'mall', 
+  filter: (place) => 
+    (place.name && (
+      place.name.toLowerCase().includes('mall') || 
+      place.name.toLowerCase().includes('shopping centre') || 
+      place.name.toLowerCase().includes('shopping center')
+    )) ||
+    (place.display_name && (
+      place.display_name.toLowerCase().includes('mall') || 
+      place.display_name.toLowerCase().includes('shopping centre') || 
+      place.display_name.toLowerCase().includes('shopping center')
+    )) ||
+    (place.type && (
+      place.type.toLowerCase().includes('mall') || 
+      place.type.toLowerCase().includes('centre') || 
+      place.type.toLowerCase().includes('center')
+    ))
+}
     { 
       type: 'restaurant', 
       term: 'restaurant', 
