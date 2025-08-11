@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   
-  // 🔍 Find Nearby Places
+// 🔍 Find Nearby Places
 async function searchNearbyPhoton(lat, lng) {
   if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) return {};
 
@@ -92,6 +92,20 @@ async function searchNearbyPhoton(lat, lng) {
   const north = lat + delta;
 
   const typeMap = [
+    { 
+      type: 'shopping_mall', 
+      term: 'mall', 
+      filter: (place) => {
+        const name = place.name?.toLowerCase() || '';
+        const displayName = place.display_name?.toLowerCase() || '';
+        return name.includes('mall') || 
+               name.includes('shopping centre') || 
+               name.includes('shopping center') ||
+               displayName.includes('mall') || 
+               displayName.includes('shopping centre') || 
+               displayName.includes('shopping center');
+      }
+    },
     { type: 'park', term: 'park', filter: (p) => (p.class === 'leisure' && p.type === 'park') || (p.name && p.name.toLowerCase().includes('park')) },
     { type: 'supermarket', term: 'supermarket', filter: (p) => (p.class === 'shop' && p.type === 'supermarket') || (p.name && p.name.toLowerCase().includes('supermarket')) },
     { type: 'restaurant', term: 'restaurant', filter: (p) => (p.class === 'amenity' && p.type === 'restaurant') || (p.name && p.name.toLowerCase().includes('restaurant')) },
@@ -101,7 +115,7 @@ async function searchNearbyPhoton(lat, lng) {
 
   const results = {};
 
-  // ✅ Search for all types except shopping_mall
+  // ✅ Search for all types except parking
   for (const item of typeMap) {
     const { type, term, filter } = item;
     const url = `https://nominatim.openstreetmap.org/search.php?q=${encodeURIComponent(term)}&format=json&viewbox=${west},${south},${east},${north}&bounded=1&limit=10`;
@@ -123,37 +137,55 @@ async function searchNearbyPhoton(lat, lng) {
     }
   }
 
+  // ✅ Special case: Car Parks — use direct OSM tag search
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?amenity=parking&format=json&viewbox=${west},${south},${east},${north}&bounded=1&limit=5`;
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)' }
+    });
+    const data = await response.json();
 
-// ✅ Special case: Shopping Malls — use q=mall
-try {
-  const url = `https://nominatim.openstreetmap.org/search.php?q=mall&format=json&viewbox=${west},${south},${east},${north}&bounded=1&limit=10`;
-  const response = await fetch(url, {
-    headers: { 'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)' }
-  });
-  const data = await response.json();
+    results.parking = data.map(place => ({
+      geometry: {
+        coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
+      },
+      raw: place,
+      properties: {
+        name: place.name || 'Car Park'
+      }
+    }));
+  } catch (err) {
+    console.warn('Search failed for parking:', err);
+    results.parking = [];
+  }
 
-  console.log('✅ Getting mall results:', url, data);
+  // ✅ Special case: Shopping Malls — use q=mall
+  try {
+    const url = `https://nominatim.openstreetmap.org/search.php?q=mall&format=json&viewbox=${west},${south},${east},${north}&bounded=1&limit=10`;
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)' }
+    });
+    const data = await response.json();
 
-  // ✅ Skip filtering — trust Nominatim's results
-  results.shopping_mall = data.map(place => ({
-    geometry: {
-      coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
-    },
-    raw: place,
-    properties: {
-      name: place.name || 'Unnamed'
-    }
-  }));
+    results.shopping_mall = data.map(place => ({
+      geometry: {
+        coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
+      },
+      raw: place,
+      properties: {
+        name: place.name || 'Unnamed'
+      }
+    }));
 
-  console.log('✅ Final mall results:', results.shopping_mall);
-} catch (err) {
-  console.warn('Search failed for shopping_mall:', err);
-  results.shopping_mall = [];
-}
-  
-  
+    console.log('✅ Final mall results:', results.shopping_mall);
+  } catch (err) {
+    console.warn('Search failed for shopping_mall:', err);
+    results.shopping_mall = [];
+  }
+
   return results;
 }
+  
 
 
 // ✅ Display Nearby Results - Show 6 Nearest Per Type
