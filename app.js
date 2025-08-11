@@ -285,6 +285,7 @@ function getPlaceName(place) {
 
   // ✅ Use first part of display_name
   if (place.display_name) {
+      console.log('Full Place Object:', JSON.stringify(place, null, 2));
     const parts = place.display_name.split(',');
     for (const part of parts) {
       const trimmed = part.trim();
@@ -309,6 +310,7 @@ function getPlaceName(place) {
 function getPlaceAddress(place) {
   // ✅ Use display_name to extract address
   if (place.display_name) {
+      console.log('Full Place Object:', JSON.stringify(place, null, 2));
     const parts = place.display_name.split(',');
     // Remove last part (country), then take last 1-2 parts
     parts.pop(); // Remove "Singapore"
