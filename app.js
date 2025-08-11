@@ -123,67 +123,42 @@ async function searchNearbyPhoton(lat, lng) {
     }
   }
 
-  // ✅ Special case: Car Parks — use direct OSM tag search
-  try {
-    const url = `https://nominatim.openstreetmap.org/search?amenity=parking&format=json&viewbox=${west},${south},${east},${north}&bounded=1&limit=5`;
-    const response = await fetch(url, {
-      headers: { 'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)' }
-    });
-    const data = await response.json();
+// ✅ Special case: Shopping Malls — use q=mall
+try {
+  const url = `https://nominatim.openstreetmap.org/search.php?q=mall&format=json&viewbox=${west},${south},${east},${north}&bounded=1&limit=10`;
+  const response = await fetch(url, {
+    headers: { 'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)' }
+  });
+  const data = await response.json();
 
-    results.parking = data.map(place => ({
+  console.log('✅ Getting mall results:', url, data);
+
+  // ✅ Log each place's attributes
+  data.forEach(place => {
+    console.log('🔍 Mall place details:', place);
+  });
+
+  results.shopping_mall = data
+    .filter(place => {
+      // ✅ Match malls using class and type
+      return place.class === 'shop' && place.type === 'mall';
+    })
+    .map(place => ({
       geometry: {
         coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
       },
       raw: place,
       properties: {
-        name: place.name || 'Car Park'
+        name: place.name || 'Unnamed'
       }
     }));
-  } catch (err) {
-    console.warn('Search failed for parking:', err);
-    results.parking = [];
-  }
 
-  // ✅ Special case: Shopping Malls — use q=mall
-  try {
-    const url = `https://nominatim.openstreetmap.org/search.php?q=mall&format=json&viewbox=${west},${south},${east},${north}&bounded=1&limit=10`;
-    const response = await fetch(url, {
-      headers: { 'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)' }
-    });
-    const data = await response.json();
-
-    
-    console.log('✅ Getting mall results:', url, data);
-
-
-    results.shopping_mall = data
-      .filter(place => {
-        const name = place.name?.toLowerCase() || '';
-        const displayName = place.display_name?.toLowerCase() || '';
-        return name.includes('mall') || 
-               name.includes('shopping centre') || 
-               name.includes('shopping center') ||
-               displayName.includes('mall') || 
-               displayName.includes('shopping centre') || 
-               displayName.includes('shopping center');
-      })
-      .map(place => ({
-        geometry: {
-          coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
-        },
-        raw: place,
-        properties: {
-          name: place.name || 'Unnamed'
-        }
-      }));
-
-    console.log('✅ Final mall results:', results.shopping_mall);
-  } catch (err) {
-    console.warn('Search failed for shopping_mall:', err);
-    results.shopping_mall = [];
-  }
-
+  console.log('✅ Final mall results:', results.shopping_mall);
+} catch (err) {
+  console.warn('Search failed for shopping_mall:', err);
+  results.shopping_mall = [];
+}
+  
   return results;
 }
 
