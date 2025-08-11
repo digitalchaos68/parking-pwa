@@ -91,30 +91,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const north = lat + delta;
 
     const typeMap = [
-      { 
-        type: 'shopping_mall', 
-        term: 'mall', 
-        filter: (place) => 
-          (place.name && (
-            place.name.toLowerCase().includes('mall') || 
-            place.name.toLowerCase().includes('shopping centre') || 
-            place.name.toLowerCase().includes('shopping center')
-          )) ||
-          (place.display_name && (
-            place.display_name.toLowerCase().includes('mall') || 
-            place.display_name.toLowerCase().includes('shopping centre') || 
-            place.display_name.toLowerCase().includes('shopping center')
-          ))
-      },
+{ 
+  type: 'shopping_mall', 
+  term: 'mall', 
+  filter: (place) => {
+    const name = place.name?.toLowerCase() || '';
+    const displayName = place.display_name?.toLowerCase() || '';
+    const match = name.includes('mall') || 
+                 name.includes('shopping centre') || 
+                 name.includes('shopping center') ||
+                 displayName.includes('mall') || 
+                 displayName.includes('shopping centre') || 
+                 displayName.includes('shopping center');
+    if (match && place.name) {
+      console.log('✅ Mall PASSED filter:', place.name, place.class, place.type);
+    }<
+    return match;
+  }
+},
       { type: 'park', term: 'park', filter: (p) => (p.class === 'leisure' && p.type === 'park') || (p.name && p.name.toLowerCase().includes('park')) },
       { type: 'supermarket', term: 'supermarket', filter: (p) => (p.class === 'shop' && p.type === 'supermarket') || (p.name && p.name.toLowerCase().includes('supermarket')) },
       { type: 'restaurant', term: 'restaurant', filter: (p) => (p.class === 'amenity' && p.type === 'restaurant') || (p.name && p.name.toLowerCase().includes('restaurant')) },
       { type: 'cafe', term: 'cafe', filter: (p) => (p.class === 'amenity' && p.type === 'cafe') || (p.name && p.name.toLowerCase().includes('cafe')) },
       { type: 'fuel', term: 'fuel', filter: (p) => (p.class === 'amenity' && p.type === 'fuel') || (p.name && p.name.toLowerCase().includes('fuel')) }
     ];
-if (match && place.name) {
-      console.log('✅ Mall PASSED filter:', place.name, place.class, place.type);
-    }
+
     const results = {};
 
     for (const item of typeMap) {
