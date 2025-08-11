@@ -247,11 +247,7 @@ function displayNearbyResults(results, spot) {
       const mapUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 
       html += `<div class="nearby-place">
-        <h4>
-          <a href="${mapUrl}" target="_blank" style="color: inherit; text-decoration: none;">
-            ${name}
-          </a>
-        </h4>
+        <h4><a href="${mapUrl}" target="_blank">${name}</a></h4>
         <p>📍 ${distText} away</p>
         <p><small>${address}</small></p>
       </div>`;
