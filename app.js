@@ -253,6 +253,9 @@ function displayNearbyResults(results, spot) {
     }
     html += `<h3 style="margin:15px 0 8px 0; color:#2c7be5;">${label}</h3>`;
     places.slice(0, 5).forEach(place => {
+
+      console.log('Processing place:', place);
+
       const dist = computeDistance(spot.lat, spot.lng, place.geometry.coordinates[1], place.geometry.coordinates[0]);
       const distText = dist >= 1000 ? (dist/1000).toFixed(1) + ' km' : dist + ' m';
       const name = getPlaceName(place);
@@ -274,76 +277,48 @@ function displayNearbyResults(results, spot) {
   nearbyContainer.innerHTML = html || '<p>📭 No nearby places found.</p>';
 }
 
-
 function getPlaceName(place) {
-  // ✅ Use 'name' if it's meaningful
-  if (place.name && place.name.trim() && !place.name.match(/^\d+$/)) {
+  // ✅ Use 'name' if it exists and is not empty
+  if (place.name && place.name.trim() !== '') {
     return place.name;
   }
 
-  // ✅ Use 'display_name' as fallback
+  // ✅ Use first part of display_name
   if (place.display_name) {
     const parts = place.display_name.split(',');
     for (const part of parts) {
       const trimmed = part.trim();
+      // Skip if it's just a number or postal code
+      if (/^\d+$/.test(trimmed) || /^\d{6}$/.test(trimmed)) continue;
       // Skip if it's coordinates
-      if (trimmed.includes('.') && /^\d+\.\d+$/.test(trimmed.split('.')[0])) {
-        continue;
-      }
-      // Skip if it's a number (e.g., "246")
-      if (/^\d+$/.test(trimmed)) {
-        continue;
-      }
-      // Skip common junk
-      if (['Singapore', 'SG', 'Central', 'Ang Mo Kio', 'Thomson', 'Kebun Baru'].includes(trimmed)) {
-        continue;
-      }
-      // Skip postal codes (6 digits)
-      if (/^\d{6}$/.test(trimmed)) {
-        continue;
-      }
+      if (trimmed.includes('.') && /^\d+\.\d+$/.test(trimmed.split('.')[0])) continue;
+      // Skip if it's just "Singapore"
+      if (['Singapore', 'SG'].includes(trimmed)) continue;
       return trimmed;
     }
-  }
-
-  // ✅ Final fallback: first non-empty part of display_name
-  if (place.display_name) {
-    const parts = place.display_name.split(',');
+    // Fallback to first non-empty part
     for (const part of parts) {
       const trimmed = part.trim();
-      if (trimmed && trimmed !== 'Singapore') {
-        return trimmed;
-      }
+      if (trimmed && trimmed !== 'Singapore') return trimmed;
     }
   }
 
   return 'Unnamed';
 }
 
-
 function getPlaceAddress(place) {
-  // ✅ Use display_name as primary source
+  // ✅ Use display_name to extract address
   if (place.display_name) {
     const parts = place.display_name.split(',');
-    const filtered = parts
-      .map(p => p.trim())
-      .filter(p => 
-        p && 
-        !['Singapore', 'SG', 'Central', 'Ang Mo Kio', 'Thomson', 'Kebun Baru'].includes(p) &&
-        !/^\d{6}$/.test(p) && // Skip postal codes
-        !/^\d+$/.test(p) &&  // Skip numbers
-        !p.includes('.')     // Skip coordinates
-      );
-
-    // Return last 2 meaningful parts (most specific)
-    const len = filtered.length;
+    // Remove last part (country), then take last 1-2 parts
+    parts.pop(); // Remove "Singapore"
+    const len = parts.length;
     if (len >= 2) {
-      return filtered.slice(-2).join(', ');
+      return parts.slice(-2).join(', ').trim();
     } else if (len === 1) {
-      return filtered[0];
+      return parts[0].trim();
     }
   }
-
   return 'Nearby';
 }
 
