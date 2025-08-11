@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const whatsappNumber = document.getElementById('whatsappNumber');
   const sendWABtn = document.getElementById('sendWABtn');
   const nearbyContainer = document.getElementById('nearbyContainer');
+  const qrContainer = document.getElementById('qrContainer'); // ✅ Added
 
   // ✅ Safe gtag wrapper
   function trackEvent(action, category = 'Feature', label = '') {
@@ -114,7 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const results = {};
 
-    // ✅ Search for all types except parking
     for (const item of typeMap) {
       const { type, term, filter } = item;
       const url = `https://nominatim.openstreetmap.org/search.php?q=${encodeURIComponent(term)}&format=json&viewbox=${west},${south},${east},${north}&bounded=1&limit=10`;
@@ -371,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 🔲 Show QR Code
-  if (showQRBtn && typeof QRCode !== 'undefined') {
+  if (showQRBtn && typeof QRCode !== 'undefined' && qrContainer) {
     showQRBtn.addEventListener('click', () => {
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
@@ -383,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
         width: 128,
         height: 128
       });
-      document.getElementById('qrContainer').style.display = 'block';
+      qrContainer.style.display = 'block';
       trackEvent('click', 'Feature', 'Show QR Code');
     });
   }
