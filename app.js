@@ -90,21 +90,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const north = lat + delta;
 
     const typeMap = [
-  { 
-    type: 'shopping_mall', 
-    term: 'mall', 
-    filter: (place) => 
-      (place.name && (
-        place.name.toLowerCase().includes('mall') || 
-        place.name.toLowerCase().includes('shopping centre') || 
-        place.name.toLowerCase().includes('shopping center')
-      )) ||
-      (place.display_name && (
-        place.display_name.toLowerCase().includes('mall') || 
-        place.display_name.toLowerCase().includes('shopping centre') || 
-        place.display_name.toLowerCase().includes('shopping center')
-      ))
-  },      
+      { 
+        type: 'shopping_mall', 
+        term: 'mall', 
+        filter: (place) => 
+          (place.name && (
+            place.name.toLowerCase().includes('mall') || 
+            place.name.toLowerCase().includes('shopping centre') || 
+            place.name.toLowerCase().includes('shopping center')
+          )) ||
+          (place.display_name && (
+            place.display_name.toLowerCase().includes('mall') || 
+            place.display_name.toLowerCase().includes('shopping centre') || 
+            place.display_name.toLowerCase().includes('shopping center')
+          ))
+      },
       { type: 'park', term: 'park', filter: (p) => (p.class === 'leisure' && p.type === 'park') || (p.name && p.name.toLowerCase().includes('park')) },
       { type: 'supermarket', term: 'supermarket', filter: (p) => (p.class === 'shop' && p.type === 'supermarket') || (p.name && p.name.toLowerCase().includes('supermarket')) },
       { type: 'restaurant', term: 'restaurant', filter: (p) => (p.class === 'amenity' && p.type === 'restaurant') || (p.name && p.name.toLowerCase().includes('restaurant')) },
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const results = {};
 
-    // ✅ Search for all types except parking and shopping_mall
+    // ✅ Search for all types except parking
     for (const item of typeMap) {
       const { type, term, filter } = item;
       const url = `https://nominatim.openstreetmap.org/search.php?q=${encodeURIComponent(term)}&format=json&viewbox=${west},${south},${east},${north}&bounded=1&limit=10`;
@@ -156,28 +156,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.warn('Search failed for parking:', err);
       results.parking = [];
-    }
-
-    // ✅ Special case: Shopping Malls — use direct OSM tag search
-    try {
-      const url = `https://nominatim.openstreetmap.org/search?shop=mall&format=json&viewbox=${west},${south},${east},${north}&bounded=1&limit=5`;
-      const response = await fetch(url, {
-        headers: { 'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)' }
-      });
-      const data = await response.json();
-
-      results.shopping_mall = data.map(place => ({
-        geometry: {
-          coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
-        },
-        raw: place,
-        properties: {
-          name: place.name || place.display_name.split(',')[0] || 'Unnamed'
-        }
-      }));
-    } catch (err) {
-      console.warn('Search failed for shopping_mall:', err);
-      results.shopping_mall = [];
     }
 
     return results;
