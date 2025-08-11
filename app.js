@@ -156,52 +156,68 @@ try {
 }
 
 
-  // ✅ Display Nearby Results
-  function displayNearbyResults(results, spot) {
+// ✅ Display Nearby Results - Show 6 Nearest Per Type
+function displayNearbyResults(results, spot) {
+
     // ✅ LOG 5: Results received by display function
     console.log('📥 Results received by displayNearbyResults:', results);
 
-    let html = '';
-    const labels = {
-      restaurant: '🍽️ Restaurants',
-      cafe: '☕ Cafes',
-      supermarket: '🛒 Supermarkets',
-      shopping_mall: '🛍️ Shopping Malls',
-      park: '🌳 Parks',
-      parking: '🅿️ Carparks',
-      fuel: '⛽ Gas Stations'
-    };
+  let html = '';
 
-    for (const [type, places] of Object.entries(results)) {
-      if (!places.length) continue;
-      const label = labels[type];
-      if (!label) continue;
+  const labels = {
+    restaurant: '🍽️ Restaurants',
+    cafe: '☕ Cafes',
+    supermarket: '🛒 Supermarkets',
+    shopping_mall: '🛍️ Shopping Malls',
+    park: '🌳 Parks',
+    parking: '🅿️ Carparks',
+    fuel: '⛽ Gas Stations'
+  };
+
+  for (const [type, places] of Object.entries(results)) {
+    if (!places.length) continue;
+    const label = labels[type];
+    if (!label) continue;
 
       // ✅ LOG 6: Processing this type
       console.log(`📊 Processing ${type}:`, places);
 
-      html += `<h3 style="margin:15px 0 8px 0; color:#2c7be5;">${label}</h3>`;
-      places.slice(0, 5).forEach(place => {
-        const dist = computeDistance(spot.lat, spot.lng, place.geometry.coordinates[1], place.geometry.coordinates[0]);
-        const distText = dist >= 1000 ? (dist/1000).toFixed(1) + ' km' : dist + ' m';
-        const name = place.properties.name;
-        const address = getPlaceAddress(place.raw) || 'Nearby';
-        const [lng, lat] = place.geometry.coordinates;
-        const mapUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+    // ✅ Sort places by distance (nearest first)
+    const sortedPlaces = places
+      .map(place => {
+        const dist = computeDistance(
+          spot.lat,
+          spot.lng,
+          place.geometry.coordinates[1],
+          place.geometry.coordinates[0]
+        );
+        return { ...place, distance: dist };
+      })
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 6); // ✅ Take only the 6 nearest
 
-        html += `<div class="nearby-place">
-          <h4>
-            <a href="${mapUrl}" target="_blank">${name}</a>
-          </h4>
-          <p>📍 ${distText} away</p>
-          <p><small>${address}</small></p>
-        </div>`;
+    html += `<h3 style="margin:15px 0 8px 0; color:#2c7be5;">${label}</h3>`;
+    sortedPlaces.forEach(place => {
+      const distText = place.distance >= 1000 
+        ? (place.distance / 1000).toFixed(1) + ' km' 
+        : place.distance + ' m';
+      const name = place.properties.name;
+      const address = getPlaceAddress(place.raw) || 'Nearby';
+      const [lng, lat] = place.geometry.coordinates;
+      const mapUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 
-
-      });
-    }
-    nearbyContainer.innerHTML = html || '<p>📭 No nearby places found.</p>';
+      html += `<div class="nearby-place">
+        <h4>
+          <a href="${mapUrl}" target="_blank">${name}</a>
+        </h4>
+        <p>📍 ${distText} away</p>
+        <p><small>${address}</small></p>
+      </div>`;
+    });
   }
+
+  nearbyContainer.innerHTML = html || '<p>📭 No nearby places found.</p>';
+}
 
   function getPlaceAddress(place) {
     if (!place || !place.display_name) return 'Nearby';
