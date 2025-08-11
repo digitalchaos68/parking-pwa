@@ -259,70 +259,77 @@ function displayNearbyResults(results, spot) {
 
 
 function getPlaceName(place) {
-  // ✅ Priority 1: Use name if it's meaningful
+  // ✅ Use 'name' if it's meaningful
   if (place.name && place.name.trim() && !place.name.match(/^\d+$/)) {
     return place.name;
   }
 
-  // ✅ Priority 2: Use display_name if it's not coordinates
+  // ✅ Use 'display_name' as fallback
   if (place.display_name) {
     const parts = place.display_name.split(',');
     for (const part of parts) {
       const trimmed = part.trim();
-      // Skip if it looks like coordinates
+      // Skip if it's coordinates
       if (trimmed.includes('.') && /^\d+\.\d+$/.test(trimmed.split('.')[0])) {
         continue;
       }
-      // Skip if it's just a number
+      // Skip if it's a number (e.g., "246")
       if (/^\d+$/.test(trimmed)) {
+        continue;
+      }
+      // Skip common junk
+      if (['Singapore', 'SG', 'Central', 'Ang Mo Kio', 'Thomson', 'Kebun Baru'].includes(trimmed)) {
+        continue;
+      }
+      // Skip postal codes (6 digits)
+      if (/^\d{6}$/.test(trimmed)) {
         continue;
       }
       return trimmed;
     }
   }
 
-  // ✅ Fallback: Extract from display_name or coordinates
+  // ✅ Final fallback: first non-empty part of display_name
   if (place.display_name) {
-    return place.display_name.split(',')[0].trim();
+    const parts = place.display_name.split(',');
+    for (const part of parts) {
+      const trimmed = part.trim();
+      if (trimmed && trimmed !== 'Singapore') {
+        return trimmed;
+      }
+    }
   }
 
-  // ✅ Final fallback
   return 'Unnamed';
 }
 
-function getPlaceAddress(place) {
-  const addr = place.address;
-  if (!addr) return 'Nearby';
 
-  // ✅ Try common address fields
-  return addr.road ||
-         addr.pedestrian ||
-         addr.residential ||
-         addr.suburb ||
-         addr.neighbourhood ||
-         addr.city ||
-         addr.town ||
-         addr.village ||
-         addr.state ||
-         'Nearby';
+function getPlaceAddress(place) {
+  // ✅ Use display_name as primary source
+  if (place.display_name) {
+    const parts = place.display_name.split(',');
+    const filtered = parts
+      .map(p => p.trim())
+      .filter(p => 
+        p && 
+        !['Singapore', 'SG', 'Central', 'Ang Mo Kio', 'Thomson', 'Kebun Baru'].includes(p) &&
+        !/^\d{6}$/.test(p) && // Skip postal codes
+        !/^\d+$/.test(p) &&  // Skip numbers
+        !p.includes('.')     // Skip coordinates
+      );
+
+    // Return last 2 meaningful parts (most specific)
+    const len = filtered.length;
+    if (len >= 2) {
+      return filtered.slice(-2).join(', ');
+    } else if (len === 1) {
+      return filtered[0];
+    }
+  }
+
+  return 'Nearby';
 }
 
-
-  // ✅ Distance helper (haversine formula)
-  function computeDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371e3; // Earth radius in meters
-    const φ1 = lat1 * Math.PI / 180;
-    const φ2 = lat2 * Math.PI / 180;
-    const Δφ = (lat2 - lat1) * Math.PI / 180;
-    const Δλ = (lon2 - lon1) * Math.PI / 180;
-
-    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-              Math.cos(φ1) * Math.cos(φ2) *
-              Math.sin(Δλ/2) * Math.sin(Δλ/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-    return Math.round(R * c);
-  }
 
   // 🔔 Request notification permission
   function requestNotificationPermission() {
