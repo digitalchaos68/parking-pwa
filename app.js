@@ -123,6 +123,7 @@ async function searchNearbyPhoton(lat, lng) {
     }
   }
 
+
 // ✅ Special case: Shopping Malls — use q=mall
 try {
   const url = `https://nominatim.openstreetmap.org/search.php?q=mall&format=json&viewbox=${west},${south},${east},${north}&bounded=1&limit=10`;
@@ -133,31 +134,23 @@ try {
 
   console.log('✅ Getting mall results:', url, data);
 
-  // ✅ Filter malls using address_type, class, and type
-  results.shopping_mall = data
-    .filter(place => {
-      return (
-        place.address_type === 'shop' &&
-        place.class === 'shop' &&
-        place.type === 'mall'
-      );
-    })
-    .map(place => ({
-      geometry: {
-        coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
-      },
-      raw: place,
-      properties: {
-        name: place.name || 'Unnamed'
-      }
-    }));
+  // ✅ Skip filtering — trust Nominatim's results
+  results.shopping_mall = data.map(place => ({
+    geometry: {
+      coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
+    },
+    raw: place,
+    properties: {
+      name: place.name || 'Unnamed'
+    }
+  }));
 
   console.log('✅ Final mall results:', results.shopping_mall);
 } catch (err) {
   console.warn('Search failed for shopping_mall:', err);
   results.shopping_mall = [];
 }
-
+  
   
   return results;
 }
