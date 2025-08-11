@@ -90,6 +90,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const north = lat + delta;
 
     const typeMap = [
+  { 
+    type: 'shopping_mall', 
+    term: 'mall', 
+    filter: (place) => 
+      (place.name && (
+        place.name.toLowerCase().includes('mall') || 
+        place.name.toLowerCase().includes('shopping centre') || 
+        place.name.toLowerCase().includes('shopping center')
+      )) ||
+      (place.display_name && (
+        place.display_name.toLowerCase().includes('mall') || 
+        place.display_name.toLowerCase().includes('shopping centre') || 
+        place.display_name.toLowerCase().includes('shopping center')
+      ))
+  },      
       { type: 'park', term: 'park', filter: (p) => (p.class === 'leisure' && p.type === 'park') || (p.name && p.name.toLowerCase().includes('park')) },
       { type: 'supermarket', term: 'supermarket', filter: (p) => (p.class === 'shop' && p.type === 'supermarket') || (p.name && p.name.toLowerCase().includes('supermarket')) },
       { type: 'restaurant', term: 'restaurant', filter: (p) => (p.class === 'amenity' && p.type === 'restaurant') || (p.name && p.name.toLowerCase().includes('restaurant')) },
