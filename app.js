@@ -92,21 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const typeMap = [
       { type: 'park', term: 'park', filter: (p) => (p.class === 'leisure' && p.type === 'park') || (p.name && p.name.toLowerCase().includes('park')) },
       { type: 'supermarket', term: 'supermarket', filter: (p) => (p.class === 'shop' && p.type === 'supermarket') || (p.name && p.name.toLowerCase().includes('supermarket')) },
-{ 
-  type: 'shopping_mall', 
-  term: 'mall', 
-  filter: (place) => 
-    (place.name && (
-      place.name.toLowerCase().includes('mall') || 
-      place.name.toLowerCase().includes('shopping centre') || 
-      place.name.toLowerCase().includes('shopping center')
-    )) ||
-    (place.display_name && (
-      place.display_name.toLowerCase().includes('mall') || 
-      place.display_name.toLowerCase().includes('shopping centre') || 
-      place.display_name.toLowerCase().includes('shopping center')
-    ))
-},
       { type: 'restaurant', term: 'restaurant', filter: (p) => (p.class === 'amenity' && p.type === 'restaurant') || (p.name && p.name.toLowerCase().includes('restaurant')) },
       { type: 'cafe', term: 'cafe', filter: (p) => (p.class === 'amenity' && p.type === 'cafe') || (p.name && p.name.toLowerCase().includes('cafe')) },
       { type: 'fuel', term: 'fuel', filter: (p) => (p.class === 'amenity' && p.type === 'fuel') || (p.name && p.name.toLowerCase().includes('fuel')) }
@@ -114,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const results = {};
 
+    // ✅ Search for all types except parking and shopping_mall
     for (const item of typeMap) {
       const { type, term, filter } = item;
       const url = `https://nominatim.openstreetmap.org/search.php?q=${encodeURIComponent(term)}&format=json&viewbox=${west},${south},${east},${north}&bounded=1&limit=10`;
@@ -135,21 +121,48 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // ✅ Car Parks
+    // ✅ Special case: Car Parks — use direct OSM tag search
     try {
       const url = `https://nominatim.openstreetmap.org/search?amenity=parking&format=json&viewbox=${west},${south},${east},${north}&bounded=1&limit=5`;
       const response = await fetch(url, {
         headers: { 'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)' }
       });
       const data = await response.json();
+
       results.parking = data.map(place => ({
-        geometry: { coordinates: [parseFloat(place.lon), parseFloat(place.lat)] },
+        geometry: {
+          coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
+        },
         raw: place,
-        properties: { name: place.name || 'Car Park' }
+        properties: {
+          name: place.name || 'Car Park'
+        }
       }));
     } catch (err) {
       console.warn('Search failed for parking:', err);
       results.parking = [];
+    }
+
+    // ✅ Special case: Shopping Malls — use direct OSM tag search
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?shop=mall&format=json&viewbox=${west},${south},${east},${north}&bounded=1&limit=5`;
+      const response = await fetch(url, {
+        headers: { 'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)' }
+      });
+      const data = await response.json();
+
+      results.shopping_mall = data.map(place => ({
+        geometry: {
+          coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
+        },
+        raw: place,
+        properties: {
+          name: place.name || place.display_name.split(',')[0] || 'Unnamed'
+        }
+      }));
+    } catch (err) {
+      console.warn('Search failed for shopping_mall:', err);
+      results.shopping_mall = [];
     }
 
     return results;
@@ -221,74 +234,75 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 📷 Photo Upload
+  // 📸 Photo Upload
   if (photoInput) {
     photoInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = (e) => {
-          photoImg.src = e.target.result;
+        reader.onload = function(event) {
+          const dataUrl = event.target.result;
+          photoImg.src = dataUrl;
           photoPreview.style.display = 'block';
-          trackEvent('upload', 'Photo', 'Parking Spot Photo');
+          localStorage.setItem('parkingPhoto', dataUrl);
         };
         reader.readAsDataURL(file);
       }
     });
   }
 
-// ✅ Save My Parking Spot
-if (saveBtn) {
-  saveBtn.addEventListener('click', () => {
-    status.textContent = '📍 Getting your location...';
-    navigator.geolocation.getCurrentPosition(async (position) => {
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
+  // ✅ Save My Parking Spot
+  if (saveBtn) {
+    saveBtn.addEventListener('click', () => {
+      status.textContent = '📍 Getting your location...';
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
 
-      if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
-        status.textContent = '❌ Invalid location received';
-        return;
-      }
+        if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
+          status.textContent = '❌ Invalid location received';
+          return;
+        }
 
-      // ✅ Reverse geocode to get location name
-      const locationName = await reverseGeocode(lat, lng);
+        // ✅ Reverse geocode to get location name
+        const locationName = await reverseGeocode(lat, lng);
 
-      // ✅ Save spot
-      const spot = {
-        lat,
-        lng,
-        time: new Date().toISOString(),
-        locationName
-      };
-      localStorage.setItem('parkingSpot', JSON.stringify(spot));
+        // ✅ Save spot
+        const spot = {
+          lat,
+          lng,
+          time: new Date().toISOString(),
+          locationName
+        };
+        localStorage.setItem('parkingSpot', JSON.stringify(spot));
 
-      // ✅ Save photo separately (as Data URL)
-      if (photoImg.src) {
-        localStorage.setItem('parkingPhoto', photoImg.src);
-      }
+        // ✅ Save photo separately (as Data URL)
+        if (photoImg.src) {
+          localStorage.setItem('parkingPhoto', photoImg.src);
+        }
 
-      // ✅ Clear nearby results
-      nearbyContainer.innerHTML = '';
-      nearbyContainer.style.display = 'none';
+        // ✅ Clear nearby results
+        nearbyContainer.innerHTML = '';
+        nearbyContainer.style.display = 'none';
 
-      // ✅ Update UI
-      updateMap(lat, lng);
-      findBtn.disabled = false;
-      shareBtn.disabled = false;
-      showQRBtn.disabled = false;
-      directionsBtn.disabled = false;
-      nearbyBtn.disabled = false;
-      resetBtn.disabled = false;
-      sendWABtn.disabled = false;
+        // ✅ Update UI
+        updateMap(lat, lng);
+        findBtn.disabled = false;
+        shareBtn.disabled = false;
+        showQRBtn.disabled = false;
+        directionsBtn.disabled = false;
+        nearbyBtn.disabled = false;
+        resetBtn.disabled = false;
+        sendWABtn.disabled = false;
 
-      status.textContent = `✅ Parking saved: ${locationName}`;
-      if (timer) timer.textContent = '';
-      trackEvent('click', 'Action', 'Save Parking Spot');
-    }, (err) => {
-      status.textContent = `❌ Error: ${err.message}`;
-    }, { enableHighAccuracy: true });
-  });
-}
+        status.textContent = `✅ Parking saved: ${locationName}`;
+        if (timer) timer.textContent = '';
+        trackEvent('click', 'Action', 'Save Parking Spot');
+      }, (err) => {
+        status.textContent = `❌ Error: ${err.message}`;
+      }, { enableHighAccuracy: true });
+    });
+  }
 
   // 🧭 Find My Car
   if (findBtn) {
@@ -337,8 +351,12 @@ if (saveBtn) {
     shareBtn.addEventListener('click', async () => {
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
-      const url = `${window.location.origin}/?lat=${spot.lat}&lng=${spot.lng}&time=${spot.time}&photo=${encodeURIComponent(spot.photo || '')}`;
-      const shareData = { title: 'My Parking Spot', text: `I parked at ${spot.locationName}`, url };
+      const url = `${window.location.origin}/?lat=${spot.lat}&lng=${spot.lng}&time=${spot.time}`;
+      const shareData = { 
+        title: 'My Parking Spot', 
+        text: `I parked at ${spot.locationName}`, 
+        url 
+      };
       if (navigator.share) {
         try {
           await navigator.share(shareData);
@@ -359,27 +377,23 @@ if (saveBtn) {
     });
   }
 
-// 🔲 Show QR Code
-if (showQRBtn && typeof QRCode !== 'undefined') {
-  showQRBtn.addEventListener('click', () => {
-    const spot = JSON.parse(localStorage.getItem('parkingSpot'));
-    if (!spot) return;
-
-    // ✅ Don't include photo in URL
-    const url = `${window.location.origin}/?lat=${spot.lat}&lng=${spot.lng}&time=${spot.time}`;
-    const qrcodeDiv = document.getElementById('qrcode');
-    qrcodeDiv.innerHTML = ''; // Clear previous QR
-
-    new QRCode(qrcodeDiv, {
-      text: url,
-      width: 128,
-      height: 128
+  // 🔲 Show QR Code
+  if (showQRBtn && typeof QRCode !== 'undefined') {
+    showQRBtn.addEventListener('click', () => {
+      const spot = JSON.parse(localStorage.getItem('parkingSpot'));
+      if (!spot) return;
+      const url = `${window.location.origin}/?lat=${spot.lat}&lng=${spot.lng}&time=${spot.time}`;
+      const qrcodeDiv = document.getElementById('qrcode');
+      qrcodeDiv.innerHTML = ''; // Clear previous QR
+      new QRCode(qrcodeDiv, {
+        text: url,
+        width: 128,
+        height: 128
+      });
+      document.getElementById('qrContainer').style.display = 'block';
+      trackEvent('click', 'Feature', 'Show QR Code');
     });
-
-    document.getElementById('qrContainer').style.display = 'block';
-    trackEvent('click', 'Feature', 'Show QR Code');
-  });
-}
+  }
 
   // 🗺️ Get Directions
   if (directionsBtn) {
@@ -410,21 +424,19 @@ if (showQRBtn && typeof QRCode !== 'undefined') {
     });
   }
 
-// 💬 Save Reminder in WhatsApp
-if (sendWABtn) {
-  sendWABtn.addEventListener('click', () => {
-    const spot = JSON.parse(localStorage.getItem('parkingSpot'));
-    if (!spot || !whatsappNumber.value) return;
-
-    // ✅ Use the full URL with photo
-    const photo = localStorage.getItem('parkingPhoto') || '';
-    const url = `${window.location.origin}/?lat=${spot.lat}&lng=${spot.lng}&time=${spot.time}&photo=${encodeURIComponent(photo)}`;
-    const text = encodeURIComponent(`I parked at ${spot.locationName}. Here's the location: ${url}`);
-    const waUrl = `https://wa.me/${whatsappNumber.value}?text=${text}`;
-    window.open(waUrl, '_blank');
-    trackEvent('click', 'Feature', 'Send to WhatsApp');
-  });
-}
+  // 💬 Save Reminder in WhatsApp
+  if (sendWABtn) {
+    sendWABtn.addEventListener('click', () => {
+      const spot = JSON.parse(localStorage.getItem('parkingSpot'));
+      if (!spot || !whatsappNumber.value) return;
+      const photo = localStorage.getItem('parkingPhoto') || '';
+      const url = `${window.location.origin}/?lat=${spot.lat}&lng=${spot.lng}&time=${spot.time}&photo=${encodeURIComponent(photo)}`;
+      const text = encodeURIComponent(`I parked at ${spot.locationName}. Here's the location: ${url}`);
+      const waUrl = `https://wa.me/${whatsappNumber.value}?text=${text}`;
+      window.open(waUrl, '_blank');
+      trackEvent('click', 'Feature', 'Send to WhatsApp');
+    });
+  }
 
   // ☕ Support This App
   if (supportBtn) {
@@ -438,6 +450,7 @@ if (sendWABtn) {
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
       localStorage.removeItem('parkingSpot');
+      localStorage.removeItem('parkingPhoto');
       if (leafletMap) { leafletMap.remove(); leafletMap = null; }
       mapDiv.style.display = 'none';
       [findBtn, shareBtn, showQRBtn, directionsBtn, nearbyBtn, resetBtn, sendWABtn].forEach(btn => btn.disabled = true);
@@ -474,25 +487,90 @@ if (sendWABtn) {
   // —————————————————————————————
   requestNotificationPermission();
   const savedSpot = localStorage.getItem('parkingSpot');
-// ✅ Restore saved spot
-if (savedSpot) {
-  const spot = JSON.parse(savedSpot);
-  updateMap(spot.lat, spot.lng);
-  status.textContent = `📍 Parking spot restored: ${spot.locationName}`;
-  findBtn.disabled = false;
-  shareBtn.disabled = false;
-  showQRBtn.disabled = false;
-  directionsBtn.disabled = false;
-  nearbyBtn.disabled = false;
-  resetBtn.disabled = false;
-  sendWABtn.disabled = false;
+  if (savedSpot) {
+    const spot = JSON.parse(savedSpot);
+    updateMap(spot.lat, spot.lng);
+    status.textContent = `📍 Parking spot restored: ${spot.locationName}`;
+    findBtn.disabled = false;
+    shareBtn.disabled = false;
+    showQRBtn.disabled = false;
+    directionsBtn.disabled = false;
+    nearbyBtn.disabled = false;
+    resetBtn.disabled = false;
+    sendWABtn.disabled = false;
 
-  // ✅ Restore photo
-  const savedPhoto = localStorage.getItem('parkingPhoto');
-  if (savedPhoto) {
-    photoImg.src = savedPhoto;
-    photoPreview.style.display = 'block';
+    // ✅ Restore photo
+    const savedPhoto = localStorage.getItem('parkingPhoto');
+    if (savedPhoto) {
+      photoImg.src = savedPhoto;
+      photoPreview.style.display = 'block';
+    }
   }
-}
 
+  // 🔊 Voice Selection (Robust, iOS-Compatible)
+  if ('speechSynthesis' in window && voiceSelect) {
+    let voices = [];
+
+    function populateVoiceList() {
+      voices = speechSynthesis.getVoices();
+      voiceSelect.innerHTML = '';
+      const defaultOption = document.createElement('option');
+      defaultOption.value = '';
+      defaultOption.textContent = 'System Voice';
+      voiceSelect.appendChild(defaultOption);
+
+      voices.forEach((voice, i) => {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = `${voice.name} (${voice.lang})`;
+        voiceSelect.appendChild(option);
+      });
+
+      const savedIndex = localStorage.getItem('preferredVoice');
+      if (savedIndex !== null && voices[savedIndex]) {
+        voiceSelect.value = savedIndex;
+      }
+    }
+
+    // ✅ Test Voice Button
+    if (testVoiceBtn) {
+      testVoiceBtn.addEventListener('click', () => {
+        const msg = new SpeechSynthesisUtterance('This is a voice test');
+        const selectedVoice = window.getSelectedVoice();
+        if (selectedVoice) msg.voice = selectedVoice;
+        msg.rate = 0.9;
+        msg.pitch = 1;
+        speechSynthesis.speak(msg);
+      });
+    }
+
+    // ✅ Populate voices
+    populateVoiceList();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = populateVoiceList;
+    }
+
+    // ✅ Fallback: iOS and slow browsers
+    setTimeout(populateVoiceList, 500);
+    setTimeout(populateVoiceList, 1000);
+    setTimeout(populateVoiceList, 2000);
+
+    // ✅ Save selection
+    voiceSelect.addEventListener('change', () => {
+      localStorage.setItem('preferredVoice', voiceSelect.value);
+    });
+
+    // ✅ Expose for other functions
+    window.getSelectedVoice = function() {
+      const savedIndex = voiceSelect.value;
+      if (savedIndex === '' || savedIndex === null) return null;
+      return voices[savedIndex] || null;
+    };
+  } else if (voiceSelect) {
+    // Hide voice controls if not supported
+    voiceSelect.style.display = 'none';
+    const label = document.querySelector('label[for="voiceSelect"]');
+    if (label) label.style.display = 'none';
+    if (testVoiceBtn) testVoiceBtn.style.display = 'none';
+  }
 });
