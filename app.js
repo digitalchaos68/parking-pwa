@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ✅ Safe gtag wrapper
   function trackEvent(action, category = 'Feature', label = '') {
-    if (typeof gtag === 'function') {
+    if (typeof gtag == 'function') {
       gtag('event', action, { 'event_category': category, 'event_label': label });
     }
   }
@@ -583,7 +583,7 @@ console.log('📥 Results received by displayNearbyResults:', results);
     // ✅ Expose for other functions
     window.getSelectedVoice = function() {
       const savedIndex = voiceSelect.value;
-      if (savedIndex === '' || savedIndex === null) return null;
+      if (savedIndex == '' || savedIndex === null) return null;
       return voices[savedIndex] || null;
     };
   } else if (voiceSelect) {
