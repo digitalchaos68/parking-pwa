@@ -92,13 +92,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const typeMap = [
       { type: 'park', term: 'park', filter: (p) => (p.class === 'leisure' && p.type === 'park') || (p.name && p.name.toLowerCase().includes('park')) },
       { type: 'supermarket', term: 'supermarket', filter: (p) => (p.class === 'shop' && p.type === 'supermarket') || (p.name && p.name.toLowerCase().includes('supermarket')) },
-      { 
-        type: 'shopping_mall', 
-        term: 'mall', 
-        filter: (p) => 
-          (p.name && (p.name.toLowerCase().includes('mall') || p.name.toLowerCase().includes('shopping centre') || p.name.toLowerCase().includes('shopping center'))) ||
-          (p.display_name && (p.display_name.toLowerCase().includes('mall') || p.display_name.toLowerCase().includes('shopping centre') || p.display_name.toLowerCase().includes('shopping center')))
-      },
+{ 
+  type: 'shopping_mall', 
+  term: 'mall', 
+  filter: (place) => 
+    (place.name && (
+      place.name.toLowerCase().includes('mall') || 
+      place.name.toLowerCase().includes('shopping centre') || 
+      place.name.toLowerCase().includes('shopping center')
+    )) ||
+    (place.display_name && (
+      place.display_name.toLowerCase().includes('mall') || 
+      place.display_name.toLowerCase().includes('shopping centre') || 
+      place.display_name.toLowerCase().includes('shopping center')
+    ))
+},
       { type: 'restaurant', term: 'restaurant', filter: (p) => (p.class === 'amenity' && p.type === 'restaurant') || (p.name && p.name.toLowerCase().includes('restaurant')) },
       { type: 'cafe', term: 'cafe', filter: (p) => (p.class === 'amenity' && p.type === 'cafe') || (p.name && p.name.toLowerCase().includes('cafe')) },
       { type: 'fuel', term: 'fuel', filter: (p) => (p.class === 'amenity' && p.type === 'fuel') || (p.name && p.name.toLowerCase().includes('fuel')) }
@@ -229,31 +237,58 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 📍 Save My Parking Spot
-  if (saveBtn) {
-    saveBtn.addEventListener('click', () => {
-      status.textContent = '📍 Getting your location...';
-      navigator.geolocation.getCurrentPosition(async (position) => {
-        const { latitude: lat, longitude: lng } = position.coords;
-        if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
-          status.textContent = '❌ Invalid location';
-          return;
-        }
-        const locationName = await reverseGeocode(lat, lng);
-        const spot = { lat, lng, time: new Date().toISOString(), locationName, photo: photoImg.src || '' };
-        localStorage.setItem('parkingSpot', JSON.stringify(spot));
-        nearbyContainer.innerHTML = '';
-        nearbyContainer.style.display = 'none';
-        updateMap(lat, lng);
-        [findBtn, shareBtn, showQRBtn, directionsBtn, nearbyBtn, resetBtn, sendWABtn].forEach(btn => btn.disabled = false);
-        status.textContent = `✅ Parking saved: ${locationName}`;
-        if (timer) timer.textContent = '';
-        trackEvent('click', 'Action', 'Save Parking Spot');
-      }, (err) => {
-        status.textContent = `❌ Error: ${err.message}`;
-      }, { enableHighAccuracy: true });
-    });
-  }
+// ✅ Save My Parking Spot
+if (saveBtn) {
+  saveBtn.addEventListener('click', () => {
+    status.textContent = '📍 Getting your location...';
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+
+      if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
+        status.textContent = '❌ Invalid location received';
+        return;
+      }
+
+      // ✅ Reverse geocode to get location name
+      const locationName = await reverseGeocode(lat, lng);
+
+      // ✅ Save spot
+      const spot = {
+        lat,
+        lng,
+        time: new Date().toISOString(),
+        locationName
+      };
+      localStorage.setItem('parkingSpot', JSON.stringify(spot));
+
+      // ✅ Save photo separately (as Data URL)
+      if (photoImg.src) {
+        localStorage.setItem('parkingPhoto', photoImg.src);
+      }
+
+      // ✅ Clear nearby results
+      nearbyContainer.innerHTML = '';
+      nearbyContainer.style.display = 'none';
+
+      // ✅ Update UI
+      updateMap(lat, lng);
+      findBtn.disabled = false;
+      shareBtn.disabled = false;
+      showQRBtn.disabled = false;
+      directionsBtn.disabled = false;
+      nearbyBtn.disabled = false;
+      resetBtn.disabled = false;
+      sendWABtn.disabled = false;
+
+      status.textContent = `✅ Parking saved: ${locationName}`;
+      if (timer) timer.textContent = '';
+      trackEvent('click', 'Action', 'Save Parking Spot');
+    }, (err) => {
+      status.textContent = `❌ Error: ${err.message}`;
+    }, { enableHighAccuracy: true });
+  });
+}
 
   // 🧭 Find My Car
   if (findBtn) {
@@ -324,19 +359,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 🔲 Show QR Code
-  if (showQRBtn && typeof QRCode !== 'undefined') {
-    showQRBtn.addEventListener('click', () => {
-      const spot = JSON.parse(localStorage.getItem('parkingSpot'));
-      if (!spot) return;
-      const url = `${window.location.origin}/?lat=${spot.lat}&lng=${spot.lng}&time=${spot.time}&photo=${encodeURIComponent(spot.photo || '')}`;
-      const qrcodeDiv = document.getElementById('qrcode');
-      qrcodeDiv.innerHTML = '';
-      new QRCode(qrcodeDiv, { text: url, width: 128, height: 128 });
-      document.getElementById('qrContainer').style.display = 'block';
-      trackEvent('click', 'Feature', 'Show QR Code');
+// 🔲 Show QR Code
+if (showQRBtn && typeof QRCode !== 'undefined') {
+  showQRBtn.addEventListener('click', () => {
+    const spot = JSON.parse(localStorage.getItem('parkingSpot'));
+    if (!spot) return;
+
+    // ✅ Don't include photo in URL
+    const url = `${window.location.origin}/?lat=${spot.lat}&lng=${spot.lng}&time=${spot.time}`;
+    const qrcodeDiv = document.getElementById('qrcode');
+    qrcodeDiv.innerHTML = ''; // Clear previous QR
+
+    new QRCode(qrcodeDiv, {
+      text: url,
+      width: 128,
+      height: 128
     });
-  }
+
+    document.getElementById('qrContainer').style.display = 'block';
+    trackEvent('click', 'Feature', 'Show QR Code');
+  });
+}
 
   // 🗺️ Get Directions
   if (directionsBtn) {
@@ -367,18 +410,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 💬 Save Reminder in WhatsApp
-  if (sendWABtn) {
-    sendWABtn.addEventListener('click', () => {
-      const spot = JSON.parse(localStorage.getItem('parkingSpot'));
-      if (!spot || !whatsappNumber.value) return;
-      const url = `${window.location.origin}/?lat=${spot.lat}&lng=${spot.lng}&time=${spot.time}`;
-      const text = encodeURIComponent(`I parked at ${spot.locationName}. Here's the location: ${url}`);
-      const waUrl = `https://wa.me/${whatsappNumber.value}?text=${text}`;
-      window.open(waUrl, '_blank');
-      trackEvent('click', 'Feature', 'Send to WhatsApp');
-    });
-  }
+// 💬 Save Reminder in WhatsApp
+if (sendWABtn) {
+  sendWABtn.addEventListener('click', () => {
+    const spot = JSON.parse(localStorage.getItem('parkingSpot'));
+    if (!spot || !whatsappNumber.value) return;
+
+    // ✅ Use the full URL with photo
+    const photo = localStorage.getItem('parkingPhoto') || '';
+    const url = `${window.location.origin}/?lat=${spot.lat}&lng=${spot.lng}&time=${spot.time}&photo=${encodeURIComponent(photo)}`;
+    const text = encodeURIComponent(`I parked at ${spot.locationName}. Here's the location: ${url}`);
+    const waUrl = `https://wa.me/${whatsappNumber.value}?text=${text}`;
+    window.open(waUrl, '_blank');
+    trackEvent('click', 'Feature', 'Send to WhatsApp');
+  });
+}
 
   // ☕ Support This App
   if (supportBtn) {
@@ -428,14 +474,25 @@ document.addEventListener('DOMContentLoaded', () => {
   // —————————————————————————————
   requestNotificationPermission();
   const savedSpot = localStorage.getItem('parkingSpot');
-  if (savedSpot) {
-    const spot = JSON.parse(savedSpot);
-    updateMap(spot.lat, spot.lng);
-    status.textContent = `📍 Parking spot restored: ${spot.locationName}`;
-    [findBtn, shareBtn, showQRBtn, directionsBtn, nearbyBtn, resetBtn, sendWABtn].forEach(btn => btn.disabled = false);
-    if (spot.photo) {
-      photoImg.src = spot.photo;
-      photoPreview.style.display = 'block';
-    }
+// ✅ Restore saved spot
+if (savedSpot) {
+  const spot = JSON.parse(savedSpot);
+  updateMap(spot.lat, spot.lng);
+  status.textContent = `📍 Parking spot restored: ${spot.locationName}`;
+  findBtn.disabled = false;
+  shareBtn.disabled = false;
+  showQRBtn.disabled = false;
+  directionsBtn.disabled = false;
+  nearbyBtn.disabled = false;
+  resetBtn.disabled = false;
+  sendWABtn.disabled = false;
+
+  // ✅ Restore photo
+  const savedPhoto = localStorage.getItem('parkingPhoto');
+  if (savedPhoto) {
+    photoImg.src = savedPhoto;
+    photoPreview.style.display = 'block';
   }
+}
+
 });
