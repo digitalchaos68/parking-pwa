@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
                  displayName.includes('shopping center');
     if (match && place.name) {
       console.log('✅ Mall PASSED filter:', place.name, place.class, place.type);
-    }<
+    }
     return match;
   }
 },
