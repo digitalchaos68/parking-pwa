@@ -278,6 +278,7 @@ function displayNearbyResults(results, spot) {
 }
 
 function getPlaceName(place) {
+  console.log('Full Place Object:', JSON.stringify(place, null, 2));
   // ✅ Use 'name' if it exists and is not empty
   if (place.name && place.name.trim() !== '') {
     return place.name;
@@ -285,7 +286,6 @@ function getPlaceName(place) {
 
   // ✅ Use first part of display_name
   if (place.display_name) {
-      console.log('Full Place Object:', JSON.stringify(place, null, 2));
     const parts = place.display_name.split(',');
     for (const part of parts) {
       const trimmed = part.trim();
@@ -308,9 +308,9 @@ function getPlaceName(place) {
 }
 
 function getPlaceAddress(place) {
+  console.log('Full Place Object:', JSON.stringify(place, null, 2));
   // ✅ Use display_name to extract address
   if (place.display_name) {
-      console.log('Full Place Object:', JSON.stringify(place, null, 2));
     const parts = place.display_name.split(',');
     // Remove last part (country), then take last 1-2 parts
     parts.pop(); // Remove "Singapore"
