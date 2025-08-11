@@ -268,6 +268,16 @@ function displayNearbyResults(results, spot) {
     }
   }
 
+function hideAds() {
+  const adContainer = document.getElementById('ad-container');
+  adContainer.classList.add('hidden');
+}
+
+function showAds() {
+  const adContainer = document.getElementById('ad-container');
+  adContainer.classList.remove('hidden');
+}
+
   // 🌙 Theme Toggle
   let isDark = localStorage.getItem('darkMode') === 'true';
   if (isDark) document.body.classList.add('dark');
@@ -633,12 +643,3 @@ function displayNearbyResults(results, spot) {
   }
 });
 
-function hideAds() {
-  const adContainer = document.getElementById('ad-container');
-  adContainer.classList.add('hidden');
-}
-
-function showAds() {
-  const adContainer = document.getElementById('ad-container');
-  adContainer.classList.remove('hidden');
-}
