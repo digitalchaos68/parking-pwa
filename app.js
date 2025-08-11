@@ -112,7 +112,9 @@ document.addEventListener('DOMContentLoaded', () => {
       { type: 'cafe', term: 'cafe', filter: (p) => (p.class === 'amenity' && p.type === 'cafe') || (p.name && p.name.toLowerCase().includes('cafe')) },
       { type: 'fuel', term: 'fuel', filter: (p) => (p.class === 'amenity' && p.type === 'fuel') || (p.name && p.name.toLowerCase().includes('fuel')) }
     ];
-
+if (match && place.name) {
+      console.log('✅ Mall PASSED filter:', place.name, place.class, place.type);
+    }
     const results = {};
 
     for (const item of typeMap) {
@@ -123,6 +125,11 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: { 'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)' }
         });
         const data = await response.json();
+
+if (type === 'shopping_mall') {
+  console.log('🔍 Raw mall search response:', data);
+}
+
         results[type] = data
           .filter(filter)
           .map(place => ({
@@ -156,6 +163,10 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.warn('Search failed for parking:', err);
       results.parking = [];
+    }
+
+if (match && place.name) {
+      console.log('✅ Mall PASSED filter:', place.name, place.class, place.type);
     }
 
     return results;
