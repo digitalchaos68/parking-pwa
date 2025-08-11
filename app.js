@@ -91,7 +91,7 @@ async function searchNearbyPhoton(lat, lng) {
   }
 
   // Define bounding box (~1km)
-  const delta = 0.05;
+  const delta = 0.03;
   const west = lng - delta;
   const south = lat - delta;
   const east = lng + delta;
@@ -214,7 +214,6 @@ async function searchNearbyPhoton(lat, lng) {
 
 
 // ✅ Display Nearby Results
-// ✅ Display Nearby Results
 function displayNearbyResults(results, spot) {
   let html = '';
 
@@ -239,8 +238,8 @@ function displayNearbyResults(results, spot) {
     places.slice(0, 5).forEach(place => {
       const dist = computeDistance(spot.lat, spot.lng, place.geometry.coordinates[1], place.geometry.coordinates[0]);
       const distText = dist >= 1000 ? (dist/1000).toFixed(1) + ' km' : dist + ' m';
-      const name = place.properties.name || 'Unknown';
-      const address = place.properties.street || '';
+      const name = getPlaceName(place);
+      const address = getPlaceAddress(place);
       const lat = place.geometry.coordinates[1];
       const lng = place.geometry.coordinates[0];
 
@@ -262,7 +261,35 @@ function displayNearbyResults(results, spot) {
   nearbyContainer.innerHTML = html || '<p>📭 No nearby places found.</p>';
 }
 
+function getPlaceName(place) {
+  if (place.name && place.name.trim()) return place.name;
+  if (place.display_name) {
+    const parts = place.display_name.split(',');
+    // Return first meaningful part (not coordinates)
+    for (const part of parts) {
+      const trimmed = part.trim();
+      if (!trimmed.includes('.') && !trimmed.match(/^\d+$/)) {
+        return trimmed;
+      }
+    }
+    return parts[0].trim();
+  }
+  return 'Unnamed';
+}
 
+function getPlaceAddress(place) {
+  const addr = place.address;
+  if (!addr) return 'Nearby';
+
+  return addr.road ||
+         addr.pedestrian ||
+         addr.residential ||
+         addr.suburb ||
+         addr.city ||
+         addr.town ||
+         addr.village ||
+         'Nearby';
+}
 
   // ✅ Distance helper (haversine formula)
   function computeDistance(lat1, lon1, lat2, lon2) {
