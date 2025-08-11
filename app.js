@@ -24,321 +24,173 @@ document.addEventListener('DOMContentLoaded', () => {
   const sendWABtn = document.getElementById('sendWABtn');
   const nearbyContainer = document.getElementById('nearbyContainer');
 
-  // ✅ Safe gtag wrapper (prevents "gtag is not defined")
+  // ✅ Safe gtag wrapper
   function trackEvent(action, category = 'Feature', label = '') {
     if (typeof gtag === 'function') {
-      gtag('event', action, {
-        'event_category': category,
-        'event_label': label
-      });
+      gtag('event', action, { 'event_category': category, 'event_label': label });
     }
   }
 
   // 🗺️ Initialize Leaflet map
   let leafletMap;
 
-function updateMap(lat, lng) {
-  // ✅ Safety check
-  if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
-    console.warn('updateMap called with invalid coordinates:', { lat, lng });
-    return;
-  }
-
-  // ✅ Show map container
-  mapDiv.style.display = 'block';
-
-  // ✅ Create map only once
-  if (!leafletMap) {
-    leafletMap = L.map('map').setView([lat, lng], 18);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(leafletMap);
-  } else {
-    // ✅ Just update view if map exists
-    leafletMap.setView([lat, lng], 18);
-  }
-
-  // ✅ Update or create marker
-  if (leafletMap._marker) {
-    leafletMap.removeLayer(leafletMap._marker);
-  }
-  leafletMap._marker = L.marker([lat, lng]).addTo(leafletMap);
-}
-
-  // 🔍 Reverse Geocode using Photon (OpenStreetMap)
-async function reverseGeocode(lat, lng) {
-  if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
-    console.warn('Invalid coordinates in reverseGeocode:', { lat, lng });
-    return 'Unknown Location';
-  }
-
-  try {
-    const response = await fetch(`https://photon.komoot.io/reverse?lat=${lat}&lon=${lng}`);
-    const data = await response.json();
-    const name = data.features?.[0]?.properties?.name;
-    return name || `Parking Spot at ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-  } catch (err) {
-    console.warn('Reverse geocode failed:', err);
-    return `Parking Spot at ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-  }
-}
-
-// ✅ Distance helper (haversine formula)
-function computeDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371e3; // Earth radius in meters
-  const φ1 = lat1 * Math.PI / 180;
-  const φ2 = lat2 * Math.PI / 180;
-  const Δφ = (lat2 - lat1) * Math.PI / 180;
-  const Δλ = (lon2 - lon1) * Math.PI / 180;
-
-  const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-            Math.cos(φ1) * Math.cos(φ2) *
-            Math.sin(Δλ/2) * Math.sin(Δλ/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-  return Math.round(R * c);
-}
-
-
-// 🔍 Find Nearby Places using Photon
-async function searchNearbyPhoton(lat, lng) {
-  if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
-    console.warn('Invalid coordinates:', { lat, lng });
-    return {};
-  }
-
-  // Define bounding box (~1km)
-  const delta = 0.03;
-  const west = lng - delta;
-  const south = lat - delta;
-  const east = lng + delta;
-  const north = lat + delta;
-
-
-  const typeMap = [
-    { 
-      type: 'park', 
-      term: 'park', 
-      filter: (place) => 
-        (place.class === 'leisure' && place.type === 'park') ||
-        (place.name && place.name.toLowerCase().includes('park'))
-    },
-    { 
-      type: 'supermarket', 
-      term: 'supermarket', 
-      filter: (place) => 
-        (place.class === 'shop' && place.type === 'supermarket') ||
-        (place.name && place.name.toLowerCase().includes('supermarket'))
-    },
-{ 
-  type: 'shopping_mall', 
-  term: 'mall', 
-  filter: (place) => 
-    // ✅ Catch any place where name or display_name contains "mall", "centre", etc.
-    (place.name && (
-      place.name.toLowerCase().includes('mall') || 
-      place.name.toLowerCase().includes('shopping centre') || 
-      place.name.toLowerCase().includes('shopping center')
-    )) ||
-    (place.display_name && (
-      place.display_name.toLowerCase().includes('mall') || 
-      place.display_name.toLowerCase().includes('shopping centre') || 
-      place.display_name.toLowerCase().includes('shopping center')
-    ))
-},
-    { 
-      type: 'restaurant', 
-      term: 'restaurant', 
-      filter: (place) => 
-        (place.class === 'amenity' && place.type === 'restaurant') ||
-        (place.name && place.name.toLowerCase().includes('restaurant'))
-    },
-    { 
-      type: 'cafe', 
-      term: 'cafe', 
-      filter: (place) => 
-        (place.class === 'amenity' && place.type === 'cafe') ||
-        (place.name && place.name.toLowerCase().includes('cafe'))
-    },
-    { 
-      type: 'fuel', 
-      term: 'fuel', 
-      filter: (place) => 
-        (place.class === 'amenity' && place.type === 'fuel') ||
-        (place.name && place.name.toLowerCase().includes('fuel'))
+  function updateMap(lat, lng) {
+    if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
+      console.warn('Invalid coordinates in updateMap:', { lat, lng });
+      return;
     }
-  ];
+    mapDiv.style.display = 'block';
+    if (!leafletMap) {
+      leafletMap = L.map('map').setView([lat, lng], 18);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(leafletMap);
+    } else {
+      leafletMap.setView([lat, lng], 18);
+    }
+    if (leafletMap._marker) leafletMap.removeLayer(leafletMap._marker);
+    leafletMap._marker = L.marker([lat, lng]).addTo(leafletMap);
+  }
 
-  const results = {};
-
-  // ✅ Search for all types except parking
-  for (const item of typeMap) {
-    const { type, term, filter } = item;
-    const url = `https://nominatim.openstreetmap.org/search.php?q=${encodeURIComponent(term)}&format=json&viewbox=${west},${south},${east},${north}&bounded=1&limit=10`;
-
+  // 🔍 Reverse Geocode
+  async function reverseGeocode(lat, lng) {
+    if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
+      return 'Unknown Location';
+    }
     try {
+      const response = await fetch(`https://photon.komoot.io/reverse?lat=${lat}&lon=${lng}`);
+      const data = await response.json();
+      return data.features?.[0]?.properties?.name || `Parking Spot at ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+    } catch (err) {
+      console.warn('Reverse geocode failed:', err);
+      return `Parking Spot at ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+    }
+  }
+
+  // ✅ Distance helper
+  function computeDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371e3;
+    const φ1 = lat1 * Math.PI / 180;
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return Math.round(R * c);
+  }
+
+  // 🔍 Find Nearby Places
+  async function searchNearbyPhoton(lat, lng) {
+    if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) return {};
+
+    const delta = 0.03;
+    const west = lng - delta;
+    const south = lat - delta;
+    const east = lng + delta;
+    const north = lat + delta;
+
+    const typeMap = [
+      { type: 'park', term: 'park', filter: (p) => (p.class === 'leisure' && p.type === 'park') || (p.name && p.name.toLowerCase().includes('park')) },
+      { type: 'supermarket', term: 'supermarket', filter: (p) => (p.class === 'shop' && p.type === 'supermarket') || (p.name && p.name.toLowerCase().includes('supermarket')) },
+      { 
+        type: 'shopping_mall', 
+        term: 'mall', 
+        filter: (p) => 
+          (p.name && (p.name.toLowerCase().includes('mall') || p.name.toLowerCase().includes('shopping centre') || p.name.toLowerCase().includes('shopping center'))) ||
+          (p.display_name && (p.display_name.toLowerCase().includes('mall') || p.display_name.toLowerCase().includes('shopping centre') || p.display_name.toLowerCase().includes('shopping center')))
+      },
+      { type: 'restaurant', term: 'restaurant', filter: (p) => (p.class === 'amenity' && p.type === 'restaurant') || (p.name && p.name.toLowerCase().includes('restaurant')) },
+      { type: 'cafe', term: 'cafe', filter: (p) => (p.class === 'amenity' && p.type === 'cafe') || (p.name && p.name.toLowerCase().includes('cafe')) },
+      { type: 'fuel', term: 'fuel', filter: (p) => (p.class === 'amenity' && p.type === 'fuel') || (p.name && p.name.toLowerCase().includes('fuel')) }
+    ];
+
+    const results = {};
+
+    for (const item of typeMap) {
+      const { type, term, filter } = item;
+      const url = `https://nominatim.openstreetmap.org/search.php?q=${encodeURIComponent(term)}&format=json&viewbox=${west},${south},${east},${north}&bounded=1&limit=10`;
+      try {
+        const response = await fetch(url, {
+          headers: { 'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)' }
+        });
+        const data = await response.json();
+        results[type] = data
+          .filter(filter)
+          .map(place => ({
+            geometry: { coordinates: [parseFloat(place.lon), parseFloat(place.lat)] },
+            raw: place,
+            properties: { name: place.name || 'Unnamed' }
+          }));
+      } catch (err) {
+        console.warn(`Search failed for ${type}:`, err);
+        results[type] = [];
+      }
+    }
+
+    // ✅ Car Parks
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?amenity=parking&format=json&viewbox=${west},${south},${east},${north}&bounded=1&limit=5`;
       const response = await fetch(url, {
-        headers: {
-          'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)'
-        }
+        headers: { 'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)' }
       });
       const data = await response.json();
-
-    results[type] = data
-      .filter(filter)
-      .map(place => ({
-        geometry: {
-          coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
-        },
-        // ✅ Pass full raw place data
+      results.parking = data.map(place => ({
+        geometry: { coordinates: [parseFloat(place.lon), parseFloat(place.lat)] },
         raw: place,
-        properties: {
-          // ✅ Only set name here
-          name: place.name || 'Unnamed'
-        }
+        properties: { name: place.name || 'Car Park' }
       }));
     } catch (err) {
-      console.warn(`Search failed for ${type}:`, err);
-      results[type] = [];
+      console.warn('Search failed for parking:', err);
+      results.parking = [];
     }
+
+    return results;
   }
 
-// ✅ Special case: Car Parks — use direct OSM tag search
-try {
-  const url = `https://nominatim.openstreetmap.org/search?amenity=parking&format=json&bounded=1&viewbox=${west},${south},${east},${north}&limit=5`;
-  const response = await fetch(url, {
-    headers: {
-      'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)'
+  // ✅ Display Nearby Results
+  function displayNearbyResults(results, spot) {
+    let html = '';
+    const labels = {
+      restaurant: '🍽️ Restaurants',
+      cafe: '☕ Cafes',
+      supermarket: '🛒 Supermarkets',
+      shopping_mall: '🛍️ Shopping Malls',
+      park: '🌳 Parks',
+      parking: '🅿️ Carparks',
+      fuel: '⛽ Gas Stations'
+    };
+
+    for (const [type, places] of Object.entries(results)) {
+      if (!places.length) continue;
+      const label = labels[type];
+      if (!label) continue;
+      html += `<h3 style="margin:15px 0 8px 0; color:#2c7be5;">${label}</h3>`;
+      places.slice(0, 5).forEach(place => {
+        const dist = computeDistance(spot.lat, spot.lng, place.geometry.coordinates[1], place.geometry.coordinates[0]);
+        const distText = dist >= 1000 ? (dist/1000).toFixed(1) + ' km' : dist + ' m';
+        const name = place.properties.name;
+        const address = getPlaceAddress(place.raw) || 'Nearby';
+        const [lng, lat] = place.geometry.coordinates;
+        const mapUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+        html += `<div class="nearby-place">
+          <h4><a href="${mapUrl}" target="_blank" style="color:inherit;text-decoration:none;">${name}</a></h4>
+          <p>📍 ${distText} away</p>
+          <p><small>${address}</small></p>
+        </div>`;
+      });
     }
-  });
-  const data = await response.json();
-
-  results.parking = data.map(place => ({
-    geometry: {
-      coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
-    },
-    raw: place, // ✅ Add raw data
-    properties: {
-      name: place.name || 'Car Park'
-      // ❌ Remove 'street' — let getPlaceAddress handle it
-    }
-  }));
-} catch (err) {
-  console.warn('Search failed for parking:', err);
-  results.parking = [];
-}
-  
-  return results;
-}
-
-
-// ✅ Display Nearby Results
-function displayNearbyResults(results, spot) {
-  let html = '';
-
-  const labels = {
-    restaurant: '🍽️ Restaurants',
-    cafe: '☕ Cafes',
-    supermarket: '🛒 Supermarkets',
-    shopping_mall: '🛍️ Shopping Malls',
-    park: '🌳 Parks',
-    parking: '🅿️ Carparks',
-    fuel: '⛽ Gas Stations'
-  };
-
-  for (const [type, places] of Object.entries(results)) {
-    if (places.length === 0) continue;
-    const label = labels[type];
-    if (!label) continue;
-
-    html += `<h3 style="margin:15px 0 8px 0; color:#2c7be5;">${label}</h3>`;
-    places.slice(0, 5).forEach(place => {
-      const dist = computeDistance(spot.lat, spot.lng, place.geometry.coordinates[1], place.geometry.coordinates[0]);
-      const distText = dist >= 1000 ? (dist/1000).toFixed(1) + ' km' : dist + ' m';
-      const name = place.properties.name;
-      // ✅ Use raw.place to get full address
-      const address = getPlaceAddress(place.raw) || 'Nearby'; // ← Use raw data!
-      const lat = place.geometry.coordinates[1];
-      const lng = place.geometry.coordinates[0];
-
-      const mapUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-
-      html += `<div class="nearby-place">
-        <h4>
-          <a href="${mapUrl}" target="_blank" style="color: inherit; text-decoration: none;">
-            ${name}
-          </a>
-        </h4>
-        <p>📍 ${distText} away</p>
-        <p><small>${address}</small></p>
-      </div>`;
-    });
+    nearbyContainer.innerHTML = html || '<p>📭 No nearby places found.</p>';
   }
 
-  nearbyContainer.innerHTML = html || '<p>📭 No nearby places found.</p>';
-}
-
-function getPlaceName(place) {
-  console.log('Full Place Object:', JSON.stringify(place, null, 2));
-  // ✅ Use 'name' if it exists and is not empty
-  if (place.name && place.name.trim() !== '') {
-    return place.name;
-  }
-
-  // ✅ Use first part of display_name
-  if (place.display_name) {
+  function getPlaceAddress(place) {
+    if (!place || !place.display_name) return 'Nearby';
     const parts = place.display_name.split(',');
-    for (const part of parts) {
-      const trimmed = part.trim();
-      // Skip if it's just a number or postal code
-      if (/^\d+$/.test(trimmed) || /^\d{6}$/.test(trimmed)) continue;
-      // Skip if it's coordinates
-      if (trimmed.includes('.') && /^\d+\.\d+$/.test(trimmed.split('.')[0])) continue;
-      // Skip if it's just "Singapore"
-      if (['Singapore', 'SG'].includes(trimmed)) continue;
-      return trimmed;
-    }
-    // Fallback to first non-empty part
-    for (const part of parts) {
-      const trimmed = part.trim();
-      if (trimmed && trimmed !== 'Singapore') return trimmed;
-    }
-  }
-
-  return 'Unnamed';
-}
-
-
-function getPlaceAddress(place) {
-  // ✅ Handle missing or invalid place
-  if (!place) {
-    return 'Nearby';
-  }
-
-  // ✅ If it's already a string (fallback), return it
-  if (typeof place === 'string') {
-    return place;
-  }
-
-  // ✅ Use display_name if available
-  if (place.display_name) {
-    const parts = place.display_name.split(',');
-    const filtered = parts
+    return parts
       .map(p => p.trim())
-      .filter(p => 
-        p && 
-        !['Singapore', 'SG', 'Central', 'Ang Mo Kio', 'Thomson', 'Kebun Baru'].includes(p) &&
-        !/^\d{6}$/.test(p) && // Skip postal codes
-        !/^\d+$/.test(p) &&  // Skip numbers
-        !p.includes('.')     // Skip coordinates
-      );
-
-    return filtered.slice(-2).join(', ') || 'Nearby';
+      .filter(p => p && !['Singapore', 'SG', 'Central', 'Ang Mo Kio'].includes(p) && !/^\d{6}$/.test(p) && !/^\d+$/.test(p) && !p.includes('.'))
+      .slice(-2)
+      .join(', ') || 'Nearby';
   }
-
-  return 'Nearby';
-}
-
 
   // 🔔 Request notification permission
   function requestNotificationPermission() {
@@ -348,14 +200,10 @@ function getPlaceAddress(place) {
   }
 
   // 🌙 Theme Toggle
-  let isDark = false;
-  if (localStorage.getItem('darkMode') === 'true') {
-    document.body.classList.add('dark');
-    if (themeToggle) themeToggle.textContent = '☀️ Light Mode';
-    isDark = true;
-  }
-
+  let isDark = localStorage.getItem('darkMode') === 'true';
+  if (isDark) document.body.classList.add('dark');
   if (themeToggle) {
+    themeToggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
     themeToggle.addEventListener('click', () => {
       isDark = !isDark;
       document.body.classList.toggle('dark', isDark);
@@ -381,168 +229,93 @@ function getPlaceAddress(place) {
     });
   }
 
+  // 📍 Save My Parking Spot
+  if (saveBtn) {
+    saveBtn.addEventListener('click', () => {
+      status.textContent = '📍 Getting your location...';
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const { latitude: lat, longitude: lng } = position.coords;
+        if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
+          status.textContent = '❌ Invalid location';
+          return;
+        }
+        const locationName = await reverseGeocode(lat, lng);
+        const spot = { lat, lng, time: new Date().toISOString(), locationName, photo: photoImg.src || '' };
+        localStorage.setItem('parkingSpot', JSON.stringify(spot));
+        nearbyContainer.innerHTML = '';
+        nearbyContainer.style.display = 'none';
+        updateMap(lat, lng);
+        [findBtn, shareBtn, showQRBtn, directionsBtn, nearbyBtn, resetBtn, sendWABtn].forEach(btn => btn.disabled = false);
+        status.textContent = `✅ Parking saved: ${locationName}`;
+        if (timer) timer.textContent = '';
+        trackEvent('click', 'Action', 'Save Parking Spot');
+      }, (err) => {
+        status.textContent = `❌ Error: ${err.message}`;
+      }, { enableHighAccuracy: true });
+    });
+  }
 
-// 📍 Save My Parking Spot
-if (saveBtn) {
-  saveBtn.addEventListener('click', () => {
-    status.textContent = '📍 Getting your location...';
-    navigator.geolocation.getCurrentPosition(async (position) => {
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-
-      if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
-        status.textContent = '❌ Invalid location received';
+  // 🧭 Find My Car
+  if (findBtn) {
+    findBtn.addEventListener('click', () => {
+      const spot = JSON.parse(localStorage.getItem('parkingSpot'));
+      if (!spot) {
+        status.textContent = '❌ No parking spot saved.';
         return;
       }
+      trackEvent('click', 'Feature', 'Find My Car');
+      speechSynthesis.cancel();
+      updateMap(spot.lat, spot.lng);
+      const parkedTime = new Date(spot.time);
+      const now = new Date();
+      const diffMs = now - parkedTime;
+      const hours = Math.floor(diffMs / (1000 * 60 * 60));
+      const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+      const time = parkedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      let durationText = hours === 0 ? `${minutes} minute${minutes !== 1 ? 's' : ''}` : `${hours} hour${hours !== 1 ? 's' : ''}${minutes > 0 ? ` and ${minutes} minute${minutes !== 1 ? 's' : ''}` : ''}`;
+      const isMeaningfulLocation = spot.locationName && !spot.locationName.startsWith('Parking Spot at') && !spot.locationName.includes('Unknown');
+      const baseMessage = `You parked at ${time}${isMeaningfulLocation ? ` near ${spot.locationName}` : ''} for ${durationText}.`;
+      const utter = new SpeechSynthesisUtterance(baseMessage);
+      utter.voice = window.getSelectedVoice ? window.getSelectedVoice() : null;
+      utter.rate = 0.9;
+      utter.pitch = 1;
+      speechSynthesis.speak(utter);
+      status.textContent = `🚗 Parked for ${hours ? hours + 'h ' : ''}${minutes}m.`;
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const distance = computeDistance(pos.coords.latitude, pos.coords.longitude, spot.lat, spot.lng);
+        setTimeout(() => {
+          const distUtter = new SpeechSynthesisUtterance(`Your car is ${distance} meters away.`);
+          distUtter.voice = window.getSelectedVoice ? window.getSelectedVoice() : null;
+          distUtter.rate = 0.8;
+          speechSynthesis.speak(distUtter);
+        }, 2000);
+        status.textContent = `🚗 Your car is ${distance} meters away.`;
+      }, (err) => {
+        console.warn('Failed to get current location for distance:', err);
+        status.textContent = '📍 Unable to get your location for distance.';
+      }, { enableHighAccuracy: true, timeout: 10000 });
+    });
+  }
 
-      // ✅ Reverse geocode to get location name
-      const locationName = await reverseGeocode(lat, lng);
-
-      // ✅ Save spot with locationName
-      const spot = {
-        lat,
-        lng,
-        time: new Date().toISOString(),
-        locationName
-      };
-      localStorage.setItem('parkingSpot', JSON.stringify(spot));
-
-      // ✅ Clear nearby results (new fix!)
-      nearbyContainer.innerHTML = '';
-      nearbyContainer.style.display = 'none';
-
-      // ✅ Update UI
-      updateMap(lat, lng);
-      findBtn.disabled = false;
-      shareBtn.disabled = false;
-      showQRBtn.disabled = false;
-      directionsBtn.disabled = false;
-      nearbyBtn.disabled = false;
-      resetBtn.disabled = false;
-      sendWABtn.disabled = false;
-
-      status.textContent = `✅ Parking saved: ${locationName}`;
-      if (timer) timer.textContent = '';
-      trackEvent('click', 'Action', 'Save Parking Spot');
-    }, (err) => {
-      status.textContent = `❌ Error: ${err.message}`;
-    }, { enableHighAccuracy: true });
-  });
-}  
-
-
-
-// 🧭 Find My Car
-if (findBtn) {
-  findBtn.addEventListener('click', () => {
-    trackEvent('click', 'Feature', 'Find My Car');
-    const spot = JSON.parse(localStorage.getItem('parkingSpot'));
-    if (!spot) {
-      status.textContent = '❌ No parking spot saved.';
-      return;
-    }
-
-    // ✅ Cancel any ongoing speech
-    speechSynthesis.cancel();
-
-    // ✅ Update map
-    updateMap(spot.lat, spot.lng);
-
-    // ✅ Get time parked
-    const parkedTime = new Date(spot.time);
-    const now = new Date();
-    const diffMs = now - parkedTime;
-
-    const hours = Math.floor(diffMs / (1000 * 60 * 60));
-    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-    const time = parkedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    // ✅ Format duration for speech
-    let durationText = '';
-    if (hours === 0) {
-      durationText = `${minutes} minute${minutes !== 1 ? 's' : ''}`;
-    } else {
-      durationText = `${hours} hour${hours !== 1 ? 's' : ''}`;
-      if (minutes > 0) {
-        durationText += ` and ${minutes} minute${minutes !== 1 ? 's' : ''}`;
-      }
-    }
-
-    // ✅ Check if locationName is meaningful
-    const isMeaningfulLocation = spot.locationName &&
-      !spot.locationName.startsWith('Parking Spot at') &&
-      !spot.locationName.includes('Unknown') &&
-      spot.locationName.trim().length > 0;
-
-    // ✅ Build voice message
-    let baseMessage = `You parked at ${time}`;
-    if (isMeaningfulLocation) {
-      baseMessage += ` near ${spot.locationName}`;
-    }
-    baseMessage += ` for ${durationText}.`;
-
-    // ✅ Speak the message
-    const utter = new SpeechSynthesisUtterance(baseMessage);
-    utter.voice = window.getSelectedVoice ? window.getSelectedVoice() : null;
-    utter.rate = 0.9;
-    utter.pitch = 1;
-    speechSynthesis.speak(utter);
-
-    // ✅ Show status
-    status.textContent = `🚗 Parked for ${hours ? hours + 'h ' : ''}${minutes}m.`;
-
-    // ✅ ALWAYS calculate and announce distance (user wants to know how far their car is)
-    navigator.geolocation.getCurrentPosition((pos) => {
-      const R = 6371e3;
-      const φ1 = pos.coords.latitude * Math.PI / 180;
-      const φ2 = spot.lat * Math.PI / 180;
-      const Δφ = (spot.lat - pos.coords.latitude) * Math.PI / 180;
-      const Δλ = (spot.lng - pos.coords.longitude) * Math.PI / 180;
-      const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-      const distance = R * c;
-      const distText = Math.round(distance);
-
-      // ✅ Wait for first message to finish
-      setTimeout(() => {
-        const distUtter = new SpeechSynthesisUtterance(`Your car is ${distText} meters away.`);
-        distUtter.voice = window.getSelectedVoice ? window.getSelectedVoice() : null;
-        distUtter.rate = 0.8;
-        speechSynthesis.speak(distUtter);
-      }, 2000); // Adjust based on message length
-
-      // ✅ Update status with distance
-      status.textContent = `🚗 Your car is ${distText} meters away.`;
-    }, (err) => {
-      console.warn('Failed to get current location for distance:', err);
-      status.textContent = '📍 Unable to get your location for distance.';
-    }, { enableHighAccuracy: true, timeout: 10000 });
-  });
-}
-
-
-// 📤 Share My Spot
+  // 📤 Share My Spot
   if (shareBtn) {
     shareBtn.addEventListener('click', async () => {
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
-
-      const shareData = {
-        title: 'My Parking Spot',
-        text: `I parked at ${spot.locationName}`,
-        url: `${window.location.origin}/?lat=${spot.lat}&lng=${spot.lng}&time=${spot.time}&photo=${encodeURIComponent(photoImg.src || '')}`
-      };
-
+      const url = `${window.location.origin}/?lat=${spot.lat}&lng=${spot.lng}&time=${spot.time}&photo=${encodeURIComponent(spot.photo || '')}`;
+      const shareData = { title: 'My Parking Spot', text: `I parked at ${spot.locationName}`, url };
       if (navigator.share) {
         try {
           await navigator.share(shareData);
           trackEvent('share', 'Feature', 'Web Share API');
         } catch (err) {
-          console.log('Share cancelled');
+          console.log('Share cancelled:', err);
+          navigator.clipboard.writeText(url).then(() => {
+            status.textContent = '🔗 Link copied to clipboard!';
+            trackEvent('click', 'Feature', 'Copy Share Link');
+          });
         }
       } else {
-        // Fallback: Copy to clipboard
-        const url = shareData.url;
         navigator.clipboard.writeText(url).then(() => {
           status.textContent = '🔗 Link copied to clipboard!';
           trackEvent('click', 'Feature', 'Copy Share Link');
@@ -556,15 +329,10 @@ if (findBtn) {
     showQRBtn.addEventListener('click', () => {
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
-
-      const url = `${window.location.origin}/?lat=${spot.lat}&lng=${spot.lng}&time=${spot.time}&photo=${encodeURIComponent(photoImg.src || '')}`;
+      const url = `${window.location.origin}/?lat=${spot.lat}&lng=${spot.lng}&time=${spot.time}&photo=${encodeURIComponent(spot.photo || '')}`;
       const qrcodeDiv = document.getElementById('qrcode');
-      qrcodeDiv.innerHTML = ''; // Clear previous QR
-      new QRCode(qrcodeDiv, {
-        text: url,
-        width: 128,
-        height: 128
-      });
+      qrcodeDiv.innerHTML = '';
+      new QRCode(qrcodeDiv, { text: url, width: 128, height: 128 });
       document.getElementById('qrContainer').style.display = 'block';
       trackEvent('click', 'Feature', 'Show QR Code');
     });
@@ -584,13 +352,11 @@ if (findBtn) {
   // 🔍 Nearby Places Button
   if (nearbyBtn) {
     nearbyBtn.addEventListener('click', async () => {
-      trackEvent('click', 'Feature', 'Nearby Places');
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot) return;
-
+      trackEvent('click', 'Feature', 'Nearby Places');
       nearbyContainer.innerHTML = '<p>🔍 Searching for nearby places...</p>';
       nearbyContainer.style.display = 'block';
-
       try {
         const results = await searchNearbyPhoton(spot.lat, spot.lng);
         displayNearbyResults(results, spot);
@@ -601,35 +367,11 @@ if (findBtn) {
     });
   }
 
-  // 🔊 Test Voice
-  if (testVoiceBtn && 'speechSynthesis' in window) {
-    testVoiceBtn.addEventListener('click', () => {
-      const msg = new SpeechSynthesisUtterance('This is a voice test');
-      const selectedVoice = voiceSelect.value;
-      msg.voice = speechSynthesis.getVoices().find(v => v.name === selectedVoice);
-      speechSynthesis.speak(msg);
-    });
-
-    // Populate voice select
-    speechSynthesis.onvoiceschanged = () => {
-      const voices = speechSynthesis.getVoices();
-      voiceSelect.innerHTML = '';
-      voices.forEach(voice => {
-        const option = document.createElement('option');
-        option.value = voice.name;
-        option.textContent = `${voice.name} (${voice.lang})`;
-        voiceSelect.appendChild(option);
-      });
-    };
-    speechSynthesis.getVoices(); // Trigger voices load
-  }
-
   // 💬 Save Reminder in WhatsApp
   if (sendWABtn) {
     sendWABtn.addEventListener('click', () => {
       const spot = JSON.parse(localStorage.getItem('parkingSpot'));
       if (!spot || !whatsappNumber.value) return;
-
       const url = `${window.location.origin}/?lat=${spot.lat}&lng=${spot.lng}&time=${spot.time}`;
       const text = encodeURIComponent(`I parked at ${spot.locationName}. Here's the location: ${url}`);
       const waUrl = `https://wa.me/${whatsappNumber.value}?text=${text}`;
@@ -650,20 +392,11 @@ if (findBtn) {
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
       localStorage.removeItem('parkingSpot');
-      if (leafletMap) {
-        leafletMap.remove();
-        leafletMap = null;
-      }
+      if (leafletMap) { leafletMap.remove(); leafletMap = null; }
       mapDiv.style.display = 'none';
+      [findBtn, shareBtn, showQRBtn, directionsBtn, nearbyBtn, resetBtn, sendWABtn].forEach(btn => btn.disabled = true);
       status.textContent = '✅ Parking spot reset.';
       if (timer) timer.textContent = '';
-      findBtn.disabled = true;
-      shareBtn.disabled = true;
-      showQRBtn.disabled = true;
-      directionsBtn.disabled = true;
-      nearbyBtn.disabled = true;
-      resetBtn.disabled = true;
-      sendWABtn.disabled = true;
       photoPreview.style.display = 'none';
       document.getElementById('qrContainer').style.display = 'none';
       nearbyContainer.style.display = 'none';
@@ -672,19 +405,14 @@ if (findBtn) {
   }
 
   // —————————————————————————————
-  // Shared View Logic (When URL has ?lat=...&lng=...)
+  // Shared View Logic
   // —————————————————————————————
   const params = new URLSearchParams(window.location.search);
   if (params.has('lat') && params.has('lng')) {
-    // Hide owner-only buttons
     document.querySelectorAll('.shared-hide').forEach(el => el.style.display = 'none');
-
-    // Show map with shared location
     const lat = parseFloat(params.get('lat'));
     const lng = parseFloat(params.get('lng'));
     updateMap(lat, lng);
-
-    // Add Back button
     const backButton = document.createElement('button');
     backButton.textContent = '🔙 Back to My Parking';
     backButton.addEventListener('click', () => {
@@ -692,8 +420,7 @@ if (findBtn) {
       window.location.href = './';
     });
     document.querySelector('.container').appendChild(backButton);
-
-    return; // Exit early — don't run normal app logic
+    return;
   }
 
   // —————————————————————————————
@@ -701,20 +428,13 @@ if (findBtn) {
   // —————————————————————————————
   requestNotificationPermission();
   const savedSpot = localStorage.getItem('parkingSpot');
-
-  // ✅ Restore saved spot
   if (savedSpot) {
     const spot = JSON.parse(savedSpot);
     updateMap(spot.lat, spot.lng);
     status.textContent = `📍 Parking spot restored: ${spot.locationName}`;
-    findBtn.disabled = false;
-    shareBtn.disabled = false;
-    showQRBtn.disabled = false;
-    directionsBtn.disabled = false;
-    nearbyBtn.disabled = false;
-    resetBtn.disabled = false;
-    sendWABtn.disabled = false;
-    if (photoImg.src) {
+    [findBtn, shareBtn, showQRBtn, directionsBtn, nearbyBtn, resetBtn, sendWABtn].forEach(btn => btn.disabled = false);
+    if (spot.photo) {
+      photoImg.src = spot.photo;
       photoPreview.style.display = 'block';
     }
   }
