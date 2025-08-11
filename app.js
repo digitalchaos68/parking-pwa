@@ -214,6 +214,7 @@ async function searchNearbyPhoton(lat, lng) {
 
 
 // ✅ Display Nearby Results
+// ✅ Display Nearby Results
 function displayNearbyResults(results, spot) {
   let html = '';
 
@@ -228,19 +229,30 @@ function displayNearbyResults(results, spot) {
   };
 
   for (const [type, places] of Object.entries(results)) {
-    if (!places || places.length === 0) continue;
+    if (places.length === 0) continue;
     const label = labels[type];
-    if (!label) continue;
-
+    if (!label) {
+      console.warn('No label found for type:', type);
+      continue;
+    }
     html += `<h3 style="margin:15px 0 8px 0; color:#2c7be5;">${label}</h3>`;
     places.slice(0, 5).forEach(place => {
       const dist = computeDistance(spot.lat, spot.lng, place.geometry.coordinates[1], place.geometry.coordinates[0]);
       const distText = dist >= 1000 ? (dist/1000).toFixed(1) + ' km' : dist + ' m';
       const name = place.properties.name || 'Unknown';
-      const address = place.properties.street || 'Nearby';
+      const address = place.properties.street || '';
+      const lat = place.geometry.coordinates[1];
+      const lng = place.geometry.coordinates[0];
+
+      // ✅ Create Google Maps URL
+      const mapUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 
       html += `<div class="nearby-place">
-        <h4>${name}</h4>
+        <h4>
+          <a href="${mapUrl}" target="_blank" style="color: inherit; text-decoration: none;">
+            ${name}
+          </a>
+        </h4>
         <p>📍 ${distText} away</p>
         <p><small>${address}</small></p>
       </div>`;
@@ -249,6 +261,8 @@ function displayNearbyResults(results, spot) {
 
   nearbyContainer.innerHTML = html || '<p>📭 No nearby places found.</p>';
 }
+
+
 
   // ✅ Distance helper (haversine formula)
   function computeDistance(lat1, lon1, lat2, lon2) {
