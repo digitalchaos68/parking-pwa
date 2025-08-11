@@ -153,6 +153,10 @@ async function searchNearbyPhoton(lat, lng) {
     });
     const data = await response.json();
 
+    
+    console.log('✅ Getting mall results:', url, data);
+
+
     results.shopping_mall = data
       .filter(place => {
         const name = place.name?.toLowerCase() || '';
