@@ -261,19 +261,36 @@ function displayNearbyResults(results, spot) {
   nearbyContainer.innerHTML = html || '<p>📭 No nearby places found.</p>';
 }
 
+
 function getPlaceName(place) {
-  if (place.name && place.name.trim()) return place.name;
+  // ✅ Priority 1: Use name if it's meaningful
+  if (place.name && place.name.trim() && !place.name.match(/^\d+$/)) {
+    return place.name;
+  }
+
+  // ✅ Priority 2: Use display_name if it's not coordinates
   if (place.display_name) {
     const parts = place.display_name.split(',');
-    // Return first meaningful part (not coordinates)
     for (const part of parts) {
       const trimmed = part.trim();
-      if (!trimmed.includes('.') && !trimmed.match(/^\d+$/)) {
-        return trimmed;
+      // Skip if it looks like coordinates
+      if (trimmed.includes('.') && /^\d+\.\d+$/.test(trimmed.split('.')[0])) {
+        continue;
       }
+      // Skip if it's just a number
+      if (/^\d+$/.test(trimmed)) {
+        continue;
+      }
+      return trimmed;
     }
-    return parts[0].trim();
   }
+
+  // ✅ Fallback: Extract from display_name or coordinates
+  if (place.display_name) {
+    return place.display_name.split(',')[0].trim();
+  }
+
+  // ✅ Final fallback
   return 'Unnamed';
 }
 
@@ -281,15 +298,19 @@ function getPlaceAddress(place) {
   const addr = place.address;
   if (!addr) return 'Nearby';
 
+  // ✅ Try common address fields
   return addr.road ||
          addr.pedestrian ||
          addr.residential ||
          addr.suburb ||
+         addr.neighbourhood ||
          addr.city ||
          addr.town ||
          addr.village ||
+         addr.state ||
          'Nearby';
 }
+
 
   // ✅ Distance helper (haversine formula)
   function computeDistance(lat1, lon1, lat2, lon2) {
