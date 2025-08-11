@@ -183,17 +183,19 @@ async function searchNearbyPhoton(lat, lng) {
       });
       const data = await response.json();
 
-      results[type] = data
-        .filter(filter)
-        .map(place => ({
-          geometry: {
-            coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
-          },
-          properties: {
-            name: place.name || 'Unnamed',
-            street: place.address?.road || place.address?.pedestrian || place.address?.suburb || 'Nearby'
-          }
-        }));
+    results[type] = data
+      .filter(filter)
+      .map(place => ({
+        geometry: {
+          coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
+        },
+        // ✅ Pass full raw place data
+        raw: place,
+        properties: {
+          // ✅ Only set name here
+          name: place.name || 'Unnamed'
+        }
+      }));
     } catch (err) {
       console.warn(`Search failed for ${type}:`, err);
       results[type] = [];
@@ -229,7 +231,6 @@ async function searchNearbyPhoton(lat, lng) {
 }
 
 
-
 // ✅ Display Nearby Results
 function displayNearbyResults(results, spot) {
   let html = '';
@@ -247,27 +248,26 @@ function displayNearbyResults(results, spot) {
   for (const [type, places] of Object.entries(results)) {
     if (places.length === 0) continue;
     const label = labels[type];
-    if (!label) {
-      console.warn('No label found for type:', type);
-      continue;
-    }
+    if (!label) continue;
+
     html += `<h3 style="margin:15px 0 8px 0; color:#2c7be5;">${label}</h3>`;
     places.slice(0, 5).forEach(place => {
-
-      console.log('Processing place:', place);
-
       const dist = computeDistance(spot.lat, spot.lng, place.geometry.coordinates[1], place.geometry.coordinates[0]);
       const distText = dist >= 1000 ? (dist/1000).toFixed(1) + ' km' : dist + ' m';
-      const name = getPlaceName(place);
-      const address = getPlaceAddress(place);
+      const name = place.properties.name;
+      // ✅ Use raw.place to get full address
+      const address = getPlaceAddress(place.raw); // ← Use raw data!
       const lat = place.geometry.coordinates[1];
       const lng = place.geometry.coordinates[0];
 
-      // ✅ Create Google Maps URL
       const mapUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 
       html += `<div class="nearby-place">
-        <h4><a href="${mapUrl}" target="_blank">${name}</a></h4>
+        <h4>
+          <a href="${mapUrl}" target="_blank" style="color: inherit; text-decoration: none;">
+            ${name}
+          </a>
+        </h4>
         <p>📍 ${distText} away</p>
         <p><small>${address}</small></p>
       </div>`;
