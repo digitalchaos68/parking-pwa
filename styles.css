@@ -427,3 +427,26 @@ body.dark a {
   margin: 10px auto;
   text-align: center;
 }
+
+/* Nearby Place Links */
+.nearby-place a {
+  color: #2c7be5;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.nearby-place a:hover {
+  color: #1a68d1;
+}
+
+/* Optional: Add pointer cursor to whole card */
+.nearby-place h4 {
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.nearby-place h4:hover a {
+  color: #1a68d1;
+}
