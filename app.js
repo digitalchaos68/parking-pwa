@@ -112,7 +112,9 @@ document.addEventListener('DOMContentLoaded', () => {
       { type: 'cafe', term: 'cafe', filter: (p) => (p.class === 'amenity' && p.type === 'cafe') || (p.name && p.name.toLowerCase().includes('cafe')) },
       { type: 'fuel', term: 'fuel', filter: (p) => (p.class === 'amenity' && p.type === 'fuel') || (p.name && p.name.toLowerCase().includes('fuel')) }
     ];
-
+    if (match && place.name) {
+      console.log('✅ Mall PASSED filter:', place.name, place.class, place.type);
+    } 
     const results = {};
 
     for (const item of typeMap) {
@@ -123,9 +125,25 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: { 'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)' }
         });
         const data = await response.json();
+
+// ✅ LOG 1: Raw response for mall
+  if (type === 'shopping_mall') {
+    console.log('🔍 Raw mall search response:', data);
+}
+
         results[type] = data
           .filter(filter)
           .map(place => ({
+
+if (type === 'shopping_mall' && place.name) {
+  console.log('📦 Mapped mall object:', {
+    name: place.name,
+    display_name: place.display_name,
+    lat: place.lat,
+    lon: place.lon
+  });}
+
+            
             geometry: { coordinates: [parseFloat(place.lon), parseFloat(place.lat)] },
             raw: place,
             properties: { name: place.name || 'Unnamed' }
@@ -153,11 +171,19 @@ document.addEventListener('DOMContentLoaded', () => {
           name: place.name || 'Car Park'
         }
       }));
+
+// ✅ LOG 3: Final results for mall
+<strong>if (type === 'shopping_mall') {
+  console.log('✅ Final mall results:', results[type]);
+}
+
+
     } catch (err) {
       console.warn('Search failed for parking:', err);
       results.parking = [];
     }
 
+console.log('📤 All results from searchNearbyPhoton:', results);
     return results;
   }
 
@@ -173,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
       parking: '🅿️ Carparks',
       fuel: '⛽ Gas Stations'
     };
-
+console.log('📥 Results received by displayNearbyResults:', results);
     for (const [type, places] of Object.entries(results)) {
       if (!places.length) continue;
       const label = labels[type];
@@ -409,6 +435,7 @@ document.addEventListener('DOMContentLoaded', () => {
       nearbyContainer.style.display = 'block';
       try {
         const results = await searchNearbyPhoton(spot.lat, spot.lng);
+        console.log('🎯 Final results before display:', results);
         displayNearbyResults(results, spot);
       } catch (err) {
         console.error('Nearby search failed:', err);
