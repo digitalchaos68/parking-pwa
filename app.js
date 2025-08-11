@@ -202,31 +202,31 @@ async function searchNearbyPhoton(lat, lng) {
     }
   }
 
-  // ✅ Special case: Car Parks — use direct OSM tag search
-  try {
-    const url = `https://nominatim.openstreetmap.org/search?amenity=parking&format=json&bounded=1&viewbox=${west},${south},${east},${north}&limit=5`;
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)'
-      }
-    });
-    const data = await response.json();
+// ✅ Special case: Car Parks — use direct OSM tag search
+try {
+  const url = `https://nominatim.openstreetmap.org/search?amenity=parking&format=json&bounded=1&viewbox=${west},${south},${east},${north}&limit=5`;
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent': 'ParkHere/1.0 (https://parking-pwa-eight.vercel.app; jason@digitalchaos.com.sg)'
+    }
+  });
+  const data = await response.json();
 
-    // ✅ Merge safely
-    results.parking = data.map(place => ({
-      geometry: {
-        coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
-      },
-      properties: {
-        name: place.name || 'Car Park',
-        street: place.address?.road || place.address?.pedestrian || 'Nearby'
-      }
-    }));
-  } catch (err) {
-    console.warn('Search failed for parking:', err);
-    results.parking = [];
-  }
-
+  results.parking = data.map(place => ({
+    geometry: {
+      coordinates: [parseFloat(place.lon), parseFloat(place.lat)]
+    },
+    raw: place, // ✅ Add raw data
+    properties: {
+      name: place.name || 'Car Park'
+      // ❌ Remove 'street' — let getPlaceAddress handle it
+    }
+  }));
+} catch (err) {
+  console.warn('Search failed for parking:', err);
+  results.parking = [];
+}
+  
   return results;
 }
 
@@ -256,7 +256,7 @@ function displayNearbyResults(results, spot) {
       const distText = dist >= 1000 ? (dist/1000).toFixed(1) + ' km' : dist + ' m';
       const name = place.properties.name;
       // ✅ Use raw.place to get full address
-      const address = getPlaceAddress(place.raw); // ← Use raw data!
+      const address = getPlaceAddress(place.raw) || 'Nearby'; // ← Use raw data!
       const lat = place.geometry.coordinates[1];
       const lng = place.geometry.coordinates[0];
 
@@ -307,20 +307,34 @@ function getPlaceName(place) {
   return 'Unnamed';
 }
 
+
 function getPlaceAddress(place) {
-  console.log('Full Place Object:', JSON.stringify(place, null, 2));
-  // ✅ Use display_name to extract address
+  // ✅ Handle missing or invalid place
+  if (!place) {
+    return 'Nearby';
+  }
+
+  // ✅ If it's already a string (fallback), return it
+  if (typeof place === 'string') {
+    return place;
+  }
+
+  // ✅ Use display_name if available
   if (place.display_name) {
     const parts = place.display_name.split(',');
-    // Remove last part (country), then take last 1-2 parts
-    parts.pop(); // Remove "Singapore"
-    const len = parts.length;
-    if (len >= 2) {
-      return parts.slice(-2).join(', ').trim();
-    } else if (len === 1) {
-      return parts[0].trim();
-    }
+    const filtered = parts
+      .map(p => p.trim())
+      .filter(p => 
+        p && 
+        !['Singapore', 'SG', 'Central', 'Ang Mo Kio', 'Thomson', 'Kebun Baru'].includes(p) &&
+        !/^\d{6}$/.test(p) && // Skip postal codes
+        !/^\d+$/.test(p) &&  // Skip numbers
+        !p.includes('.')     // Skip coordinates
+      );
+
+    return filtered.slice(-2).join(', ') || 'Nearby';
   }
+
   return 'Nearby';
 }
 
