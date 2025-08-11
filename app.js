@@ -133,15 +133,14 @@ try {
 
   console.log('✅ Getting mall results:', url, data);
 
-  // ✅ Log each place's attributes
-  data.forEach(place => {
-    console.log('🔍 Mall place details:', place);
-  });
-
+  // ✅ Filter malls using address_type, class, and type
   results.shopping_mall = data
     .filter(place => {
-      // ✅ Match malls using class and type
-      return place.class === 'shop' && place.type === 'mall';
+      return (
+        place.address_type === 'shop' &&
+        place.class === 'shop' &&
+        place.type === 'mall'
+      );
     })
     .map(place => ({
       geometry: {
@@ -158,6 +157,7 @@ try {
   console.warn('Search failed for shopping_mall:', err);
   results.shopping_mall = [];
 }
+
   
   return results;
 }
