@@ -51,6 +51,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (leafletMap._marker) leafletMap.removeLayer(leafletMap._marker);
     leafletMap._marker = L.marker([lat, lng]).addTo(leafletMap);
+
+    // Load ads
+  loadAdsDeferred();
+    } else {
+  // Hide ads or prevent loading
+  hideAds();
+  }
+
+
+
   }
 
   // 🔍 Reverse Geocode
@@ -279,6 +289,23 @@ function loadAds() {
     adContainer.classList.remove('hidden');
   } else {
     console.warn('Ad container not found');
+  }
+}
+
+// ✅ Deferred Ad Loading
+function loadAdsDeferred() {
+  const adContainer = document.getElementById('ad-container');
+  if (adContainer) {
+    adContainer.style.display = 'block';
+    
+    // ✅ Use setTimeout to defer ad loading
+    setTimeout(() => {
+      try {
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (err) {
+        console.warn('AdSense push failed:', err);
+      }
+    }, 500); // 500ms delay
   }
 }
 
@@ -573,7 +600,7 @@ function loadAds() {
     }
 
     // Load ads
-    loadAds();    
+  loadAdsDeferred();
     } else {
   // Hide ads or prevent loading
   hideAds();
