@@ -54,12 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load ads
   loadAdsDeferred();
-    } else {
-  // Hide ads or prevent loading
-  hideAds();
+
   }
-
-
 
   }
 
