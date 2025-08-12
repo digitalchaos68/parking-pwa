@@ -412,6 +412,10 @@ function resetAds() {
         status.textContent = `✅ Parking saved: ${locationName}`;
         if (timer) timer.textContent = '';
         trackEvent('click', 'Action', 'Save Parking Spot');
+
+      // ✅ ✅ ✅ CRITICAL FIX: Load ads immediately after saving
+      loadAds();
+
       }, (err) => {
         status.textContent = `❌ Error: ${err.message}`;
       }, { enableHighAccuracy: true });
@@ -581,7 +585,9 @@ function resetAds() {
 
     // ✅ Hide ads and allow reload
   resetAds();
-
+    // ✅ ✅ ✅ CRITICAL FIX: Load ads immediately after reset (if you want to show ads on empty state)
+    // Note: Usually you don't load ads here, but if you have a "featured" ad, you might.
+    // For now, we skip loadAds() here.
 
     });
   }
@@ -629,7 +635,8 @@ function resetAds() {
       photoPreview.style.display = 'block';
     }
 
-  // ✅ Load ads after a delay
+
+  // ✅ ✅ ✅ CRITICAL FIX: Load ads immediately after restoring saved spot
   loadAds();
     } else {
   // Hide ads or prevent loading
