@@ -287,6 +287,7 @@ function loadAds() {
       document.querySelector('.photo-preview') || // Photo preview
     );
 
+    
     if (hasContent) {
       adContainer.classList.remove('hidden');
       
