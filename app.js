@@ -279,25 +279,32 @@ let adLoaded = false; // Flag to track if ad has been loaded
 
 function loadAds() {
   const adContainer = document.getElementById('ad-container');
-  const adElement = adContainer?.querySelector('ins.adsbygoogle');
+  if (adContainer) {
+    // Check if meaningful content is present
+    const hasContent = Boolean(
+      document.querySelector('.map') || // Map content
+      document.querySelector('.nearby-place') || // Nearby places
+      document.querySelector('.photo-preview') || // Photo preview
+    );
 
-  if (adContainer && adElement && !adLoaded) {
-    adContainer.classList.remove('hidden');
-
-    // Delay the push() call to ensure container is rendered
-    setTimeout(() => {
-      try {
-        (adsbygoogle = window.adsbygoogle || []).push({});
-        adLoaded = true; // Mark as loaded
-      } catch (err) {
-        console.warn('AdSense push failed:', err);
-      }
-    }, 300); // 300ms delay
-  } else if (adLoaded) {
-    console.log('Ad already loaded, skipping push');
+    if (hasContent) {
+      adContainer.classList.remove('hidden');
+      
+      // Delay ad push to ensure DOM is painted
+      setTimeout(() => {
+        try {
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        } catch (err) {
+          console.warn('AdSense push failed:', err);
+        }
+      }, 300);
+    } else {
+      console.warn('No meaningful content detected; ads not loaded.');
+    }
+  } else {
+    console.warn('Ad container not found');
   }
 }
-
 
 // ✅ Reset ad state on navigation or reload
 function resetAds() {
