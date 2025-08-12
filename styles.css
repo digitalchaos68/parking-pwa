@@ -450,3 +450,8 @@ body.dark a {
 .nearby-place h4:hover a {
   color: #1a68d1;
 }
+
+
+.hidden {
+  display: none;
+}
