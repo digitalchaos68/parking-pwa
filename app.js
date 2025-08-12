@@ -273,9 +273,13 @@ function hideAds() {
   adContainer.classList.add('hidden');
 }
 
-function LoadAds() {
+function loadAds() {
   const adContainer = document.getElementById('ad-container');
-  adContainer.classList.remove('hidden');
+  if (adContainer) {
+    adContainer.classList.remove('hidden');
+  } else {
+    console.warn('Ad container not found');
+  }
 }
 
   // 🌙 Theme Toggle
@@ -569,7 +573,7 @@ function LoadAds() {
     }
 
     // Load ads
-    loadAds();
+    loadAds();    
     } else {
   // Hide ads or prevent loading
   hideAds();
