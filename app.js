@@ -277,23 +277,29 @@ function hideAds() {
   adContainer.classList.add('hidden');
 }
 
-// ✅ Load Ads with internal delay
+// ✅ Load Ads with guard against multiple pushes
+let adLoaded = false; // ✅ Flag to track if ad has been loaded
+
 function loadAds() {
   const adContainer = document.getElementById('ad-container');
-  if (adContainer) {
+  const adElement = adContainer?.querySelector('ins.adsbygoogle');
+
+  if (adContainer && adElement && !adLoaded) {
     adContainer.classList.remove('hidden');
     
     // ✅ Delay the push() call to ensure container is rendered
     setTimeout(() => {
       try {
         (adsbygoogle = window.adsbygoogle || []).push({});
+        adLoaded = true; // ✅ Mark as loaded
       } catch (err) {
         console.warn('AdSense push failed:', err);
       }
     }, 300); // 300ms delay
+  } else if (adLoaded) {
+    console.log('Ad already loaded, skipping push');
   }
 }
-
 
 // ✅ Deferred Ad Loading
 function loadAdsDeferred() {
@@ -556,6 +562,12 @@ function loadAdsDeferred() {
       document.getElementById('qrContainer').style.display = 'none';
       nearbyContainer.style.display = 'none';
       trackEvent('click', 'Action', 'Reset Parking Spot');
+
+    // ✅ Hide ads and allow reload
+    hideAds();
+    adLoaded = false; // ✅ Reset flag
+
+
     });
   }
 
