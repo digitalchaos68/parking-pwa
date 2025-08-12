@@ -280,7 +280,24 @@ function hideAds() {
 function loadAds() {
   const adContainer = document.getElementById('ad-container');
   if (adContainer) {
-    adContainer.classList.remove('hidden');
+    // Check if meaningful content is present
+    const hasContent = Boolean(
+      document.querySelector('.map') || // Map content
+      document.querySelector('.nearby-place') || // Nearby places
+      document.querySelector('.photo-preview') || // Photo preview
+      document.querySelector('.voice-select') // Voice selection
+    );
+
+    if (hasContent) {
+      adContainer.style.display = 'block';
+      try {
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (err) {
+        console.warn('AdSense push failed:', err);
+      }
+    } else {
+      console.warn('No meaningful content detected; ads not loaded.');
+    }
   } else {
     console.warn('Ad container not found');
   }
@@ -292,14 +309,14 @@ function loadAdsDeferred() {
   if (adContainer) {
     adContainer.style.display = 'block';
     
-    // ✅ Use setTimeout to defer ad loading
-    setTimeout(() => {
+    // ✅ Use requestAnimationFrame to defer ad loading
+    requestAnimationFrame(() => {
       try {
         (adsbygoogle = window.adsbygoogle || []).push({});
       } catch (err) {
         console.warn('AdSense push failed:', err);
       }
-    }, 500); // 500ms delay
+    });
   }
 }
 
