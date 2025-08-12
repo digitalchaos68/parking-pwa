@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     leafletMap._marker = L.marker([lat, lng]).addTo(leafletMap);
 
     // Load ads
-  loadAdsDeferred();
+  loadAds();
 
   }
 
@@ -277,22 +277,20 @@ function hideAds() {
   adContainer.classList.add('hidden');
 }
 
-// ✅ Final Ad Loading
+// ✅ Load Ads with internal delay
 function loadAds() {
   const adContainer = document.getElementById('ad-container');
   if (adContainer) {
     adContainer.classList.remove('hidden');
     
-    // ✅ Use setTimeout to ensure DOM is painted
+    // ✅ Delay the push() call to ensure container is rendered
     setTimeout(() => {
       try {
         (adsbygoogle = window.adsbygoogle || []).push({});
       } catch (err) {
         console.warn('AdSense push failed:', err);
       }
-    }, 300);
-  } else {
-    console.warn('Ad container not found');
+    }, 300); // 300ms delay
   }
 }
 
@@ -605,7 +603,7 @@ function loadAdsDeferred() {
     }
 
   // ✅ Load ads after a delay
-  setTimeout(loadAds, 500);
+  loadAds();
     } else {
   // Hide ads or prevent loading
   hideAds();
