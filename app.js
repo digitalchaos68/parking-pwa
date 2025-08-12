@@ -52,9 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (leafletMap._marker) leafletMap.removeLayer(leafletMap._marker);
     leafletMap._marker = L.marker([lat, lng]).addTo(leafletMap);
 
-    // Load ads
-  loadAds();
-
   }
 
   // 🔍 Reverse Geocode
@@ -277,46 +274,66 @@ function hideAds() {
   adContainer.classList.add('hidden');
 }
 
-// ✅ Load Ads with guard against multiple pushes
-let adLoaded = false; // ✅ Flag to track if ad has been loaded
+// ✅ Load Ads with full policy compliance
+let adLoaded = false; // Prevents duplicate pushes
 
 function loadAds() {
+  console.log('Attempting to load ads...');
   const adContainer = document.getElementById('ad-container');
-  const adElement = adContainer?.querySelector('ins.adsbygoogle');
-
-  if (adContainer && adElement && !adLoaded) {
-    adContainer.classList.remove('hidden');
-    
-    // ✅ Delay the push() call to ensure container is rendered
-    setTimeout(() => {
-      try {
-        (adsbygoogle = window.adsbygoogle || []).push({});
-        adLoaded = true; // ✅ Mark as loaded
-      } catch (err) {
-        console.warn('AdSense push failed:', err);
-      }
-    }, 300); // 300ms delay
-  } else if (adLoaded) {
-    console.log('Ad already loaded, skipping push');
+  
+  if (!adContainer) {
+    console.warn('Ad container not found in DOM');
+    return;
   }
+
+  // Check if meaningful content is present
+  const hasContent = Boolean(
+    document.querySelector('.map') || 
+    document.querySelector('.nearby-place') || 
+    document.querySelector('.photo-preview') || 
+    document.querySelector('.voice-select') ||
+    JSON.parse(localStorage.getItem('parkingSpot'))
+  );
+
+  if (!hasContent) {
+    console.warn('No meaningful content detected; ads not loaded.');
+    adContainer.classList.add('hidden');
+    return;
+  }
+
+  console.log('Meaningful content detected, preparing to load ad...');
+  adContainer.classList.remove('hidden');
+
+  // Only push once
+  if (adLoaded) {
+    console.log('Ad already loaded, skipping push');
+    return;
+  }
+
+  // Delay to ensure DOM is fully rendered
+  setTimeout(() => {
+    try {
+      console.log('Executing adsbygoogle.push()');
+      (adsbygoogle = window.adsbygoogle || []).push({});
+      adLoaded = true;
+      console.log('Ad request sent successfully');
+    } catch (err) {
+      console.warn('AdSense push failed:', err);
+    }
+  }, 300);
 }
 
-// ✅ Deferred Ad Loading
-function loadAdsDeferred() {
+
+// ✅ Reset ad state on navigation or reload
+function resetAds() {
+  adLoaded = false;
   const adContainer = document.getElementById('ad-container');
   if (adContainer) {
-    adContainer.style.display = 'block';
-    
-    // ✅ Use requestAnimationFrame to defer ad loading
-    requestAnimationFrame(() => {
-      try {
-        (adsbygoogle = window.adsbygoogle || []).push({});
-      } catch (err) {
-        console.warn('AdSense push failed:', err);
-      }
-    });
+    adContainer.classList.add('hidden');
+    console.log('Ad hidden successfully');
   }
 }
+
 
   // 🌙 Theme Toggle
   let isDark = localStorage.getItem('darkMode') === 'true';
@@ -396,6 +413,10 @@ function loadAdsDeferred() {
         status.textContent = `✅ Parking saved: ${locationName}`;
         if (timer) timer.textContent = '';
         trackEvent('click', 'Action', 'Save Parking Spot');
+
+      // ✅ ✅ ✅ CRITICAL FIX: Load ads immediately after saving
+      loadAds();
+
       }, (err) => {
         status.textContent = `❌ Error: ${err.message}`;
       }, { enableHighAccuracy: true });
@@ -564,9 +585,10 @@ function loadAdsDeferred() {
       trackEvent('click', 'Action', 'Reset Parking Spot');
 
     // ✅ Hide ads and allow reload
-    hideAds();
-    adLoaded = false; // ✅ Reset flag
-
+  resetAds();
+    // ✅ ✅ ✅ CRITICAL FIX: Load ads immediately after reset (if you want to show ads on empty state)
+    // Note: Usually you don't load ads here, but if you have a "featured" ad, you might.
+    // For now, we skip loadAds() here.
 
     });
   }
@@ -614,7 +636,8 @@ function loadAdsDeferred() {
       photoPreview.style.display = 'block';
     }
 
-  // ✅ Load ads after a delay
+
+  // ✅ ✅ ✅ CRITICAL FIX: Load ads immediately after restoring saved spot
   loadAds();
     } else {
   // Hide ads or prevent loading
