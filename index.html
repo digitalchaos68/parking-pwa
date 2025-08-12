@@ -119,16 +119,17 @@ x<head>
   <!-- Ad code here -->
 
  <!-- ✅ Add AdSense script here -->
-<!-- ✅ Add a min-width to prevent 0-width error -->
-<div id="ad-container" style="min-width: 300px; width: 100%; margin: 10px 0; display: block;">
+<!-- ✅ Add a visible, non-zero width container -->
+<div id="ad-container" style="min-width: 300px; width: 100%; height: 100px; margin: 10px 0; border: 1px solid #eee; display: flex; align-items: center; justify-content: center;">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5412094469616601"
      crossorigin="anonymous"></script>
   <ins class="adsbygoogle"
-       style="display:block"
+       style="display:block; text-align:center;"
        data-ad-client="ca-pub-5412094469616601"
        data-ad-slot="4593086129"
-       data-ad-format="auto"
-       data-full-width-responsive="true"></ins>
+       data-ad-format="fluid"
+       data-ad-layout="in-article"
+       data-full-width-responsive="true"> </ins>
   <script>
     (adsbygoogle = window.adsbygoogle || []).push({});
   </script>
