@@ -274,6 +274,8 @@ function hideAds() {
   adContainer.classList.add('hidden');
 }
 
+// ✅ Load Ads with full policy compliance
+let adLoaded = false; // Prevents duplicate pushes
 
 function loadAds() {
   console.log('Attempting to load ads...');
