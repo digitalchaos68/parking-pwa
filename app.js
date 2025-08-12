@@ -57,8 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   }
 
-  }
-
   // 🔍 Reverse Geocode
   async function reverseGeocode(lat, lng) {
     if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
