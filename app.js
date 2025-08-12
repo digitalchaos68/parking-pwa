@@ -274,38 +274,53 @@ function hideAds() {
   adContainer.classList.add('hidden');
 }
 
-// ✅ Load Ads with guard against multiple pushes
-let adLoaded = false; // Flag to track if ad has been loaded
 
 function loadAds() {
+  console.log('Attempting to load ads...');
   const adContainer = document.getElementById('ad-container');
-  if (adContainer) {
-    // Check if meaningful content is present
-    const hasContent = Boolean(
-      document.querySelector('.map') || // Map content
-      document.querySelector('.nearby-place') || // Nearby places
-      document.querySelector('.photo-preview') // Photo preview
-    );
-
-
-    if (hasContent) {
-      adContainer.classList.remove('hidden');
-      
-      // Delay ad push to ensure DOM is painted
-      setTimeout(() => {
-        try {
-          (adsbygoogle = window.adsbygoogle || []).push({});
-        } catch (err) {
-          console.warn('AdSense push failed:', err);
-        }
-      }, 300);
-    } else {
-      console.warn('No meaningful content detected; ads not loaded.');
-    }
-  } else {
-    console.warn('Ad container not found');
+  
+  if (!adContainer) {
+    console.warn('Ad container not found in DOM');
+    return;
   }
+
+  // Check if meaningful content is present
+  const hasContent = Boolean(
+    document.querySelector('.map') || 
+    document.querySelector('.nearby-place') || 
+    document.querySelector('.photo-preview') || 
+    document.querySelector('.voice-select') ||
+    JSON.parse(localStorage.getItem('parkingSpot'))
+  );
+
+  if (!hasContent) {
+    console.warn('No meaningful content detected; ads not loaded.');
+    adContainer.classList.add('hidden');
+    return;
+  }
+
+  console.log('Meaningful content detected, preparing to load ad...');
+  adContainer.classList.remove('hidden');
+
+  // Only push once
+  if (adLoaded) {
+    console.log('Ad already loaded, skipping push');
+    return;
+  }
+
+  // Delay to ensure DOM is fully rendered
+  setTimeout(() => {
+    try {
+      console.log('Executing adsbygoogle.push()');
+      (adsbygoogle = window.adsbygoogle || []).push({});
+      adLoaded = true;
+      console.log('Ad request sent successfully');
+    } catch (err) {
+      console.warn('AdSense push failed:', err);
+    }
+  }, 300);
 }
+
 
 // ✅ Reset ad state on navigation or reload
 function resetAds() {
