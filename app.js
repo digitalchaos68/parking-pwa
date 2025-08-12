@@ -330,6 +330,7 @@ function resetAds() {
   const adContainer = document.getElementById('ad-container');
   if (adContainer) {
     adContainer.classList.add('hidden');
+    console.log('Ad hidden successfully');
   }
 }
 
