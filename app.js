@@ -273,7 +273,7 @@ function hideAds() {
   adContainer.classList.add('hidden');
 }
 
-function showAds() {
+function LoadAds() {
   const adContainer = document.getElementById('ad-container');
   adContainer.classList.remove('hidden');
 }
