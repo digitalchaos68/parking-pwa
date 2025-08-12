@@ -51,6 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (leafletMap._marker) leafletMap.removeLayer(leafletMap._marker);
     leafletMap._marker = L.marker([lat, lng]).addTo(leafletMap);
+
+    // Load ads
+  loadAds();
+
   }
 
   // 🔍 Reverse Geocode
@@ -273,9 +277,39 @@ function hideAds() {
   adContainer.classList.add('hidden');
 }
 
-function LoadAds() {
+// ✅ Load Ads with internal delay
+function loadAds() {
   const adContainer = document.getElementById('ad-container');
-  adContainer.classList.remove('hidden');
+  if (adContainer) {
+    adContainer.classList.remove('hidden');
+    
+    // ✅ Delay the push() call to ensure container is rendered
+    setTimeout(() => {
+      try {
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (err) {
+        console.warn('AdSense push failed:', err);
+      }
+    }, 300); // 300ms delay
+  }
+}
+
+
+// ✅ Deferred Ad Loading
+function loadAdsDeferred() {
+  const adContainer = document.getElementById('ad-container');
+  if (adContainer) {
+    adContainer.style.display = 'block';
+    
+    // ✅ Use requestAnimationFrame to defer ad loading
+    requestAnimationFrame(() => {
+      try {
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (err) {
+        console.warn('AdSense push failed:', err);
+      }
+    });
+  }
 }
 
   // 🌙 Theme Toggle
@@ -568,8 +602,8 @@ function LoadAds() {
       photoPreview.style.display = 'block';
     }
 
-    // Load ads
-    loadAds();
+  // ✅ Load ads after a delay
+  loadAds();
     } else {
   // Hide ads or prevent loading
   hideAds();
