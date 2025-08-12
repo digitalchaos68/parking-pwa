@@ -284,10 +284,10 @@ function loadAds() {
     const hasContent = Boolean(
       document.querySelector('.map') || // Map content
       document.querySelector('.nearby-place') || // Nearby places
-      document.querySelector('.photo-preview') || // Photo preview
+      document.querySelector('.photo-preview') // Photo preview
     );
 
-    
+
     if (hasContent) {
       adContainer.classList.remove('hidden');
       
