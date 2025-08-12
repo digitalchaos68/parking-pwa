@@ -52,9 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (leafletMap._marker) leafletMap.removeLayer(leafletMap._marker);
     leafletMap._marker = L.marker([lat, lng]).addTo(leafletMap);
 
-    // Load ads
-  loadAds();
-
   }
 
   // 🔍 Reverse Geocode
@@ -278,7 +275,7 @@ function hideAds() {
 }
 
 // ✅ Load Ads with guard against multiple pushes
-let adLoaded = false; // ✅ Flag to track if ad has been loaded
+let adLoaded = false; // Flag to track if ad has been loaded
 
 function loadAds() {
   const adContainer = document.getElementById('ad-container');
@@ -286,12 +283,12 @@ function loadAds() {
 
   if (adContainer && adElement && !adLoaded) {
     adContainer.classList.remove('hidden');
-    
-    // ✅ Delay the push() call to ensure container is rendered
+
+    // Delay the push() call to ensure container is rendered
     setTimeout(() => {
       try {
         (adsbygoogle = window.adsbygoogle || []).push({});
-        adLoaded = true; // ✅ Mark as loaded
+        adLoaded = true; // Mark as loaded
       } catch (err) {
         console.warn('AdSense push failed:', err);
       }
@@ -301,22 +298,16 @@ function loadAds() {
   }
 }
 
-// ✅ Deferred Ad Loading
-function loadAdsDeferred() {
+
+// ✅ Reset ad state on navigation or reload
+function resetAds() {
+  adLoaded = false;
   const adContainer = document.getElementById('ad-container');
   if (adContainer) {
-    adContainer.style.display = 'block';
-    
-    // ✅ Use requestAnimationFrame to defer ad loading
-    requestAnimationFrame(() => {
-      try {
-        (adsbygoogle = window.adsbygoogle || []).push({});
-      } catch (err) {
-        console.warn('AdSense push failed:', err);
-      }
-    });
+    adContainer.classList.add('hidden');
   }
 }
+
 
   // 🌙 Theme Toggle
   let isDark = localStorage.getItem('darkMode') === 'true';
@@ -564,8 +555,7 @@ function loadAdsDeferred() {
       trackEvent('click', 'Action', 'Reset Parking Spot');
 
     // ✅ Hide ads and allow reload
-    hideAds();
-    adLoaded = false; // ✅ Reset flag
+  resetAds();
 
 
     });
