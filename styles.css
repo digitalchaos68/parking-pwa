@@ -455,3 +455,9 @@ body.dark a {
 .hidden {
   display: none;
 }
+
+.content-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Space between map and tips */
+}
