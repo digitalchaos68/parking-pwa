@@ -598,6 +598,21 @@ if (localStorage.getItem('parkingTipsDismissed') === 'true') {
   const tips = document.getElementById('parking-tips');
   if (tips) tips.style.display = 'none';
 }
+
+// Toggle visibility of content and placeholder
+const toggleParkingTips = () => {
+  const content = document.getElementById('parking-tips-content');
+  const placeholder = document.getElementById('parking-tips-placeholder');
+  const isMinimized = content.style.display === 'none';
+
+  content.style.display = isMinimized ? 'block' : 'none';
+  placeholder.style.display = isMinimized ? 'none' : 'block';
+  localStorage.setItem('parkingTipsMinimized', !isMinimized);
+};
+
+// Attach to button
+document.querySelector('#parking-tips button').addEventListener('click', toggleParkingTips);
+
   // —————————————————————————————
   // Shared View Logic
   // —————————————————————————————

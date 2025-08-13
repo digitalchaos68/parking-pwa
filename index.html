@@ -99,17 +99,19 @@ x<head>
   <button 
     onclick="
       const content = this.nextElementSibling;
-      const isHidden = content.style.display === 'none';
-      content.style.display = isHidden ? 'block' : 'none';
-      this.textContent = isHidden ? '–' : '✕';
-      localStorage.setItem('parkingTipsMinimized', !isHidden);
+      const isMinimized = content.style.display === 'none';
+      content.style.display = isMinimized ? 'block' : 'none';
+      this.textContent = isMinimized ? '–' : '✕';
+      localStorage.setItem('parkingTipsMinimized', !isMinimized);
     " 
     style="position: absolute; top: 8px; right: 8px; background: #2c7be5; color: white; border: none; border-radius: 4px; width: 24px; height: 24px; font-size: 14px; cursor: pointer;"
   >–</button>
 
-  <!-- Tips Content -->
-  <div style="overflow: hidden; transition: max-height 0.3s ease-in-out; max-height: 500px;">
-    <h3 style="margin: 0 0 8px 0; color: #2c7be5; font-size: 1.1em;">🚗 Parking Tips</h3>
+  <!-- Always-Visible Header -->
+  <h3 style="margin: 0 0 8px 0; color: #2c7be5; font-size: 1.1em;">🚗 Parking Tips</h3>
+
+  <!-- Collapsible Content -->
+  <div id="parking-tips-content" style="overflow: hidden; transition: max-height 0.3s ease-in-out; max-height: 500px;">
     <ul style="margin: 8px 0; padding-left: 20px; text-align: left;">
       <li>Always note nearby landmarks when parking.</li>
       <li>Take a photo of your parking spot and surrounding signs.</li>
@@ -122,6 +124,11 @@ x<head>
       <br>
       <em><strong>Tip</strong>: Tap "Find Nearby Places" to get nearby Restaurants, Cafes, Supermarkets, Shopping Malls, Parks, Car Parks and Gas Stations.</em>
     </p>
+  </div>
+
+  <!-- Placeholder for Minimized State -->
+  <div id="parking-tips-placeholder" style="display: none; margin-top: 8px; font-size: 0.9em; color: #6c757d;">
+    <em>Tap here to expand Parking Tips.</em>
   </div>
 </div>
 
