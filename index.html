@@ -92,6 +92,25 @@ x<head>
   <a href="/disclaimer.html" style="color:#e74c3c;">Disclaimer</a> | 
   <a href="https://buymeacoffee.com/digitalchaos" target="_blank" style="color:#ff8f00;">Support</a>
 </p>
+
+<!-- Updated with close button -->
+<div id="parking-tips" style="margin: 15px 0; padding: 12px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef; font-size: 0.95em; line-height: 1.5; position: relative;">
+  <button onclick="this.parentElement.style.display='none'; localStorage.setItem('parkingTipsDismissed', 'true');" style="position: absolute; top: 8px; right: 8px; background: #dc3545; color: white; border: none; border-radius: 4px; width: 24px; height: 24px; font-size: 14px; cursor: pointer;">×</button>
+  <h3 style="margin: 0 0 8px 0; color: #2c7be5; font-size: 1.1em;">🚗 Parking Tips</h3>
+  <ul style="margin: 8px 0; padding-left: 20px;">
+    <li>Always note nearby landmarks when parking.</li>
+    <li>Take a photo of your parking spot and surrounding signs.</li>
+    <li>Use this app to save your exact location.</li>
+    <li>Check for time limits or towing zones.</li>
+    <li>Share your spot with family for easy pickup.</li>
+  </ul>
+  <p style="margin: 8px 0 0 0; font-size: 0.9em; color: #6c757d;">
+    <em>Tip: Tap "Find My Car" to get voice-guided directions back to your vehicle.</em>
+    <em>Tip: Tap "Find Nearby Places" to get nearby Restaurants, Cafes, Supermarkets, Shopping Malls, Parks, Car Parks and Gas Stations..</em>
+  </p>
+</div>
+
+
     <!-- Status & Timer -->
     <div id="status"></div>
     <div id="timer"></div>

@@ -593,7 +593,11 @@ function resetAds() {
     });
   }
 
-  
+  // Hide tips if previously dismissed
+if (localStorage.getItem('parkingTipsDismissed') === 'true') {
+  const tips = document.getElementById('parking-tips');
+  if (tips) tips.style.display = 'none';
+}
   // —————————————————————————————
   // Shared View Logic
   // —————————————————————————————
