@@ -93,24 +93,51 @@ x<head>
   <a href="https://buymeacoffee.com/digitalchaos" target="_blank" style="color:#ff8f00;">Support</a>
 </p>
 
-<!-- Updated with close button -->
+<!-- Updated with minimize button -->
 <div id="parking-tips" style="margin: 15px 0; padding: 12px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef; font-size: 0.95em; line-height: 1.5; position: relative;">
-  <button onclick="this.parentElement.style.display='none'; localStorage.setItem('parkingTipsDismissed', 'true');" style="position: absolute; top: 8px; right: 8px; background: #dc3545; color: white; border: none; border-radius: 4px; width: 24px; height: 24px; font-size: 14px; cursor: pointer;">×</button>
-  <h3 style="margin: 0 0 8px 0; color: #2c7be5; font-size: 1.1em;">🚗 Parking Tips</h3>
-  <ul style="margin: 8px 0; padding-left: 20px; text-align: left;">
-    <li>Always note nearby landmarks when parking.</li>
-    <li>Take a photo of your parking spot and surrounding signs.</li>
-    <li>Use this app to save your exact location and a photo of your parking spot.</li>
-    <li>Check for time limits or towing zones.</li>
-    <li>Share your spot with family for easy pickup.</li>
-  </ul>
-  <p style="margin: 8px 0 0 0; font-size: 0.9em; color: #6c757d; text-align: left;">
-    <em><strong>Tip</strong>: Tap "Find My Car" to get voice-guided directions back to your vehicle.</em>
-    <br>
-    <em><strong>Tip</strong>: Tap "Find Nearby Places" to get nearby Restaurants, Cafes, Supermarkets, Shopping Malls, Parks, Car Parks and Gas Stations.</em>
-  </p>
+  <!-- Minimize Button -->
+  <button 
+    onclick="
+      const content = this.nextElementSibling;
+      const isHidden = content.style.display === 'none';
+      content.style.display = isHidden ? 'block' : 'none';
+      this.textContent = isHidden ? '–' : '✕';
+      localStorage.setItem('parkingTipsMinimized', !isHidden);
+    " 
+    style="position: absolute; top: 8px; right: 8px; background: #2c7be5; color: white; border: none; border-radius: 4px; width: 24px; height: 24px; font-size: 14px; cursor: pointer;"
+  >–</button>
+
+  <!-- Tips Content -->
+  <div style="overflow: hidden; transition: max-height 0.3s ease-in-out; max-height: 500px;">
+    <h3 style="margin: 0 0 8px 0; color: #2c7be5; font-size: 1.1em;">🚗 Parking Tips</h3>
+    <ul style="margin: 8px 0; padding-left: 20px; text-align: left;">
+      <li>Always note nearby landmarks when parking.</li>
+      <li>Take a photo of your parking spot and surrounding signs.</li>
+      <li>Use this app to save your exact location and a photo of your parking spot.</li>
+      <li>Check for time limits or towing zones.</li>
+      <li>Share your spot with family for easy pickup.</li>
+    </ul>
+    <p style="margin: 8px 0 0 0; font-size: 0.9em; color: #6c757d; text-align: left;">
+      <em><strong>Tip</strong>: Tap "Find My Car" to get voice-guided directions back to your vehicle.</em>
+      <br>
+      <em><strong>Tip</strong>: Tap "Find Nearby Places" to get nearby Restaurants, Cafes, Supermarkets, Shopping Malls, Parks, Car Parks and Gas Stations.</em>
+    </p>
+  </div>
 </div>
 
+<script>
+  // Restore minimize state
+  const tipsDiv = document.getElementById('parking-tips');
+  if (tipsDiv) {
+    const isMinimized = localStorage.getItem('parkingTipsMinimized') === 'true';
+    const content = tipsDiv.querySelector('div[style*="overflow"]');
+    const button = tipsDiv.querySelector('button');
+    if (content && button) {
+      content.style.display = isMinimized ? 'none' : 'block';
+      button.textContent = isMinimized ? '–' : '✕';
+    }
+  }
+</script>
 
     <!-- Status & Timer -->
     <div id="status"></div>
