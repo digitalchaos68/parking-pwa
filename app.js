@@ -789,17 +789,3 @@ if (infoToggle && infoPanel) {
 document.querySelector('#infoToggle button').addEventListener('click', infoToggle);
 
 
-// ✅ ParkingTipsToggle ParkingTipsPanel
-const ParkingTipsToggle = document.getElementById('ParkingTipsToggle');
-const ParkingTipsPanel = document.getElementById('ParkingTipsPanel');
-
-if (ParkingTipsToggle && ParkingTipsPanel) {
-  ParkingTipsToggle.addEventListener('click', () => {
-    const isHidden = ParkingTipsPanel.style.display === 'none';
-    ParkingTipsPanel.style.display = isHidden ? 'block' : 'none';
-    ParkingTipsToggle.textContent = isHidden ? '❌ Hide Parking Tips' : '🚗 Parking Tips';
-    trackEvent('click', 'UI', isHidden ? 'Expand Parking Tips Panel' : 'Collapse Parking Tips Panel');
-  });
-}
-// Attach to button
-document.querySelector('#ParkingTipsToggle button').addEventListener('click', ParkingTipsToggle);
