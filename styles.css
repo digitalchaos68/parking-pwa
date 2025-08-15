@@ -500,7 +500,6 @@ body.dark a {
   margin-bottom: 5px;
   color: black;
 }
-
 /* General Info Box Styles */
 .info-box {
   margin: 20px 0;
@@ -533,4 +532,10 @@ body.dark a {
 .info-box li {
   margin-bottom: 5px;
   color: black;
+}
+
+/* Dark Mode Overrides */
+body.dark .info-box {
+  background: #2d2d2d;
+  color: #e0e0e0;
 }
