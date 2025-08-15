@@ -541,12 +541,14 @@ body.dark a {
 body.dark .info-box {
   background: #2d2d2d;
   border-color: #444;
-  color: #e0e0e0;
+  color: #e0e0e0; /* Light text for dark mode */
 }
+
 body.dark .info-box h3 {
   color: #4dabf7;
 }
+
 body.dark .info-box p,
 body.dark .info-box li {
-  color: #ccc;
+  color: #ccc; /* Lighter text for better contrast */
 }
