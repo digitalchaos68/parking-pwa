@@ -784,8 +784,3 @@ if (infoToggle && infoPanel) {
     trackEvent('click', 'UI', isHidden ? 'Expand Info Panel' : 'Collapse Info Panel');
   });
 }
-
-// Attach to button
-document.querySelector('#infoToggle button').addEventListener('click', infoToggle);
-
-
