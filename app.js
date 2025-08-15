@@ -611,7 +611,7 @@ const toggleParkingTips = () => {
 };
 
 // Attach to button
-document.querySelector('#parking-tips button').addEventListener('click', toggleParkingTips);
+// document.querySelector('#parking-tips button').addEventListener('click', toggleParkingTips);
 
   // —————————————————————————————
   // Shared View Logic
@@ -785,6 +785,10 @@ if (infoToggle && infoPanel) {
   });
 }
 
+// Attach to button
+document.querySelector('#infoToggle button').addEventListener('click', infoToggle);
+
+
 // ✅ ParkingTipsToggle ParkingTipsPanel
 const ParkingTipsToggle = document.getElementById('ParkingTipsToggle');
 const ParkingTipsPanel = document.getElementById('ParkingTipsPanel');
@@ -797,3 +801,5 @@ if (ParkingTipsToggle && ParkingTipsPanel) {
     trackEvent('click', 'UI', isHidden ? 'Expand Parking Tips Panel' : 'Collapse Parking Tips Panel');
   });
 }
+// Attach to button
+document.querySelector('#ParkingTipsToggle button').addEventListener('click', ParkingTipsToggle);
