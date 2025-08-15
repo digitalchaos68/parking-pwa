@@ -775,13 +775,18 @@ if (document.getElementById('parking-tip')) {
   document.getElementById('parking-tip').textContent = parkingTips[randomIndex];
 }
 
+
 // ✅ Toggle Info Panel
 const infoToggle = document.getElementById('infoToggle');
 const infoPanel = document.getElementById('infoPanel');
 
 if (infoToggle && infoPanel) {
+  // Set initial state: visible
+  infoPanel.style.display = 'block';
+  infoToggle.textContent = '❌ Hide Info & Tips';
+
   infoToggle.addEventListener('click', () => {
-    const isHidden = infoPanel.style.display === 'block';
+    const isHidden = infoPanel.style.display === 'none';
     infoPanel.style.display = isHidden ? 'block' : 'none';
     infoToggle.textContent = isHidden ? '❌ Hide Info & Tips' : 'ℹ️ Info & Tips';
     trackEvent('click', 'UI', isHidden ? 'Expand Info Panel' : 'Collapse Info Panel');
