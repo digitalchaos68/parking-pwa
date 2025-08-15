@@ -1,3 +1,11 @@
+
+  // ✅ Safe gtag wrapper
+  function trackEvent(action, category = 'Feature', label = '') {
+    if (typeof gtag === 'function') {
+      gtag('event', action, { 'event_category': category, 'event_label': label });
+    }
+  }
+  
 // Main App Initialization
 document.addEventListener('DOMContentLoaded', () => {
   console.log('ParkHere: App initializing...');
@@ -25,12 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const nearbyContainer = document.getElementById('nearbyContainer');
   const qrContainer = document.getElementById('qrContainer'); // ✅ Added
 
-  // ✅ Safe gtag wrapper
-  function trackEvent(action, category = 'Feature', label = '') {
-    if (typeof gtag === 'function') {
-      gtag('event', action, { 'event_category': category, 'event_label': label });
-    }
-  }
+
 
   // 🗺️ Initialize Leaflet map
   let leafletMap;
