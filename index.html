@@ -92,7 +92,9 @@ x<head>
   <a href="/disclaimer.html" style="color:#e74c3c;">Disclaimer</a> | 
   <a href="https://buymeacoffee.com/digitalchaos" target="_blank" style="color:#ff8f00;">Support</a>
 </p>
-
+<p style="font-size:0.8em; color:#666; margin-top: 5px;">
+  We never collect or sell your data. Your location and photo are stored only on your device.
+</p>
 <div class="content-container">
   <!-- Map Container -->
   <div id="map" style="height: 300px; width: 100%;"></div>
@@ -157,7 +159,6 @@ x<head>
     <!-- Status & Timer -->
     <div id="status"></div>
     <div id="timer"></div>
-    <div id="map"></div>
   </div>
 
   <!-- Load QRCode.js first -->
@@ -177,11 +178,25 @@ x<head>
   <!-- Then load your app -->
   <script src="app.js"></script>
 
-<!-- ✅ Footer: Always visible, adds publisher content -->
+<div class="how-it-works" style="margin: 20px 0; padding: 15px; background: #f0f8ff; border-radius: 8px;">
+  <h3>How ParkHere Works</h3>
+  <p>ParkHere uses your phone's GPS to save your exact parking location. You can add a photo, share the spot with friends, or get directions back later. No account or install needed — it works directly in your browser!</p>
+  <ul>
+    <li>✅ Save your spot with one tap</li>
+    <li>✅ View map, get distance, or share via QR code</li>
+    <li>✅ Works offline after first load (PWA)</li>
+  </ul>
+</div>
+<!-- ✅ Footer: Always visible, adds publisher content 
 <p style="font-size:0.8em; color:#666; text-align:center; margin-top: 10px;">
   ParkHere helps you remember where you parked — no install needed.
 </p>
-
+-->
+<div style="margin: 20px 0; font-size: 0.9em; color: #555; line-height: 1.5;">
+  <h3>About ParkHere</h3>
+  <p>ParkHere is a free, open-source Progressive Web App (PWA) that helps you remember where you parked. No installation, no login, no tracking. Your data stays on your device.</p>
+  <p>Made with ❤️ by Jason. <a href="https://buymeacoffee.com/digitalchaos" target="_blank">Support development</a>.</p>
+</div>
 
 <!-- Add a class to control ad visibility -->
 
@@ -199,9 +214,11 @@ x<head>
        style="display:block; text-align:center;"
        data-ad-client="ca-pub-5412094469616601"
        data-ad-slot="4593086129"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>       
+<!--       
        data-ad-format="fluid"
        data-ad-layout="in-article"></ins>
-<!--       
   <script>
     (adsbygoogle = window.adsbygoogle || []).push({});
   </script>

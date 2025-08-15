@@ -271,7 +271,7 @@ function displayNearbyResults(results, spot) {
 
 function hideAds() {
   const adContainer = document.getElementById('ad-container');
-  adContainer.classList.add('hidden');
+  adContainer.classList.add('ad-hidden');
 }
 
 // ✅ Load Ads with full policy compliance
@@ -297,12 +297,12 @@ function loadAds() {
 
   if (!hasContent) {
     console.warn('No meaningful content detected; ads not loaded.');
-    adContainer.classList.add('hidden');
+    adContainer.classList.add('ad-hidden');
     return;
   }
 
   console.log('Meaningful content detected, preparing to load ad...');
-  adContainer.classList.remove('hidden');
+  adContainer.classList.remove('ad-hidden');
 
   // Only push once
   if (adLoaded) {
@@ -329,7 +329,7 @@ function resetAds() {
   adLoaded = false;
   const adContainer = document.getElementById('ad-container');
   if (adContainer) {
-    adContainer.classList.add('hidden');
+    adContainer.classList.add('ad-hidden');
     console.log('Ad hidden successfully');
   }
 }
