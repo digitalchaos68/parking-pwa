@@ -102,6 +102,33 @@ x<head>
 
 
 <!-- Updated with minimize button -->
+
+<!-- Info Panel Toggle Button -->
+<button id="ParkingTipsToggle" class="shared-hide" style="background: #6c757d; color: white; margin-bottom: 10px;">
+  🚗 Parking Tips
+</button>
+
+<!-- Collapsible ParkingTipsPanel Panel -->
+<div id="ParkingTipsPanel" style="display: none; margin: 15px 0; padding: 0; text-align: left;">
+
+<div class="info-box">
+    <ul style="margin: 8px 0; padding-left: 20px; text-align: left; color: black">
+      <li>Always note nearby landmarks when parking.</li>
+      <li>Take a photo of your parking spot and surrounding signs.</li>
+      <li>Use this app to save your exact location and a photo of your parking spot.</li>
+      <li>Check for time limits or towing zones.</li>
+      <li>Share your spot with family for easy pickup.</li>
+    </ul>
+    <p style="margin: 8px 0 0 0; font-size: 0.9em; color: #6c757d; text-align: left;">
+      <em><strong>Tip</strong>: Tap "Find My Car" to get voice-guided directions back to your vehicle.</em>
+      <br>
+      <em><strong>Tip</strong>: Tap "Find Nearby Places" to get nearby Restaurants, Cafes, Supermarkets, Shopping Malls, Parks, Car Parks and Gas Stations.</em>
+    </p>
+
+    <p id="parking-tip" style="font-size: 0.9em; color: #6c757d; margin: 10px 0; text-align: left;"></p>
+  </div>
+</div>
+
 <div id="parking-tips" style="margin: 15px 0; padding: 12px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef; font-size: 0.95em; line-height: 1.5; position: relative;">
   <!-- Minimize Button -->
   <button 

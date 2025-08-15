@@ -784,3 +784,16 @@ if (infoToggle && infoPanel) {
     trackEvent('click', 'UI', isHidden ? 'Expand Info Panel' : 'Collapse Info Panel');
   });
 }
+
+// ✅ ParkingTipsToggle ParkingTipsPanel
+const ParkingTipsToggle = document.getElementById('ParkingTipsToggle');
+const ParkingTipsPanel = document.getElementById('ParkingTipsPanel');
+
+if (ParkingTipsToggle && ParkingTipsPanel) {
+  ParkingTipsToggle.addEventListener('click', () => {
+    const isHidden = ParkingTipsPanel.style.display === 'none';
+    ParkingTipsPanel.style.display = isHidden ? 'block' : 'none';
+    ParkingTipsToggle.textContent = isHidden ? '❌ Hide Info' : '🚗 Parking Tips';
+    trackEvent('click', 'UI', isHidden ? 'Expand Parking Tips Panel' : 'Collapse Parking Tips Panel');
+  });
+}
