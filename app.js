@@ -734,10 +734,10 @@ document.querySelector('#parking-tips button').addEventListener('click', toggleP
 
 // Random Parking Tip
 const parkingTips = [
-  "Did you know? In many cities, you must park within 12 inches of the curb.",
-  "Always check for 'No Parking' signs with specific hours — they can be easy to miss.",
-  "Using a dashcam? Point it toward your parking spot for extra security.",
-  "In cold climates, clear all snow from your car — including the roof — before driving."
+  "<em><strong>Tip</strong>: Did you know? In many cities, you must park within 12 inches of the curb.",
+  "<em><strong>Tip</strong>: Always check for 'No Parking' signs with specific hours — they can be easy to miss.",
+  "<em><strong>Tip</strong>: Using a dashcam? Point it toward your parking spot for extra security.",
+  "<em><strong>Tip</strong>: In cold climates, clear all snow from your car — including the roof — before driving."
 ];
 
 if (document.getElementById('parking-tip')) {
