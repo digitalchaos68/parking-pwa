@@ -780,7 +780,7 @@ if (infoToggle && infoPanel) {
   infoToggle.addEventListener('click', () => {
     const isHidden = infoPanel.style.display === 'none';
     infoPanel.style.display = isHidden ? 'block' : 'none';
-    infoToggle.textContent = isHidden ? '❌ Hide Info' : 'ℹ️ Info & Tips';
+    infoToggle.textContent = isHidden ? '❌ Hide & Tips' : 'ℹ️ Info & Tips';
     trackEvent('click', 'UI', isHidden ? 'Expand Info Panel' : 'Collapse Info Panel');
   });
 }
@@ -793,7 +793,7 @@ if (ParkingTipsToggle && ParkingTipsPanel) {
   ParkingTipsToggle.addEventListener('click', () => {
     const isHidden = ParkingTipsPanel.style.display === 'none';
     ParkingTipsPanel.style.display = isHidden ? 'block' : 'none';
-    ParkingTipsToggle.textContent = isHidden ? '❌ Hide Info' : '🚗 Parking Tips';
+    ParkingTipsToggle.textContent = isHidden ? '❌ Hide Parking Tips' : '🚗 Parking Tips';
     trackEvent('click', 'UI', isHidden ? 'Expand Parking Tips Panel' : 'Collapse Parking Tips Panel');
   });
 }
