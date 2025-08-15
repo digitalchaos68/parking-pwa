@@ -781,9 +781,9 @@ const infoPanel = document.getElementById('infoPanel');
 
 if (infoToggle && infoPanel) {
   infoToggle.addEventListener('click', () => {
-    const isHidden = infoPanel.style.display === 'none';
+    const isHidden = infoPanel.style.display === 'block';
     infoPanel.style.display = isHidden ? 'block' : 'none';
-    infoToggle.textContent = isHidden ? '❌ Hide & Tips' : 'ℹ️ Info & Tips';
+    infoToggle.textContent = isHidden ? '❌ Hide Info & Tips' : 'ℹ️ Info & Tips';
     trackEvent('click', 'UI', isHidden ? 'Expand Info Panel' : 'Collapse Info Panel');
   });
 }
