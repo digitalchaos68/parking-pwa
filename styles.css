@@ -500,3 +500,37 @@ body.dark a {
   margin-bottom: 5px;
   color: black;
 }
+
+/* General Info Box Styles */
+.info-box {
+  margin: 20px 0;
+  padding: 15px;
+  background: #f0f8ff; /* Light blue background */
+  border-radius: 8px;
+}
+
+/* Header Styles */
+.info-box h3 {
+  margin: 0 0 10px 0;
+  color: #2c7be5; /* Blue header text */
+}
+
+/* Paragraph Styles */
+.info-box p {
+  margin: 0 0 10px 0;
+  font-size: 0.9em;
+  color: #666;
+}
+
+/* List Styles */
+.info-box ul {
+  margin: 0 0 10px 0;
+  padding-left: 20px;
+  list-style-type: disc;
+}
+
+/* List Items */
+.info-box li {
+  margin-bottom: 5px;
+  color: black;
+}
