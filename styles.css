@@ -461,3 +461,42 @@ body.dark a {
   flex-direction: column;
   gap: 15px; /* Space between map and tips */
 }
+
+/* General Section Styles */
+.how-it-works,
+.about-parkhere {
+  margin: 20px 0;
+  padding: 15px;
+  background: #f0f8ff;
+  border-radius: 8px;
+}
+
+/* Header Styles */
+.how-it-works h3,
+.about-parkhere h3 {
+  margin: 0 0 10px 0;
+  color: #2c7be5;
+}
+
+/* Paragraph Styles */
+.how-it-works p,
+.about-parkhere p {
+  margin: 0 0 10px 0;
+  font-size: 0.9em;
+  color: #666;
+}
+
+/* List Styles */
+.how-it-works ul,
+.about-parkhere ul {
+  margin: 0 0 10px 0;
+  padding-left: 20px;
+  list-style-type: disc;
+}
+
+/* List Items */
+.how-it-works li,
+.about-parkhere li {
+  margin-bottom: 5px;
+  color: black;
+}
