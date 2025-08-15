@@ -732,3 +732,15 @@ document.querySelector('#parking-tips button').addEventListener('click', toggleP
   }
 });
 
+// Random Parking Tip
+const parkingTips = [
+  "Did you know? In many cities, you must park within 12 inches of the curb.",
+  "Always check for 'No Parking' signs with specific hours — they can be easy to miss.",
+  "Using a dashcam? Point it toward your parking spot for extra security.",
+  "In cold climates, clear all snow from your car — including the roof — before driving."
+];
+
+if (document.getElementById('parking-tip')) {
+  const randomTip = parkingTips[Math.floor(Math.random() * parkingTips.length)];
+  document.getElementById('parking-tip').textContent = randomTip;
+}
