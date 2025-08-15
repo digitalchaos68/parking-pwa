@@ -734,13 +734,40 @@ document.querySelector('#parking-tips button').addEventListener('click', toggleP
 
 // Random Parking Tip
 const parkingTips = [
-  "<em><strong>Tip</strong>: Did you know? In many cities, you must park within 12 inches of the curb.",
-  "<em><strong>Tip</strong>: Always check for 'No Parking' signs with specific hours — they can be easy to miss.",
-  "<em><strong>Tip</strong>: Using a dashcam? Point it toward your parking spot for extra security.",
-  "<em><strong>Tip</strong>: In cold climates, clear all snow from your car — including the roof — before driving."
+  "Did you know? In many cities, you must park within 12 inches of the curb.",
+  "Always check for 'No Parking' signs with specific hours — they can be easy to miss.",
+  "Using a dashcam? Point it toward your parking spot for extra security.",
+  "In cold climates, clear all snow from your car — including the roof — before driving.",
+  "Never park over a storm drain — it’s often a violation and can cause flooding.",
+  "When parking on a hill, turn your wheels: left when facing downhill, right when uphill.",
+  "Use your car’s sun visor to mark your parking spot if you’re in a large lot.",
+  "Avoid parking under trees — sap, bird droppings, or falling branches can damage your car.",
+  "Always lock your car and hide valuables from view to deter theft.",
+  "Check for fire hydrants — parking too close can result in a fine or towing.",
+  "In busy areas, note nearby landmarks or building numbers to help find your car.",
+  "If parking in a garage, take a photo of the floor level and zone letter/number.",
+  "Use your phone’s camera to take a panoramic shot of your surroundings when parking.",
+  "Some cities require you to turn headlights off when parked — check local rules.",
+  "Be cautious of parking near construction zones — scaffolding or equipment may block your exit.",
+  "In narrow streets, leave enough space for other cars to open doors safely.",
+  "If parking overnight, choose a well-lit area to increase safety.",
+  "Double-check that your parking brake is engaged, especially on slopes.",
+  "Avoid parking in areas with low-hanging branches — they can scratch your roof or windows.",
+  "In residential zones, be mindful of resident-only parking restrictions.",
+  "Keep an emergency kit in your car — especially useful if you’re parked far from help.",
+  "Use a parking app or PWA like ParkHere to save your exact location with a photo.",
+  "If parking at an airport, compare long-term vs. short-term rates — sometimes shuttles are cheaper.",
+  "In multi-level parking, use a reminder app to note your level and section.",
+  "Be aware of street cleaning schedules — parking during cleaning hours can lead to fines.",
+  "When parking in a lot, try to park close to a corner or wall — it reduces the chance of dings.",
+  "If parking in the rain, leave a window slightly open to prevent fogging (if safe).",
+  "In high-theft areas, consider using a steering wheel lock for added security.",
+  "Always check for towing warnings — some private lots tow without notice.",
+  "Use your car’s built-in navigation to 'save location' if your phone battery is low."
 ];
 
+// Display a random parking tip
 if (document.getElementById('parking-tip')) {
-  const randomTip = parkingTips[Math.floor(Math.random() * parkingTips.length)];
-  document.getElementById('parking-tip').textContent = randomTip;
+  const randomIndex = Math.floor(Math.random() * parkingTips.length);
+  document.getElementById('parking-tip').textContent = parkingTips[randomIndex];
 }
