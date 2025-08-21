@@ -168,7 +168,7 @@ function generateRelatedLinks(filename, articles, relatedLinks) {
     .filter(link => articles.some(a => a.file === link))
     .map(link => {
       const target = articles.find(a => a.file === link);
-      return `<a href="article/${link}">${target?.title}</a>`;
+      return `<a href="../article/${link}">${target?.title}</a>`;
     });
   if (linkTexts.length === 0) return '';
   return `<p class="related-articles"><strong>You might also like:</strong> ${linkTexts.join(' and ')}.</p>`;
@@ -195,17 +195,11 @@ function updateArticles() {
     content = content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '').trim();
     content = content.replace(/<p class="related-articles">[\s\S]*?<\/p>/g, '').trim();
 
-    // Find the position to inject: before the back button
-    const backBtnIndex = content.indexOf('<a href="../learn.html" class="back-btn">');
+    // Find the back button
+    const backBtnTag = '<a href="../learn.html" class="back-btn">';
+    const backBtnIndex = content.indexOf(backBtnTag);
     if (backBtnIndex === -1) {
       console.warn(`⚠️  Back button not found in ${article.file}, skipping...`);
-      return;
-    }
-
-    // Find the last </div> before the back button
-    const containerCloseIndex = content.lastIndexOf('</div>', backBtnIndex);
-    if (containerCloseIndex === -1) {
-      console.warn(`⚠️  Container close not found in ${article.file}, skipping...`);
       return;
     }
 
@@ -213,13 +207,21 @@ function updateArticles() {
     const breadcrumb = generateBreadcrumb(article, categories);
     const related = generateRelatedLinks(article.file, articles, relatedLinks);
 
-    // Inject related links inside .container
-    const newContent = content.slice(0, containerCloseIndex) + 
-      `\n\n${related}\n` + 
-      content.slice(containerCloseIndex);
+    // Inject related links right before the back button
+    const newContent = content.slice(0, backBtnIndex) + 
+      `\n\n${related}\n\n` + 
+      content.slice(backBtnIndex);
 
-    // Inject JSON-LD after the container, before </body>
-    const finalContent = newContent.replace(/<\/body>/, `\n\n${breadcrumb}\n\n</body>`);
+    // ✅ BULLETPROOF: Inject JSON-LD before </body> using lastIndexOf
+    const bodyEndIndex = newContent.lastIndexOf('</body>');
+    if (bodyEndIndex === -1) {
+      console.warn(`⚠️  </body> tag not found in ${article.file}, skipping JSON-LD...`);
+      return;
+    }
+
+    const finalContent = newContent.slice(0, bodyEndIndex) + 
+      `\n\n${breadcrumb}\n` + 
+      newContent.slice(bodyEndIndex);
 
     // Write updated file
     fs.writeFileSync(filePath, finalContent);
