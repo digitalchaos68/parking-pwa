@@ -781,9 +781,9 @@ const infoToggle = document.getElementById('infoToggle');
 const infoPanel = document.getElementById('infoPanel');
 
 if (infoToggle && infoPanel) {
-  // Set initial state: visible
-  infoPanel.style.display = 'block';
-  infoToggle.textContent = '❌ Hide Info & Tips';
+  // Set initial state: hidden
+  infoPanel.style.display = 'none';
+  infoToggle.textContent = 'ℹ️ Info & Tips';
 
   infoToggle.addEventListener('click', () => {
     const isHidden = infoPanel.style.display === 'block';
