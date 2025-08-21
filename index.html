@@ -1,18 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-x<head>
+<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ParkHere 🅿️</title>
+  
+  <!-- SEO: Title -->
+  <title>ParkHere 🅿️ | Save Your Parking Spot Instantly (No Install)</title>
+  
+  <!-- SEO: Meta Description -->
+  <meta name="description" content="ParkHere helps you remember where you parked. Save your exact location, add a photo, and get directions back later. No account or installation needed — works directly in your browser!">
+
+  <!-- SEO: Open Graph (Social Sharing) -->
+  <meta property="og:title" content="ParkHere | Save Your Parking Spot Instantly">
+  <meta property="og:description" content="No more forgetting where you parked. Save your spot with one tap.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://parking-pwa-eight.vercel.app/">
+  <meta property="og:image" content="https://parking-pwa-eight.vercel.app/image/index-og.jpg">
+
+  <!-- SEO: Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ParkHere | Save Your Parking Spot Instantly">
+  <meta name="twitter:description" content="No more forgetting where you parked. Save your spot with one tap.">
+  <meta name="twitter:image" content="https://parking-pwa-eight.vercel.app/image/index-og.jpg">
+
+  <!-- SEO: Canonical URL -->
+  <link rel="canonical" href="https://parking-pwa-eight.vercel.app/">
+
+  <!-- SEO: Structured Data (Schema.org) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "ParkHere",
+    "description": "A Progressive Web App that helps you remember where you parked.",
+    "applicationCategory": "Utilities",
+    "operatingSystem": "All",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "url": "https://parking-pwa-eight.vercel.app/",
+    "logo": "https://parking-pwa-eight.vercel.app/logo.png"
+  }
+  </script>
 
   <!-- App Title for iOS -->
   <meta name="apple-mobile-web-app-title" content="ParkHere">
 
-
   <!-- Favicon -->
-<!--  <link rel="icon" href="/image/favicon.ico" type="image/x-icon"> -->
-  <link rel="apple-touch-icon" href="logo.png">
   <link rel="icon" type="image/svg+xml" href="/image/favicon.svg" />
+  <link rel="apple-touch-icon" href="logo.png">
   
   <!-- Manifest -->
   <link rel="manifest" href="manifest.json" />
@@ -28,11 +66,8 @@ x<head>
     gtag('config', 'G-WFEPX8LJMT');
   </script>
 
-
-
   <!-- Optional: Meta Tag for AdSense Account -->
   <meta name="google-adsense-account" content="ca-pub-5412094469616601">
-
 </head>
 <body>
   <div class="container">
@@ -86,114 +121,101 @@ x<head>
     <button id="sendWABtn" disabled class="shared-hide">💬 Save Reminder in WhatsApp</button>
     <button id="resetBtn" class="shared-hide">🗑️ Reset Parking Spot</button>
     <button id="supportBtn" class="shared-hide">☕ Support This App</button>
-<p class="hint">
-  ℹ️ ParkHere v1.0 by Jason | 
-  <a href="/privacy.html" style="color:#007acc;">Privacy</a> | 
-  <a href="/disclaimer.html" style="color:#e74c3c;">Disclaimer</a> | 
-  <a href="https://buymeacoffee.com/digitalchaos" target="_blank" style="color:#ff8f00;">Support</a>
-</p>
-<p style="font-size:0.8em; color:#666; margin-top: 5px;">
-  We never collect or sell your data. Your location and photo are stored only on your device.
-</p>
-<div class="content-container">
-  <!-- Map Container -->
-  <div id="map" style="height: 300px; width: 100%;"></div>
-
-
-
-<!-- Info Panel Toggle Button -->
-<button id="infoToggle" class="shared-hide" style="background: #6c757d; color: white; margin-bottom: 10px;">
-  ℹ️ Info & Tips
-</button>
-
-<!-- Collapsible Info Panel -->
-<div id="infoPanel" style="margin: 15px 0; padding: 0; text-align: left;">
-  
-<!-- How ParkHere Works -->
-<div class="info-box">
-  <h3>How ParkHere Works</h3>
-  <p>ParkHere uses your phone's GPS to save your exact parking location. You can add a photo, share the spot with friends, or get directions back later. No account or install needed — it works directly in your browser!</p>
-  <ul style="margin: 8px 0; padding-left: 20px; text-align: left; color: black">
-    <li>✅ Save your spot with one tap</li>
-    <li>✅ View map, get distance, or share via QR code</li>
-    <li>✅ Works offline after first load (PWA)</li>
-  </ul>
-</div>
-
-  <!-- Parking Tips -->
-  <div class="info-box">
-    <h3>🚗 Parking Tips</h3>
-    <ul>
-      <li>Always note nearby landmarks when parking.</li>
-      <li>Take a photo of your parking spot and surrounding signs.</li>
-      <li>Use this app to save your exact location and a photo of your parking spot.</li>
-      <li>Check for time limits or towing zones.</li>
-      <li>Share your spot with family for easy pickup.</li>
-    </ul>
-    <p style="margin: 8px 0 0 0; font-size: 0.9em;">
-      <em><strong>Tip</strong>: Tap "Find My Car" to get voice-guided directions back to your vehicle.</em>
-      <br>
-      <em><strong>Tip</strong>: Tap "Find Nearby Places" to get nearby Restaurants, Cafes, Supermarkets, Shopping Malls, Parks, Car Parks and Gas Stations.</em>
-    <p id="parking-tip" style="font-size: 0.9em; margin: 10px 0; text-align: left;"></p>
-
+    <p class="hint">
+      ℹ️ ParkHere v1.0 by Jason | 
+      <a href="/privacy.html" style="color:#007acc;">Privacy</a> | 
+      <a href="/disclaimer.html" style="color:#e74c3c;">Disclaimer</a> | 
+      <a href="https://buymeacoffee.com/digitalchaos" target="_blank" style="color:#ff8f00;">Support</a>
     </p>
-  </div>
+    <p style="font-size:0.8em; color:#666; margin-top: 5px;">
+      We never collect or sell your data. Your location and photo are stored only on your device.
+    </p>
+    <div class="content-container">
+      <!-- Map Container -->
+      <div id="map" style="height: 300px; width: 100%;"></div>
 
-<!-- Parking Laws & Safety Tips -->
-<div class="info-box">
-  <h3>🚦 Parking Laws & Safety</h3>
-  <ul style="margin: 8px 0; padding-left: 20px; text-align: left; color: black">
-    <li>Always park legally and within designated areas.</li>
-    <li>Avoid parking in restricted zones (e.g., no-parking zones, fire lanes).</li>
-    <li>Check for time restrictions — some zones may have limited parking hours.</li>
-    <li>Lock your car and hide valuables from view to prevent theft.</li>
-    <li>In cold climates, clear all snow from your car — including the roof — before driving.</li>
-    <li>Use turn signals when entering or leaving a parking spot to alert other drivers.</li>
-    <li>Never block driveways or emergency access points.</li>
-    <li>Be mindful of local parking regulations, which may vary by city or country.</li>
-  </ul>
-  <p style="margin: 8px 0 0 0; font-size: 0.9em; ">
-    <em><strong>Tip</strong>: Use the "Find Nearby Places" feature to locate public carparks.</em>
-  </p>
-</div>
+      <!-- Info Panel Toggle Button -->
+      <button id="infoToggle" class="shared-hide" style="background: #6c757d; color: white; margin-bottom: 10px;">
+        ℹ️ Info & Tips
+      </button>
 
-  <!-- Placeholder for Minimized State -->
-  <div id="parking-tips-placeholder" style="display: none; margin-top: 8px; font-size: 0.9em; color: #6c757d;">
-    <em>Tap here to expand Parking Tips.</em>
-  </div>
+      <!-- Collapsible Info Panel -->
+      <div id="infoPanel" style="display: none; margin: 15px 0; padding: 0; text-align: left;">
+        
+        <!-- How ParkHere Works -->
+        <div class="info-box">
+          <h3>How ParkHere Works</h3>
+          <p>ParkHere uses your phone's GPS to save your exact parking location. You can add a photo, share the spot with friends, or get directions back later. No account or install needed — it works directly in your browser!</p>
+          <ul style="margin: 8px 0; padding-left: 20px; text-align: left; color: black">
+            <li>✅ Save your spot with one tap</li>
+            <li>✅ View map, get distance, or share via QR code</li>
+            <li>✅ Works offline after first load (PWA)</li>
+          </ul>
+        </div>
 
-  <!-- About ParkHere -->
-<div class="info-box">
-  <h3>About ParkHere</h3>
-<p style="margin: 8px 0; padding-left: 20px; text-align: left;">ParkHere is a free, open-source Progressive Web App (PWA) that helps you remember where you parked. No installation, no login, no tracking. Your data stays on your device.</p>
-<p style="margin: 8px 0; padding-left: 20px; text-align: left;">Made with ❤️ by Jason. <a href="https://buymeacoffee.com/digitalchaos" target="_blank">Support development</a>.</p>
-</div>
+        <!-- Parking Tips -->
+        <div class="info-box">
+          <h3>🚗 Parking Tips</h3>
+          <ul>
+            <li>Always note nearby landmarks when parking.</li>
+            <li>Take a photo of your parking spot and surrounding signs.</li>
+            <li>Use this app to save your exact location and a photo of your parking spot.</li>
+            <li>Check for time limits or towing zones.</li>
+            <li>Share your spot with family for easy pickup.</li>
+          </ul>
+          <p style="margin: 8px 0 0 0; font-size: 0.9em;">
+            <em><strong>Tip</strong>: Tap "Find My Car" to get voice-guided directions back to your vehicle.</em>
+            <br>
+            <em><strong>Tip</strong>: Tap "Find Nearby Places" to get nearby Restaurants, Cafes, Supermarkets, Shopping Malls, Parks, Car Parks and Gas Stations.</em>
+          </p>
+          <p id="parking-tip" style="font-size: 0.9em; margin: 10px 0; text-align: left;"></p>
+        </div>
 
+        <!-- Parking Laws & Safety Tips -->
+        <div class="info-box">
+          <h3>🚦 Parking Laws & Safety</h3>
+          <ul style="margin: 8px 0; padding-left: 20px; text-align: left; color: black">
+            <li>Always park legally and within designated areas.</li>
+            <li>Avoid parking in restricted zones (e.g., no-parking zones, fire lanes).</li>
+            <li>Check for time restrictions — some zones may have limited parking hours.</li>
+            <li>Lock your car and hide valuables from view to prevent theft.</li>
+            <li>In cold climates, clear all snow from your car — including the roof — before driving.</li>
+            <li>Use turn signals when entering or leaving a parking spot to alert other drivers.</li>
+            <li>Never block driveways or emergency access points.</li>
+            <li>Be mindful of local parking regulations, which may vary by city or country.</li>
+          </ul>
+          <p style="margin: 8px 0 0 0; font-size: 0.9em;">
+            <em><strong>Tip</strong>: Use the "Find Nearby Places" feature to locate public carparks.</em>
+          </p>
+        </div>
 
+        <!-- About ParkHere -->
+        <div class="info-box">
+          <h3>About ParkHere</h3>
+          <p style="margin: 8px 0; padding-left: 20px; text-align: left;">ParkHere is a free, open-source Progressive Web App (PWA) that helps you remember where you parked. No installation, no login, no tracking. Your data stays on your device.</p>
+          <p style="margin: 8px 0; padding-left: 20px; text-align: left;">Made with ❤️ by Jason. <a href="https://buymeacoffee.com/digitalchaos" target="_blank">Support development</a>.</p>
+        </div>
+      </div>
 
-</div>
+      <script>
+        // Restore minimize state
+        const tipsDiv = document.getElementById('parking-tips');
+        if (tipsDiv) {
+          const isMinimized = localStorage.getItem('parkingTipsMinimized') === 'true';
+          const content = tipsDiv.querySelector('div[style*="overflow"]');
+          const button = tipsDiv.querySelector('button');
+          if (content && button) {
+            content.style.display = isMinimized ? 'none' : 'block';
+            button.textContent = isMinimized ? '–' : '✕';
+          }
+        }
+      </script>
 
-<script>
-  // Restore minimize state
-  const tipsDiv = document.getElementById('parking-tips');
-  if (tipsDiv) {
-    const isMinimized = localStorage.getItem('parkingTipsMinimized') === 'true';
-    const content = tipsDiv.querySelector('div[style*="overflow"]');
-    const button = tipsDiv.querySelector('button');
-    if (content && button) {
-      content.style.display = isMinimized ? 'none' : 'block';
-      button.textContent = isMinimized ? '–' : '✕';
-    }
-  }
-</script>
-
-<!-- Learn Button -->
-<button id="learnBtn" class="shared-hide" style="background: #2c7be5; color: white; margin: 15px 0;">
-  📚 Learn & Tips
-</button>
-
-
-</div>
+      <!-- Learn Button -->
+      <button id="learnBtn" class="shared-hide" style="background: #2c7be5; color: white; margin: 15px 0;">
+        📚 Learn & Tips
+      </button>
+    </div>
 
     <!-- Status & Timer -->
     <div id="status"></div>
@@ -217,40 +239,16 @@ x<head>
   <!-- Then load your app -->
   <script src="app.js"></script>
 
-
-<!-- ✅ Footer: Always visible, adds publisher content 
-<p style="font-size:0.8em; color:#666; text-align:center; margin-top: 10px;">
-  ParkHere helps you remember where you parked — no install needed.
-</p>
--->
-
-<!-- Add a class to control ad visibility -->
-
-  <!-- Ad code here -->
-
- <!-- ✅ Add AdSense script here -->
-
-<!-- ✅ Add min-width, width, and ensure it's visible -->
-
-<!-- ✅ Single ad container -->
-<div id="ad-container" class="hidden" style="min-width: 300px; width: 100%; height: 100px; margin: 10px 0;">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5412094469616601"
-     crossorigin="anonymous"></script>
-  <ins class="adsbygoogle"
-       style="display:block; text-align:center;"
-       data-ad-client="ca-pub-5412094469616601"
-       data-ad-slot="4593086129"
-       data-ad-format="auto"
-       data-full-width-responsive="true"></ins>       
-<!--       
-       data-ad-format="fluid"
-       data-ad-layout="in-article"></ins>
-  <script>
-    (adsbygoogle = window.adsbygoogle || []).push({});
-  </script>
--->
-
-</div>
-
+  <!-- ✅ Single ad container -->
+  <div id="ad-container" class="hidden" style="min-width: 300px; width: 100%; height: 100px; margin: 10px 0;">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5412094469616601"
+       crossorigin="anonymous"></script>
+    <ins class="adsbygoogle"
+         style="display:block; text-align:center;"
+         data-ad-client="ca-pub-5412094469616601"
+         data-ad-slot="4593086129"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+  </div>
 </body>
 </html>
