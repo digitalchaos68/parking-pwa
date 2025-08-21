@@ -79,7 +79,15 @@
     <h2>Step 4: Straighten Out</h2>
     <p>Continue reversing until your car is straight and centered in the space. Adjust as needed.</p>
 
-    <a href="../learn.html" class="back-btn">← Back to Learn & Tips</a>
+    <a href="../learn" class="back-btn">← Back to Learn & Tips</a>
   </div>
+
+  <script>
+    // Check dark mode from localStorage
+    const isDarkMode = localStorage.getItem('darkMode') === 'true';
+    if (isDarkMode) {
+      document.body.classList.add('dark');
+    }
+  </script>
 </body>
 </html>

@@ -231,6 +231,12 @@
         category.querySelector('h2 span:last-child').textContent = '▼';
       });
     });
+
+    // Check dark mode from localStorage
+    const isDarkMode = localStorage.getItem('darkMode') === 'true';
+    if (isDarkMode) {
+      document.body.classList.add('dark');
+    }
   </script>
 </body>
 </html>
