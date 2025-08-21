@@ -1,5 +1,4 @@
-
- /* Reset & Box Sizing */
+/* Reset & Box Sizing */
 * {
   margin: 0;
   padding: 0;
@@ -41,7 +40,7 @@ body.dark .container {
 
 /* Privacy & Disclaimer Specific Styles */
 #privacy-container, #disclaimer-container {
-  text-align: left; /* Left-align for privacy & disclaimer */
+  text-align: left;
 }
 
 /* Headings */
@@ -154,15 +153,14 @@ button:not(:disabled):active {
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
-/* Dark Mode Button Overrides 
+/* Dark Mode Button Overrides */
 body.dark button {
   background-color: #3a3a3a !important;
   color: white !important;
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
-  */
 
-/* Now override text color per button */
+/* Dark Mode: Button Text Colors */
 body.dark #saveBtn        { color: #a8e6a1 !important; }
 body.dark #findBtn        { color: #f5c287 !important; }
 body.dark #shareBtn       { color: #f5a9a9 !important; }
@@ -172,13 +170,8 @@ body.dark #testVoiceBtn   { color: #a9d8f0 !important; }
 body.dark #nearbyBtn      { color: #a8e6c1 !important; }
 body.dark #sendWABtn      { color: #a8e6a1 !important; }
 body.dark #resetBtn       { color: #c9cacb !important; }
-/* body.dark #supportBtn     { color: #f5d7a7 !important; }  */
+body.dark #supportBtn     { color: #f5d7a7 !important; }
 
-/* Dark Mode: Change text color to black */
-body.dark #supportBtn {
-  background-color: #f5d7a7; /* Lighter orange for dark mode */
-  color: #f39c12; /* Ensure text is black in dark mode */
-}
 /* Dark Mode Hover */
 body.dark button:not(:disabled):hover {
   background-color: #4a4a4a !important;
@@ -325,17 +318,6 @@ body.dark .nearby-place {
 
 /* Support Button */
 #supportBtn {
-  display: block;
-  width: 100%;
-  padding: 14px 20px;
-  margin-bottom: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   background-color: #f39c12;
   color: white;
 }
@@ -414,15 +396,25 @@ body.dark select {
 a {
   color: #2c7be5;
   text-decoration: none;
+  transition: color 0.3s ease;
 }
 
 a:hover {
+  color: #1a68d1;
   text-decoration: underline;
 }
 
+/* === Dark Mode Link Overrides === */
 body.dark a {
   color: #4dabf7;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.3);
 }
+
+body.dark a:hover {
+  color: #8ab4e8;
+  text-decoration: underline;
+}
+
 /* Bottom ad banner */
 .adsbygoogle {
   margin: 10px auto;
@@ -452,7 +444,6 @@ body.dark a {
   color: #1a68d1;
 }
 
-
 .ad-hidden {
   display: none;
 }
@@ -460,7 +451,7 @@ body.dark a {
 .content-container {
   display: flex;
   flex-direction: column;
-  gap: 15px; /* Space between map and tips */
+  gap: 15px;
 }
 
 /* General Section Styles */
@@ -499,7 +490,7 @@ body.dark a {
 .how-it-works li,
 .about-parkhere li {
   margin-bottom: 5px;
-  color: black;
+  color: #333;
 }
 
 /* Info Box Styles */
@@ -526,14 +517,14 @@ body.dark a {
 
 .info-box p {
   margin: 8px 0;
-  color: #666; /* Light gray for light mode */
+  color: #666;
 }
 
 /* Dark Mode Support */
 body.dark .info-box {
   background: #2d2d2d;
   border-color: #444;
-  color: #ccc; /* Lighter text for dark mode */
+  color: #ccc;
 }
 
 body.dark .info-box h3 {
@@ -542,33 +533,10 @@ body.dark .info-box h3 {
 
 body.dark .info-box p,
 body.dark .info-box li {
-  color: #ccc; /* Lighter text for better contrast */
+  color: #ccc;
 }
 
-.related-articles {
-  margin: 20px 0;
-  padding: 15px;
-  background: #f8f9fa;
-  border-left: 4px solid #2c7be5;
-  font-size: 0.95em;
-  color: #333;
-}
-
-.related-articles a {
-  color: #2c7be5;
-  text-decoration: none;
-}
-
-.related-articles a:hover {
-  text-decoration: underline;
-}
-
-/* Hide JSON-LD from view, but keep it for SEO */
-script[type="application/ld+json"] {
-  display: none;
-}
-
-/* Style the related articles section */
+/* Related Articles Section */
 .related-articles {
   margin: 20px 0;
   padding: 15px;
@@ -585,28 +553,11 @@ script[type="application/ld+json"] {
 }
 
 .related-articles a:hover {
-  text-decoration: underline;
-}
-/* === Link Colors === */
-a {
-  color: #9b59b6; /* Purple in light mode */
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-a:hover {
-  color: #7f8c8d; /* Slightly darker purple on hover */
+  color: #1a68d1;
   text-decoration: underline;
 }
 
-/* === Dark Mode Link Overrides === */
-body.dark a {
-  color: #a9cfeb; /* Light blue-purple for better visibility */
-  text-shadow: 0 1px 0 rgba(0,0,0,0.3);
-}
- 
-
-body.dark a:hover {
-  color: #8ab4e8; /* Slightly darker on hover */
-  text-decoration: underline;
+/* Hide JSON-LD from view, but keep it for SEO */
+script[type="application/ld+json"] {
+  display: none;
 }
