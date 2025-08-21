@@ -797,8 +797,8 @@ if (infoToggle && infoPanel) {
 const learnBtn = document.getElementById('learnBtn');
 if (learnBtn) {
   learnBtn.addEventListener('click', () => {
-    // Open in a new tab to keep the app functional
-    window.open('https://parking-pwa-eight.vercel.app/learn.html');
+    // Navigate within the same tab
+    window.location.href = 'https://parking-pwa-eight.vercel.app/learn.html';
     trackEvent('click', 'Navigation', 'Open Learn Page');
   });
 }
