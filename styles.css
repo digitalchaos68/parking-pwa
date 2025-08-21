@@ -543,3 +543,21 @@ body.dark .info-box p,
 body.dark .info-box li {
   color: #ccc; /* Lighter text for better contrast */
 }
+
+.related-articles {
+  margin: 20px 0;
+  padding: 15px;
+  background: #f8f9fa;
+  border-left: 4px solid #2c7be5;
+  font-size: 0.95em;
+  color: #333;
+}
+
+.related-articles a {
+  color: #2c7be5;
+  text-decoration: none;
+}
+
+.related-articles a:hover {
+  text-decoration: underline;
+}
