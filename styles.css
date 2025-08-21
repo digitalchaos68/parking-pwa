@@ -561,3 +561,28 @@ body.dark .info-box li {
 .related-articles a:hover {
   text-decoration: underline;
 }
+
+/* Hide JSON-LD from view, but keep it for SEO */
+script[type="application/ld+json"] {
+  display: none;
+}
+
+/* Style the related articles section */
+.related-articles {
+  margin: 20px 0;
+  padding: 15px;
+  background: #f8f9fa;
+  border-left: 4px solid #2c7be5;
+  font-size: 0.95em;
+  color: #333;
+  border-radius: 6px;
+}
+
+.related-articles a {
+  color: #2c7be5;
+  text-decoration: none;
+}
+
+.related-articles a:hover {
+  text-decoration: underline;
+}
