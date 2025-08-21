@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://parking-pwa-eight.vercel.app/sitemap.xml
+
+# Disallow private directories (if any)
+# Disallow: /admin/
+# Disallow: /private/
