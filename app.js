@@ -786,7 +786,7 @@ if (infoToggle && infoPanel) {
   infoToggle.textContent = 'ℹ️ Info & Tips';
 
   infoToggle.addEventListener('click', () => {
-    const isHidden = infoPanel.style.display === 'block';
+    const isHidden = infoPanel.style.display === 'none';
     infoPanel.style.display = isHidden ? 'block' : 'none';
     infoToggle.textContent = isHidden ? '❌ Hide Info & Tips' : 'ℹ️ Info & Tips';
     trackEvent('click', 'UI', isHidden ? 'Expand Info Panel' : 'Collapse Info Panel');
