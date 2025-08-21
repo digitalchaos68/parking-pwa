@@ -586,3 +586,26 @@ script[type="application/ld+json"] {
 .related-articles a:hover {
   text-decoration: underline;
 }
+/* === Link Colors === */
+a {
+  color: #9b59b6; /* Purple in light mode */
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #7f8c8d; /* Slightly darker purple on hover */
+  text-decoration: underline;
+}
+
+/* === Dark Mode Link Overrides === */
+body.dark a {
+  color: #a9cfeb; /* Light blue-purple for better visibility */
+  text-shadow: 0 1px 0 rgba(0,0,0,0.3);
+}
+ 
+
+body.dark a:hover {
+  color: #8ab4e8; /* Slightly darker on hover */
+  text-decoration: underline;
+}
