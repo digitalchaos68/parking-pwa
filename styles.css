@@ -203,6 +203,7 @@ body.dark button:not(:disabled):hover {
 body.dark #voiceSelect {
   background-color: #2d2d2d;
   color: #e0e0e0;
+  border: 1px solid #444;
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
@@ -224,6 +225,7 @@ body.dark #voiceSelect {
 body.dark #whatsappNumber {
   background-color: #2d2d2d;
   color: #e0e0e0;
+  border: 1px solid #444;
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
