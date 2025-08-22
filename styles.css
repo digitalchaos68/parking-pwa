@@ -175,7 +175,9 @@ body.dark #supportBtn     { color: #f5d7a7 !important; }
 
 /* Dark Mode Hover */
 body.dark button:not(:disabled):hover {
-  background-color: #4a4a4a !important;
+  background-color: #5a5a5a !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
 /* Voice Select Dropdown */
@@ -334,9 +336,10 @@ body.dark .nearby-place {
   color: white;
 }
 
+/* Dark Mode: Change text color to white for contrast */
 body.dark #supportBtn {
   background-color: #f5d7a7;
-  color: black;
+  color: white !important;
 }
 
 #supportBtn:hover {
