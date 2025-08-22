@@ -123,6 +123,15 @@ button {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+button, input, select, #voiceSelect, #whatsappNumber, .related-articles a {
+  transition: all 0.3s ease;
+}
+
+button:hover, input:hover, select:hover, .related-articles a:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
 /* Disabled State */
 button:disabled {
   opacity: 0.6;
@@ -186,7 +195,7 @@ body.dark #resetBtn       { color: #c9cacb !important; }
 
 body.dark #supportBtn {
   background-color: #f5d7a7;
-  color: black;
+  color: #e67e22 !important; /* Orange for contrast */
 }
 
 /* Dark Mode Hover */
