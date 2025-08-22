@@ -177,12 +177,12 @@ body.dark #resetBtn       { color: #c9cacb !important; }
 body.dark #supportBtn {
   background-color: #f5d7a7;
   color: white !important;
-}
 /* Dark Mode Hover */
 body.dark button:not(:disabled):hover {
-  background-color: #4a4a4a !important;
+  background-color: #5a5a5a !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
-
 /* Voice Select Dropdown */
 #voiceSelect {
   width: 100%;
@@ -337,11 +337,6 @@ body.dark .nearby-place {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   background-color: #f39c12;
   color: white;
-}
-
-body.dark #supportBtn {
-  background-color: #f5d7a7;
-  color: black;
 }
 
 #supportBtn:hover {
