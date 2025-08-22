@@ -180,9 +180,7 @@ body.dark #supportBtn {
 }
 /* Dark Mode Hover */
 body.dark button:not(:disabled):hover {
-  background-color: #5a5a5a !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  background-color: #4a4a4a !important;
 }
 
 /* Voice Select Dropdown */
