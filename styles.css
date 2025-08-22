@@ -587,12 +587,9 @@ body.dark .related-articles {
   color: #a9cfeb; /* Light blue-purple for better visibility */
 }
 
-.related-articles a {
-  color: #a9cfeb; /* Light blue-purple for better visibility */
-}
-
-body.dark .related-articles a {
-  color: #e6f7ff; /* Very light blue for maximum visibility */
+.container body.dark .related-articles a,
+body.dark .container .related-articles a {
+  color: #e6f7ff !important;
   text-shadow: 0 1px 0 rgba(0,0,0,0.3);
 }
 
