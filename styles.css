@@ -592,7 +592,7 @@ body.dark .related-articles {
 }
 
 body.dark .related-articles a {
-  color: #d5e8f6; /* Much lighter blue for high contrast */
+  color: #e6f7ff; /* Very light blue for maximum visibility */
   text-shadow: 0 1px 0 rgba(0,0,0,0.3);
 }
 
