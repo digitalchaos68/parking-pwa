@@ -587,13 +587,13 @@ body.dark .related-articles {
   color: #a9cfeb; /* Light blue-purple for better visibility */
 }
 
-body.dark .related-articles a {
-  color: white;
-  text-shadow: 0 1px 0 rgba(0,0,0,0.3);
+.related-articles a {
+  color: #a9cfeb; /* Light blue-purple for better visibility */
 }
 
-.related-articles a:hover {
-  text-decoration: underline;
+body.dark .related-articles a {
+  color: #d5e8f6; /* Much lighter blue for high contrast */
+  text-shadow: 0 1px 0 rgba(0,0,0,0.3);
 }
 
 /* Hide JSON-LD from view, but keep it for SEO */
