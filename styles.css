@@ -340,11 +340,7 @@ body.dark .nearby-place {
   color: white;
 }
 
-/* Dark Mode: Change text color to white for contrast */
-body.dark #supportBtn {
-  background-color: #f5d7a7;
-  color: white !important;
-}
+
 
 #supportBtn:hover {
   background-color: #e67e20;
