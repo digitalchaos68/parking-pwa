@@ -584,8 +584,12 @@ body.dark .related-articles {
 }
 
 .related-articles a {
-  color: #2c7be5;
-  text-decoration: none;
+  color: #a9cfeb; /* Light blue-purple for better visibility */
+}
+
+body.dark .related-articles a {
+  color: #a9cfeb;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.3);
 }
 
 .related-articles a:hover {
