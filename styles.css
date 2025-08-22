@@ -160,6 +160,14 @@ body.dark button {
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 */
+
+/* Dark Mode Button Overrides */
+body.dark button:not(#supportBtn) {
+  background-color: #3a3a3a !important;
+  color: white !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
 /* Now override text color per button */
 body.dark #saveBtn        { color: #a8e6a1 !important; }
 body.dark #findBtn        { color: #f5c287 !important; }
@@ -349,7 +357,9 @@ body.dark .nearby-place {
 }
 
 body.dark #supportBtn:hover {
-  background-color: #f5d7a7;
+  background-color: #f8e1b7 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
 /* Labels */
