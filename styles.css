@@ -567,16 +567,6 @@ body.dark .info-box li {
   color: #ccc; /* Lighter text for better contrast */
 }
 
-.related-articles {
-  margin: 20px 0;
-  padding: 15px;
-  background: #f8f9fa;
-  border-left: 4px solid #2c7be5;
-  font-size: 0.95em;
-  color: #333;
-  border-radius: 6px;
-}
-
 body.dark .related-articles {
   background: #2d2d2d;
   border-left: 4px solid #4dabf7;
@@ -593,10 +583,7 @@ body.dark .container .related-articles a {
   text-shadow: 0 1px 0 rgba(0,0,0,0.3);
 }
 
-/* Hide JSON-LD from view, but keep it for SEO */
-script[type="application/ld+json"] {
-  display: none;
-}
+
 
 /* Style the related articles section */
 .related-articles {
@@ -640,4 +627,9 @@ body.dark a:hover {
   color: #8ab4e8;
   text-decoration: underline;
   transition: color 0.3s ease;
+}
+
+/* Hide JSON-LD from view, but keep it for SEO */
+script[type="application/ld+json"] {
+  display: none;
 }
