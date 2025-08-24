@@ -27,7 +27,7 @@ body.dark {
   max-width: 480px;
   padding: 20px;
   top: 0;
-  left: 50%;
+  left: 100%;
   width: 100%;
   z-index: 999;
   border-radius: 12px;
