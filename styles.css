@@ -633,3 +633,6 @@ body.dark a:hover {
 script[type="application/ld+json"] {
   display: none;
 }
+.ad-hidden {
+  display: none !important;
+}

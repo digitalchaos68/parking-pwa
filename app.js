@@ -313,11 +313,13 @@ function loadAds() {
     return;
   }
 
+    const adContainer = document.getElementById('ad-container');
   // Delay to ensure DOM is fully rendered
   setTimeout(() => {
     try {
       console.log('Executing adsbygoogle.push()');
-      (adsbygoogle = window.adsbygoogle || []).push({});
+  if (adContainer && !adContainer.classList.contains('ad-hidden')) {
+    (adsbygoogle = window.adsbygoogle || []).push({});
       adLoaded = true;
       console.log('Ad request sent successfully');
     } catch (err) {
