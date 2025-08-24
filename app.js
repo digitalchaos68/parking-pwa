@@ -274,9 +274,10 @@ function displayNearbyResults(results, spot) {
 
 function hideAds() {
   const adContainer = document.getElementById('ad-container');
-  adContainer.classList.add('ad-hidden');
+  if (adContainer) {
+    adContainer.classList.add('ad-hidden');
+  }
 }
-
 // ✅ Load Ads with full policy compliance
 let adLoaded = false; // Prevents duplicate pushes
 
