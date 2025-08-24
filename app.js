@@ -313,7 +313,6 @@ function loadAds() {
     return;
   }
 
-    const adContainer = document.getElementById('ad-container');
   // Delay to ensure DOM is fully rendered
   setTimeout(() => {
     try {
@@ -321,7 +320,7 @@ function loadAds() {
   if (adContainer && !adContainer.classList.contains('ad-hidden')) {
     (adsbygoogle = window.adsbygoogle || []).push({});
       adLoaded = true;
-      console.log('Ad request sent successfully');
+      console.log('Ad request sent successfully');}
     } catch (err) {
       console.warn('AdSense push failed:', err);
     }
