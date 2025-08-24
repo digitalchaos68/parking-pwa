@@ -281,49 +281,62 @@ function hideAds() {
 // ✅ Load Ads with full policy compliance
 let adLoaded = false; // Prevents duplicate pushes
 
+
+// ✅ Load Ads with full policy compliance
+let adLoaded = false; // Prevents duplicate pushes
+
 function loadAds() {
-  console.log('Attempting to load ads...');
+  console.log('ParkHere Ads: Attempting to load ads...');
   const adContainer = document.getElementById('ad-container');
   
   if (!adContainer) {
-    console.warn('Ad container not found in DOM');
+    console.warn('ParkHere Ads: Ad container not found in DOM');
     return;
   }
 
   // Check if meaningful content is present
   const hasContent = Boolean(
-    document.querySelector('.map') || 
+    document.querySelector('#map') || 
     document.querySelector('.nearby-place') || 
-    document.querySelector('.photo-preview') || 
-    document.querySelector('.voice-select') ||
+    document.querySelector('#photoPreview') || 
+    document.querySelector('#voiceSelect') ||
     JSON.parse(localStorage.getItem('parkingSpot'))
   );
 
   if (!hasContent) {
-    console.warn('No meaningful content detected; ads not loaded.');
+    console.warn('ParkHere Ads: No meaningful content detected; ads not loaded.');
     adContainer.classList.add('ad-hidden');
     return;
   }
 
-  console.log('Meaningful content detected, preparing to load ad...');
+  console.log('ParkHere Ads: Meaningful content detected, preparing to load ad...');
   adContainer.classList.remove('ad-hidden');
 
   // Only push once
   if (adLoaded) {
-    console.log('Ad already loaded, skipping push');
+    console.log('ParkHere Ads: Ad already loaded, skipping push');
+    return;
+  }
+
+  // Wait for AdSense script to load
+  if (!window.adsbygoogle) {
+    console.warn('ParkHere Ads: adsbygoogle not loaded yet, retrying...');
+    setTimeout(loadAds, 500);
     return;
   }
 
   // Delay to ensure DOM is fully rendered
   setTimeout(() => {
     try {
-      console.log('Executing adsbygoogle.push()');
-  if (adContainer && !adContainer.classList.contains('ad-hidden')) {
-    (adsbygoogle = window.adsbygoogle || []).push({});
-      adLoaded = true;
-      console.log('Ad request sent successfully');}
+      console.log('ParkHere Ads: Executing adsbygoogle.push()');
+      if (adContainer && !adContainer.classList.contains('ad-hidden')) {
+        (adsbygoogle = window.adsbygoogle || []).push({});
+        adLoaded = true;
+        console.log('ParkHere Ads: Ad request sent successfully');
+      }
     } catch (err) {
-      console.warn('AdSense push failed:', err);
+      console.error('ParkHere Ads: AdSense push failed:', err);
+      adLoaded = false; // Reset so it can retry later
     }
   }, 300);
 }
