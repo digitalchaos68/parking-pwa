@@ -278,9 +278,6 @@ function hideAds() {
     adContainer.classList.add('ad-hidden');
   }
 }
-// ✅ Load Ads with full policy compliance
-let adLoaded = false; // Prevents duplicate pushes
-
 
 // ✅ Load Ads with full policy compliance
 let adLoaded = false; // Prevents duplicate pushes
