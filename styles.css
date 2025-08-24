@@ -25,6 +25,7 @@ body.dark {
 #fixed-banner {
   position: fixed;
   max-width: 480px;
+  width: 100%;
   padding: 20px;
   top: 0;
   left: 50%;
@@ -32,6 +33,13 @@ body.dark {
   z-index: 999;
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden; /* Prevent any overflow */
+}
+
+#fixed-banner img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
 }
 
 .container {
