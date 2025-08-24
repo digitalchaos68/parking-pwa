@@ -22,10 +22,20 @@ body.dark {
   color: #e0e0e0;
 }
 
-/* Container */
+#fixed-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
 .container {
+  margin-top: 200px; /* Adjust based on banner height */
   max-width: 480px;
-  margin: 0 auto;
+  margin-left: auto;
+  margin-right: auto;
   padding: 20px;
   background: white;
   border-radius: 12px;
