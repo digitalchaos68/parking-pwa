@@ -683,7 +683,7 @@ script[type="application/ld+json"] {
   max-width: 480px;
   padding: 12px 20px;
   background: #2c7be5;
-  color: white;
+  color: yellow;
   text-align: center;
   font-size: 0.9em;
   border-radius: 12px 12px 0 0;
@@ -704,7 +704,7 @@ install-banner-content {
 #install-dismiss {
   background: None;
   border: None;
-  color: White;
+  color: yellow;
   font-size: 1.2em;
   cursor: pointer;
   padding: 0 5px;
