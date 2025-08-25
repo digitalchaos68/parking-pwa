@@ -692,10 +692,6 @@ script[type="application/ld+json"] {
   transition: transform 0.3s ease;
 }
 
-.install-banner.visible {
-  transform: translateYY(0);
-}
-
 .install-banner-content {
   display: flex;
   justify-content: space-between;
@@ -706,10 +702,14 @@ script[type="application/ld+json"] {
 }
 
 #install-dismiss {
-  background: none;
-  border: none;
-  color: white;
+  background: None;
+  border: None;
+  color: White;
   font-size: 1.2em;
   cursor: pointer;
   padding: 0 5px;
+}
+
+.install-banner.visible {
+  transform: translateYY(0);
 }
