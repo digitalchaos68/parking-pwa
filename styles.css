@@ -694,6 +694,7 @@ script[type="application/ld+json"] {
 
 install-banner-content {
   display: flex;
+  color: yellow;
   justify-content: space-between;
   align-items: center;
   gap: 10px;
