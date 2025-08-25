@@ -710,6 +710,3 @@ install-banner-content {
   padding: 0 5px;
 }
 
-.install-banner.visible {
-  transform: translateYY(0);
-}
