@@ -814,3 +814,54 @@ if (learnBtn) {
     trackEvent('click', 'Navigation', 'Open Learn Page');
   });
 }
+
+// ✅ Save to Home Screen Banner
+function setupInstallBanner() {
+  const banner = document.getElementById('install-banner');
+  const dismiss = document.getElementById('install-dismiss');
+
+  // Check if already dismissed
+  if (localStorage.getItem('installBannerDismissed') === 'true') {
+    return;
+  }
+
+  // Check if PWA is installed
+  if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+    return; // App is installed, no need to show
+  }
+
+  // Show banner after a short delay
+  setTimeout(() => {
+    banner.classList.add('visible');
+  }, 2000);
+
+  // Dismiss on click
+  dismiss.addEventListener('click', () => {
+    banner.classList.remove('visible');
+    localStorage.setItem('installBannerDismissed', 'true');
+  });
+
+  // Click anywhere to dismiss
+  banner.addEventListener('click', (e) => {
+    if (e.target !== dismiss) {
+      banner.classList.remove('visible');
+      localStorage.setItem('installBannerDismissed', 'true');
+    }
+  });
+}
+
+// Call this after DOM is loaded
+document.addEventListener('DOMContentLoaded', setupInstallBanner);
+
+function getInstallMessage() {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isAndroid = /Android/.test(navigator.userAgent);
+
+  if (isIOS) {
+    return 'Tap <strong>Share</strong> → <strong>Add to Home Screen</strong> for instant access!';
+  } else if (isAndroid) {
+    return 'Tap <strong>Menu</strong> → <strong>Add to Home screen</strong> for instant access!';
+  } else {
+    return 'Add ParkHere to your home screen for quick access!';
+  }
+}

@@ -673,3 +673,39 @@ script[type="application/ld+json"] {
 .ad-bottom .ad-hidden {
   display: none !important;
 }
+
+.install-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #2c7be5;
+  color: white;
+  padding: 8px 20px;
+  text-align: center;
+  font-size: 0.9em;
+  z-index: 998;
+  transition: transform 0.3s ease;
+  transform: translateY(100%);
+}
+
+.install-banner.visible {
+  transform: translateY(0);
+}
+
+.install-banner-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+#install-dismiss {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2em;
+  cursor: pointer;
+  padding: 0 5px;
+}
