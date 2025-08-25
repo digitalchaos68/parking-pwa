@@ -260,20 +260,21 @@
   <!-- Then load your app -->
   <script src="app.js"></script>
 
-<!-- ✅ Save to Home Screen Banner (Guaranteed Centered) -->
+<!-- ✅ Save to Home Screen Banner (Smart, Platform-Aware) -->
 <div id="install-banner" style="position: fixed; bottom: 0; left: 0; width: 100%; z-index: 998;">
   <div style="max-width: 480px; margin: 0 auto; padding: 12px 20px; background: #2c7be5; color: white; text-align: center; font-size: 0.9em; border-radius: 12px 12px 0 0; box-shadow: 0 -2px 8px rgba(0,0,0,0.1);">
     <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
-      <p style="margin: 0; color: white; font-weight: 500;">Add ParkHere to your home screen for quick access!</p>
+      <p id="install-message" style="margin: 0; color: white; font-weight: 500;">Add ParkHere to your home screen for quick access!</p>
       <button id="install-dismiss" aria-label="Close" style="background: none; border: none; color: white; font-size: 1.2em; cursor: pointer; padding: 0; margin: 0; font-weight: bold;">×</button>
     </div>
   </div>
 </div>
 
 <script>
-  // ✅ Show Install Banner
+  // ✅ Show Install Banner with Platform-Specific Instructions
   function setupInstallBanner() {
     const banner = document.getElementById('install-banner');
+    const message = document.getElementById('install-message');
     const dismiss = document.getElementById('install-dismiss');
 
     // Hide if already dismissed
@@ -288,9 +289,21 @@
       return;
     }
 
+    // Detect platform and set message
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+
+    if (isIOS) {
+      message.textContent = 'Tap Share → Add to Home Screen';
+    } else if (isAndroid) {
+      message.textContent = 'Tap Menu → Add to Home screen';
+    } else {
+      message.textContent = 'Add ParkHere to your home screen for quick access!';
+    }
+
     // Show banner after a delay
     setTimeout(() => {
-      banner.style.transform = 'translateY(0)';
+      banner.style.opacity = '1';
     }, 2000);
 
     // Dismiss on click
