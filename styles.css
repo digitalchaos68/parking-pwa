@@ -709,4 +709,6 @@ install-banner-content {
   cursor: pointer;
   padding: 0 5px;
 }
-
+.install-banner.visible {
+  transform: translateYY(0);
+}
