@@ -692,6 +692,8 @@ script[type="application/ld+json"] {
   transition: transform 0.3s ease;
 }
 
+
+
 .install-banner-content {
   display: flex;
   justify-content: space-between;
